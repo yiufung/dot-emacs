@@ -1892,7 +1892,7 @@ org-download-image to obtain a local copy."
   ;; Dictionaries to be downloaded via OS package manager
   (setq flyspell-default-dictionary "american"
         ispell-personal-dictionary (expand-file-name "ispell_dict"
-                                                     my-emacs-conf-directory))
+                                                     my-private-conf-directory))
   ;; Suppress ispell output
   (advice-add 'ispell-change-dictionary :around #'suppress-messages)
   ;; only correct mistakes in a programming mode buffer that fall within a comment
@@ -2305,8 +2305,7 @@ In that case, insert the number."
   :bind (("C-c y" . 'yas/insert-snippet))
   :config
   (add-to-list 'yas-snippet-dirs
-               (expand-file-name "yasnippets"
-                                 my-emacs-conf-directory))
+               (expand-file-name "yasnippets" my-private-conf-directory))
   (yas-global-mode)
   (yasnippet-snippets-initialize)
   )
