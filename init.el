@@ -846,12 +846,7 @@ horizontal mode."
     (let ((current-prefix-arg '(4)))
       (call-interactively 'magit-status)))
 
-  ;; Set the magit variable so that it works on both Windows and Linux
-  ;; See discussion on https://github.com/magit/magit/issues/3345
-  (setq magit-git-executable "git")
-  ;; Add our latest git to tramp search path
-  (add-to-list 'tramp-remote-path "/home/bigdata/git/bin")
-  ;; Set magit password authentication source
+  ;; Set magit password authentication source to auth-source
   (add-to-list 'magit-process-find-password-functions
                'magit-process-password-auth-source)
 
