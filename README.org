@@ -2,7 +2,7 @@
 
 Goals:
 - Simple: Main config in one single file, with detailed explanations in comments
-- Robust: Use [[https://github.com/raxod502/straight.el#configuration-reproducibility][straight.el]] to ensure packages be locked at certain versions. See
+- Robust: Use [[https://github.com/raxod502/straight.el#configuration-reproducibility][straight.el]] to freeze package versions. See
   [[https://github.com/raxod502/straight.el#configuration-reproducibility][configuration-reproducibility]]
 
 It adopts the same idea in [[https://yiufung.net/post/pure-emacs-lisp-init-skeleton/][my post on pure Emacs-Lisp config]], except that
