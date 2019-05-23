@@ -54,8 +54,8 @@
 ;; Emacs configuration, along with many other journals, are synchronized across machines
 (setq my-sync-directory "~/Dropbox")
 ;; Define configuration directory.
-(setq my-emacs-conf-directory (expand-file-name "dotfiles/emacs" my-sync-directory)
-      my-private-conf-directory (expand-file-name "private" my-emacs-conf-directory))
+(setq my-emacs-conf-directory (expand-file-name "dotfiles/emacs/" my-sync-directory)
+      my-private-conf-directory (expand-file-name "private/" my-emacs-conf-directory))
 ;; For packages not available through MELPA, save it locally and put under load-path
 (add-to-list 'load-path (expand-file-name "elisp" my-emacs-conf-directory))
 
@@ -1328,8 +1328,8 @@ will not be modified."
       (add-to-list 'org-tempo-keywords-alist ele))
     )
 
-  (setq org-ditaa-jar-path (expand-file-name "dotfiles/emacs/bin/ditaa.jar" my-sync-directory))
-  (setq org-plantuml-jar-path (expand-file-name "dotfiles/emacs/bin/plantuml.jar" my-sync-directory))
+  (setq org-ditaa-jar-path (expand-file-name "bin/ditaa.jar" my-emacs-conf-directory))
+  (setq org-plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
   ;; For R plotting.
   ;; Default template uses :results output as header arguments.
   ;; If we want to use ggplot2, which plots to org AND saves a file in
@@ -1430,9 +1430,6 @@ org-download-image to obtain a local copy."
             (sleep-for 1) ;; Some sites dislike frequent requests
             ))))
     )
-
-  ;; Setup org-board
-  (setq org-attach-directory (expand-file-name "archive/" my-sync-directory))
 
   ;; ob-ipython
   (setq ob-ipython-resources-dir "/tmp/ob-ipython-resources/")
@@ -2654,7 +2651,7 @@ In that case, insert the number."
 (use-package plantuml-mode
   :mode ("\\.plantuml\\'" . plantuml-mode)
   :config
-  (setq plantuml-jar-path (expand-file-name "dotfiles/emacs/bin/plantuml.jar" my-sync-directory))
+  (setq plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
   )
 
 ;;;; Misc programming supporting modes
