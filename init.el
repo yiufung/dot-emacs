@@ -1023,8 +1023,8 @@ horizontal mode."
                                            org-default-notes-file
                                            (expand-file-name "projects" org-directory)
                                            ))
-                        ;; Show agenda for whole week
-                        (org-agenda-span 5)
+                        ;; Show agenda for whole week, and first 2 days of next week
+                        (org-agenda-span 9)
                         (org-agenda-start-day "-Mon")
                         ))))
      ;; ("o" "Office-related Agenda"
@@ -1038,6 +1038,7 @@ horizontal mode."
                                       org-my-plan-free-file
                                       org-my-web-archive-file
                                       (expand-file-name "bible.org" org-directory)
+                                      (expand-file-name "church" org-directory)
                                       ))
                    (org-agenda-span 3) ;; Show upcoming 3 days
                    ))))
