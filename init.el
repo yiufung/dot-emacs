@@ -1007,8 +1007,8 @@ horizontal mode."
    org-agenda-restore-windows-after-quit t
    ;; It doesn't have to start on weekday
    org-agenda-start-on-weekday nil
-   ;; Agenda view start on yesterday
-   org-agenda-start-day "-1d"
+   ;; Agenda view start on today
+   org-agenda-start-day nil
    ;; Warn me in 2 weeks
    org-deadline-warning-days 14
    ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
@@ -1022,7 +1022,11 @@ horizontal mode."
                                            org-my-office-file
                                            org-default-notes-file
                                            (expand-file-name "projects" org-directory)
-                                           ))))))
+                                           ))
+                        ;; Show agenda for whole week
+                        (org-agenda-span 5)
+                        (org-agenda-start-day "-Mon")
+                        ))))
      ;; ("o" "Office-related Agenda"
      ;;  ((agenda "" ((org-agenda-start-day "0d")
      ;;               (org-agenda-start-on-weekday nil)
@@ -1035,7 +1039,7 @@ horizontal mode."
                                       org-my-web-archive-file
                                       (expand-file-name "bible.org" org-directory)
                                       ))
-                   (org-agenda-span 1)
+                   (org-agenda-span 3) ;; Show upcoming 3 days
                    ))))
      ("c" "Church"
       ((agenda "" ((org-agenda-files (list (expand-file-name "church" org-directory)))))))
@@ -1087,7 +1091,7 @@ horizontal mode."
            entry
            (file+headline org-my-office-file
                           "Meeting")
-           "* TODO %^{prompt}\nSCHEDULED: %^t\n\n:PEOPLE:\n- %?\n:END:\n** Agenda\n** Action Items\n- [ ] "
+           "* TODO %^{prompt}\nSCHEDULED: %^t\n:PEOPLE:\n- %?\n:END:\n** Agenda\n** Action Items\n- [ ] "
            :prepend t)
 
           ("j" "working journal"
@@ -1712,9 +1716,13 @@ org-download-image to obtain a local copy."
    notmuch-fcc-dirs 'nil  ;; Don't save sent emails in a separate folder
    notmuch-search-oldest-first 'nil
    notmuch-saved-searches '((:name "inbox" :query "tag:inbox" :key "i")
-                            (:name "unread" :query "tag:inbox AND tag:unread" :key "u")
-                            (:name "flagged" :query "tag:flagged" :key "f")
+                            (:name "unread" :query "tag:inbox AND tag:unread AND (NOT tag:lists)" :key "u")
+                            (:name "church" :query "tag:church" :key "c")
+                            (:name "fastmail" :query "tag:fastmail" :key "f")
+                            (:name "gmail" :query "tag:gmail" :key "g")
+                            (:name "list" :query "tag:lists" :key "l")
                             (:name "sent" :query "tag:sent" :key "t")
+                            (:name "flagged" :query "tag:flagged" :key "F")
                             (:name "drafts" :query "tag:draft" :key "d")
                             (:name "all mail" :query "*" :key "a"))
    notmuch-always-prompt-for-sender t)
