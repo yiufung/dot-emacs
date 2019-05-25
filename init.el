@@ -1716,14 +1716,17 @@ org-download-image to obtain a local copy."
   (setq-default
    notmuch-fcc-dirs 'nil  ;; Don't save sent emails in a separate folder
    notmuch-search-oldest-first 'nil
-   notmuch-saved-searches '((:name "inbox" :query "tag:inbox" :key "i")
-                            (:name "unread" :query "tag:inbox AND tag:unread AND (NOT tag:lists)" :key "u")
+   notmuch-saved-searches '(
+                            (:name "unread" :query "tag:inbox AND tag:unread AND (NOT tag:subscription)" :key "u")
+                            (:name "unread-subscription" :query "tag:inbox AND tag:unread AND tag:subscription" :key "l")
                             (:name "church" :query "tag:church" :key "c")
                             (:name "fastmail" :query "tag:fastmail" :key "f")
                             (:name "gmail" :query "tag:gmail" :key "g")
-                            (:name "list" :query "tag:lists" :key "l")
-                            (:name "sent" :query "tag:sent" :key "t")
-                            (:name "flagged" :query "tag:flagged" :key "F")
+                            (:name "inbox" :query "tag:inbox" :key "i")
+                            (:name "emacs-devel" :query "tag:lists/emacs-devel" :key "e")
+                            (:name "emacs-orgmode" :query "tag:lists/emacs-orgmode" :key "o")
+                            (:name "nas" :query "tag:nas" :key "n")
+                            (:name "sent" :query "tag:sent" :key "s")
                             (:name "drafts" :query "tag:draft" :key "d")
                             (:name "all mail" :query "*" :key "a"))
    notmuch-always-prompt-for-sender t)
