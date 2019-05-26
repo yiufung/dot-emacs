@@ -976,8 +976,8 @@ horizontal mode."
         org-startup-with-inline-images t
         org-startup-with-latex-preview t)
   ;; set todo keywords
-  (setq org-todo-keywords '((sequence "TODO(t)" "NEXT(n)" "IN-PROGRESS(i)" "WAITING(w)" "BLOCKED(b)" "SOMEDAY(s)"
-                                      "CANCELLED(c)" "DONE(d)")))
+  (setq org-todo-keywords
+        '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAITING(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
   ;; Setup for ordered tasks. Initiate with C-c C-x o
   (setq org-enforce-todo-dependencies t)
   ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
