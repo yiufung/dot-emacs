@@ -1171,8 +1171,12 @@ will not be modified."
   ;; Enable org-habit
   (add-to-list 'org-modules 'org-habit)
   (require 'org-habit)
-  (setq org-habit-show-all-today t)
-  (setq org-habit-show-done-always-green t)
+  (setq org-habit-show-all-today t
+        org-habit-show-habits-only-for-today t
+        org-habit-show-done-always-green t
+        org-habit-graph-column 32
+        org-habit-preceding-days 28
+        org-habit-following-days 7)
 
   (defun myorg-update-parent-cookie ()
     (when (equal major-mode 'org-mode)
