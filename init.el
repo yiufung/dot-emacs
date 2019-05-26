@@ -1150,6 +1150,8 @@ will not be modified."
    org-imenu-depth 5
    ;; Logging into a drawer
    org-log-into-drawer t
+   ;; Always log closing time when task is DONE
+   org-log-done 'time
    ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
    org-hide-emphasis-markers t
    ;; resepect heading.
@@ -1600,7 +1602,7 @@ org-download-image to obtain a local copy."
      ;; Use xelatex by default
      org-latex-compiler "xelatex"
      ;; Export in background
-     org-export-in-background t)
+     org-export-in-background 'nil) ;; TODO: Seems buggy when set to t
 
     ;; Enable source code fontification
     (setq-default org-latex-listings 'minted)  ;; Use python minted to fontify
@@ -1714,25 +1716,36 @@ org-download-image to obtain a local copy."
          ("/" . notmuch-search)
          )
   :commands (notmuch)
-  :config
-  (require 'notmuch) ;; Installed by pacman
+  :init
   (setq-default
    notmuch-fcc-dirs 'nil  ;; Don't save sent emails in a separate folder
    notmuch-search-oldest-first 'nil
    notmuch-saved-searches '(
-                            (:name "unread" :query "tag:inbox AND tag:unread AND (NOT tag:subscription)" :key "u")
-                            (:name "unread-subscription" :query "tag:inbox AND tag:unread AND tag:subscription" :key "l")
-                            (:name "church" :query "tag:church" :key "c")
-                            (:name "fastmail" :query "tag:fastmail" :key "f")
-                            (:name "gmail" :query "tag:gmail" :key "g")
-                            (:name "inbox" :query "tag:inbox" :key "i")
-                            (:name "emacs-devel" :query "tag:lists/emacs-devel" :key "e")
-                            (:name "emacs-orgmode" :query "tag:lists/emacs-orgmode" :key "o")
-                            (:name "nas" :query "tag:nas" :key "n")
-                            (:name "sent" :query "tag:sent" :key "s")
-                            (:name "drafts" :query "tag:draft" :key "d")
-                            (:name "all mail" :query "*" :key "a"))
-   notmuch-always-prompt-for-sender t)
+                            (:name "(u)nread" :query "tag:inbox AND tag:unread AND (NOT tag:subscription)" :key "u")
+                            (:name "(l)ist-subscription" :query "tag:inbox AND tag:unread AND tag:subscription" :key "l")
+                            (:name "(c)hurch" :query "tag:church" :key "c")
+                            (:name "(f)astmail" :query "tag:fastmail" :key "f")
+                            (:name "(g)mail" :query "tag:gmail" :key "g")
+                            (:name "(w)ic_it" :query "tag:wic_it" :key "w")
+                            (:name "(i)nbox" :query "tag:inbox" :key "i")
+                            (:name "(e)macs-devel" :query "tag:lists/emacs-devel" :key "e")
+                            (:name "emacs-(o)rgmode" :query "tag:lists/emacs-orgmode" :key "o")
+                            (:name "(n)as" :query "tag:nas" :key "n")
+                            (:name "(s)ent" :query "tag:sent" :key "s")
+                            (:name "(d)rafts" :query "tag:draft" :key "d")
+                            (:name "(a)ll" :query "*" :key "a"))
+   notmuch-always-prompt-for-sender t
+   notmuch-show-empty-saved-searches t
+   notmuch-archive-tags '("-inbox")
+   notmuch-column-control t)
+  :config
+  (require 'notmuch) ;; Installed by pacman
+  (defun notmuch-mark-as-read-and-move-next ()
+    (interactive)
+    (notmuch-search-tag
+     (if (member "unread" (notmuch-search-get-tags))
+         "-unread" "+unread"))
+    )
 
   ;; Enable notmuch links in Org-mode
   (with-eval-after-load 'org
