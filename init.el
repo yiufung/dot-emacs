@@ -793,8 +793,11 @@ horizontal mode."
   :straight gitignore-templates
   :straight diff-hl
   :straight git-timemachine
+  ;;display flycheck errors only on added/modified lines
   :straight magit-todos
   :straight ediff
+  :init
+  (straight-use-package '(magit-diff-flycheck :host github :repo "ragone/magit-diff-flycheck"))
   :bind (:map vc-prefix-map
               ("s" . 'git-gutter:stage-hunk)
               ("c" . 'magit-clone))
