@@ -1118,6 +1118,7 @@ horizontal mode."
 
   ;; Automatically add "CREATED" timestamp to org-capture entries
   ;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
+  ;; Change: Don't add property when filing at beancount files. It will create syntax error.
   (defvar org-created-property-name "CREATED"
     "The name of the org-mode property that stores the creation date of the entry")
   (defun org-set-created-property (&optional active NAME)
@@ -1130,7 +1131,9 @@ will not be modified."
     (let* ((created (or NAME org-created-property-name))
            (fmt (if active "<%s>" "[%s]"))
            (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
-      (unless (org-entry-get (point) created nil)
+      (unless (or (org-entry-get (point) created nil)
+                  ;; Beancount format does not accept :PROPERTY: syntax
+                  (string-match "\\.beancount$" (buffer-name)))
         (org-set-property created now))))
   (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
 
