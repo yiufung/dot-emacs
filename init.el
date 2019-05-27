@@ -934,17 +934,11 @@ horizontal mode."
   :init
   ;; customized export formats
   (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
-  (defun cyf/insert-org-inactive-timestamp ()
-    "Insert string: ADDED: [inactive-timestamp]"
-    (interactive)
-    (insert "ADDED: ")
-    (org-time-stamp-inactive (format-time-string "%H:%m"))
-    )
   :bind (
          ("C-c a" . org-agenda)
          ("C-c c" . counsel-org-capture)
          ("C-c l" . org-store-link)
-         ("C-c 0" . cyf/insert-org-inactive-timestamp)
+         ("C-c 0" . org-set-created-property)
          ;; Rifle through all my org files to identify an item.
          ;; Use C-s to display results in occur-like style.
          ("C-S-s" . helm-org-rifle)
@@ -1673,6 +1667,9 @@ org-download-image to obtain a local copy."
 
   ;; helm-org-rifle
   (setq helm-org-rifle-show-path t)
+
+  ;; Export to Confluence Wiki
+  (require 'ox-confluence)
 
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
