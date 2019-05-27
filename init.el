@@ -2897,7 +2897,7 @@ In that case, insert the number."
 (use-package emacs-one-themes
   :straight (:host github :repo "balajisivaraman/emacs-one-themes"))
 
-(load-theme 'one-light t)
+(load-theme 'kaolin-light t)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
