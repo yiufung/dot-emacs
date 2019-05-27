@@ -1026,9 +1026,9 @@ horizontal mode."
                                            org-default-notes-file
                                            (expand-file-name "projects" org-directory)
                                            ))
-                        ;; Show agenda for whole week, and first 2 days of next week
+                        ;; Show agenda for this whole week, and first 2 days of next week
+                        (org-agenda-start-on-weekday 1) ;; Always start on Monday
                         (org-agenda-span 9)
-                        (org-agenda-start-day "-Mon")
                         ))))
      ;; ("o" "Office-related Agenda"
      ;;  ((agenda "" ((org-agenda-start-day "0d")
