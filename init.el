@@ -977,7 +977,7 @@ horizontal mode."
         org-startup-with-latex-preview t)
   ;; set todo keywords
   (setq org-todo-keywords
-        '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAITING(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
+        '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAIT(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
   ;; Setup for ordered tasks. Initiate with C-c C-x o
   (setq org-enforce-todo-dependencies t)
   ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
@@ -986,7 +986,7 @@ horizontal mode."
           ("TODO" ("ARCHIVE" . nil))
           ("NEXT" ("ARCHIVE" . nil))
           ("IN-PROGRESS" ("ARCHIVE" . nil))
-          ("WAITING" ("ARCHIVE" . nil))
+          ("WAIT" ("ARCHIVE" . nil))
           ("BLOCKED" ("ARCHIVE" . nil))
           ("SOMEDAY" ("ARCHIVE" . nil))
           ("DONE" ("ARCHIVE" . nil)))
@@ -2826,7 +2826,7 @@ In that case, insert the number."
                  '(("TODO" . "dark khaki")
                    ("NEXT" . "dark salmon")
                    ("IN-PROGRESS" . "dark cyan")
-                   ("WAITING" . "dark goldenrod")
+                   ("WAIT" . "dark goldenrod")
                    ("BLOCKED" . "dark red")
                    ("SOMEDAY" . "DarkSlateGray4")
                    ("CANCELLED" . "dark grey")
@@ -2838,7 +2838,7 @@ In that case, insert the number."
                  '(("TODO" . "black")
                    ("NEXT" . "rosy brown")
                    ("IN-PROGRESS" . "royal blue")
-                   ("WAITING" . "sienna")
+                   ("WAIT" . "sienna")
                    ("BLOCKED" . "red")
                    ("SOMEDAY" . "coral")
                    ("CANCELLED" . "dim grey")
