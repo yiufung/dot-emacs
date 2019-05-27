@@ -1151,10 +1151,13 @@ will not be modified."
    org-list-indent-offset 1
    ;; Increase imenu index depth
    org-imenu-depth 5
-   ;; Logging into a drawer
+   ;; Logging settings: Better verbose than miss
    org-log-into-drawer t
-   ;; Always log closing time when task is DONE
-   org-log-done 'time
+   org-log-done 'note
+   org-log-redeadline 'note
+   org-log-reschedule 'note
+   ;; All entries in the subtree are considered todo items
+   org-hierarchical-todo-statistics 'nil
    ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
    org-hide-emphasis-markers t
    ;; resepect heading.
