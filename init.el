@@ -2501,7 +2501,6 @@ In that case, insert the number."
                                        :local-repo "simple-httpd"))
   :hook (ein:notebook-mode . visual-line-mode)
   :config
-  (require 'simple-httpd)
   (setq ein:worksheet-enable-undo 't)
   )
 
@@ -2629,12 +2628,8 @@ In that case, insert the number."
 
 (use-package markdown-mode
   :straight markdown-toc
-  :straight markdown-preview-mode ; for general markdown format preview
   :straight vmd-mode ; For GFM preview
   :defer t
-  :init
-  ;; Dependency of markdown-preview-mode
-  (straight-use-package '(emacs-web-server :host github :repo "eschulte/emacs-web-server"))
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md" . gfm-mode)
          ("*\\.md" . markdown-mode)
@@ -2647,9 +2642,7 @@ In that case, insert the number."
   :init (setq markdown-command "multimarkdown")
   :config
   (setq markdown-enable-math t
-        markdown-asymmetric-header t
-        markdown-preview-stylesheets (list (concat "https://github.com/dmarcotte/github-markdown-preview/"
-                                                   "blob/master/data/css/github.css")))
+        markdown-asymmetric-header t)
   )
 
 ;;;; HTTP
