@@ -789,7 +789,6 @@ horizontal mode."
 
 (use-package magit
   :defer 10
-  :straight forge
   :straight gitignore-templates
   :straight diff-hl
   :straight git-timemachine
@@ -808,9 +807,7 @@ horizontal mode."
          ("C-x g" . magit-status)
          ("C-x G" . magit-dispatch))
   :config
-  (require 'forge)
-  ;; Enable magit-file-mode, to enable operations that touches a file,
-  ;; such as log, blame
+  ;; Enable magit-file-mode, to enable operations that touches a file, such as log, blame
   (global-magit-file-mode)
 
   ;; Prettier looks, and provides dired diffs
