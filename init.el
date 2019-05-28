@@ -969,7 +969,9 @@ horizontal mode."
   (setq org-startup-folded t
         org-startup-with-inline-images t
         org-startup-with-latex-preview t)
-  ;; set todo keywords
+  ;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
+  ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
+  ;; list of tags for font settings
   (setq org-todo-keywords
         '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAIT(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
   ;; Setup for ordered tasks. Initiate with C-c C-x o
