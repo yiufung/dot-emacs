@@ -466,8 +466,7 @@ is already narrowed."
          ;; `org-edit-src-code' is not a real narrowing
          ;; command. Remove this first conditional if
          ;; you don't want it.
-         (cond ((ignore-errors (org-edit-src-code) t)
-                (delete-other-windows))
+         (cond ((ignore-errors (org-edit-src-code) t))
                ((ignore-errors (org-narrow-to-block) t))
                (t (org-narrow-to-subtree))))
         ((derived-mode-p 'latex-mode)
