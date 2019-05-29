@@ -992,10 +992,13 @@ horizontal mode."
   ;; Setup diary too
   (setq diary-file (expand-file-name "diary" org-directory))
 
-  ;; org-mode startup
+  ;; Default org-mode startup
   (setq org-startup-folded t
         org-startup-with-inline-images t
         org-startup-with-latex-preview t)
+  ;; Larger latex fragments
+  (plist-put org-format-latex-options :scale 1.5)
+
   ;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
   ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
   ;; list of tags for font settings
@@ -1187,10 +1190,9 @@ will not be modified."
    org-insert-heading-respect-content nil
    ;; Warn when editing invisible area
    org-catch-invisible-edits 'show-and-error
+   ;; Use C-c C-o to open links, but this should be handier.
+   org-return-follows-link t
    )
-
-  ;; Larger latex fragments
-  (plist-put org-format-latex-options :scale 1.5)
 
   ;; Enable org-id for globally unique IDs
   (add-to-list 'org-modules 'org-id)
@@ -1207,35 +1209,28 @@ will not be modified."
         org-habit-preceding-days 28
         org-habit-following-days 7)
 
+  ;; Update cookie automatically
   (defun myorg-update-parent-cookie ()
     (when (equal major-mode 'org-mode)
       (save-excursion
         (ignore-errors
           (org-back-to-heading)
           (org-update-parent-todo-statistics)))))
-
   (defadvice org-kill-line (after fix-cookies activate)
     (myorg-update-parent-cookie))
-
   (defadvice kill-whole-line (after fix-cookies activate)
     (myorg-update-parent-cookie))
 
-  ;; Use C-c C-o to open links, but this should be handier.
-  (setq org-return-follows-link t)
-
   ;; Enable link abbreviation
-  (setq org-link-abbrev-alist
-        '(("bugzilla"  . "http://10.1.2.9/bugzilla/show_bug.cgi?id=")
-          ("url-to-ja" . "http://translate.google.fr/translate?sl=en&tl=ja&u=%h")
-          ("google"    . "http://www.google.com/search?q=")
-          ("gmap"      . "http://maps.google.com/maps?q=%s")
-          ("omap"      . "http://nominatim.openstreetmap.org/search?q=%s&polygon=1")
-          ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
-          ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
-          ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
-          ("youtube" . "https://www.youtube.com/results?search_query=%s")
-          )
-        )
+  (setq org-link-abbrev-alist '(("bugzilla"  . "http://10.1.2.9/bugzilla/show_bug.cgi?id=")
+                                ("url-to-ja" . "http://translate.google.fr/translate?sl=en&tl=ja&u=%h")
+                                ("google"    . "http://www.google.com/search?q=")
+                                ("gmap"      . "http://maps.google.com/maps?q=%s")
+                                ("omap"      . "http://nominatim.openstreetmap.org/search?q=%s&polygon=1")
+                                ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
+                                ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
+                                ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
+                                ("youtube" . "https://www.youtube.com/results?search_query=%s")))
 
   (use-package org-my-html-export-style
     ;; My personal HTML export settings
@@ -1294,7 +1289,7 @@ will not be modified."
             (message "Custom header file %s doesnt exist")))))
     )
 
-  ;; org-babel settings
+  ;; org-babel
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((ipython    . t)
@@ -1367,6 +1362,7 @@ will not be modified."
       (add-to-list 'org-tempo-keywords-alist ele))
     )
 
+  ;; Plotting with ditaa and plantuml
   (setq org-ditaa-jar-path (expand-file-name "bin/ditaa.jar" my-emacs-conf-directory))
   (setq org-plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
   ;; For R plotting.
@@ -1410,12 +1406,10 @@ will not be modified."
                                                     (kill-region
                                                      (region-beginning)
                                                      (region-end)))))
-
   ;; Jump to headline
-  (add-to-list 'org-speed-commands-user
-               (cons "j" (lambda ()
-                           (avy-with avy-goto-line
-                             (avy--generic-jump "^\\*+" nil)))))
+  (add-to-list 'org-speed-commands-user (cons "j" (lambda ()
+                                                    (avy-with avy-goto-line
+                                                      (avy--generic-jump "^\\*+" nil)))))
 
   ;; Capturing pages from web. Integrates org-protocol-capture-html,
   ;; org-capture-extensions and org-protocol
@@ -1503,9 +1497,8 @@ org-download-image to obtain a local copy."
 
   ;; org-download
   (require 'org-download)
-  ;; org-download use buffer-local variables. Set it individually in
-  ;; files.
-  ;; Otherwise, put things flatly in misc folder.
+  ;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
+  ;; folder.
   (setq-default org-download-image-dir
                 (expand-file-name "images/misc" org-directory)
                 org-download-heading-lvl nil
