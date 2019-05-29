@@ -1233,6 +1233,7 @@ will not be modified."
           ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
           ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
           ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
+          ("youtube" . "https://www.youtube.com/results?search_query=%s")
           )
         )
 
