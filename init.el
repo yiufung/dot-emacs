@@ -2063,9 +2063,6 @@ org-download-image to obtain a local copy."
                   ("#+end_example"   . "¶")
                   ("#+begin_quote"   . "『")
                   ("#+end_quote"     . "』")
-                  ("[ ]"             . "☐")
-                  ("[X]"             . "☑")
-                  ("[-]"             . "❍" )
                   ))
   (setq prettify-symbols-unprettify-at-point 'right-edge)
   :config
