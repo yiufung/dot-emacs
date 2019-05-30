@@ -1101,6 +1101,7 @@ horizontal mode."
   ;; Capturing thoughts and Level 1 Headings.
   (setq org-default-notes-file (expand-file-name "plan-office.org" org-directory))
   (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
+  (setq org-my-plan-church-file (expand-file-name "church/plan-church.org" org-directory))
   (setq org-my-office-file (expand-file-name "office.org" org-directory))
   (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
   (setq org-my-life-file (expand-file-name "life.org" org-directory))
@@ -1110,6 +1111,11 @@ horizontal mode."
           ("c" "all todos" ;; Capture first, refile later
            entry
            (file+headline org-my-plan-free-file "Schedule")
+           "* TODO %?\n")
+
+          ("C" "church" ;; Church todos
+           entry
+           (file+headline org-my-plan-church-file "Schedule")
            "* TODO %?\n")
 
           ("o" "office tasks"
