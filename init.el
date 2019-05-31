@@ -1188,6 +1188,16 @@ will not be modified."
    org-log-done 'note
    org-log-redeadline 'note
    org-log-reschedule 'note
+   ;; Setup log note templates. Add "to [new date]" in reschedule and redeadline
+   org-log-note-headings '((done .  "CLOSING NOTE %t")
+                           (state . "State %-12s from %-12S %t")
+                           (note .  "Note taken on %t")
+                           (reschedule .  "Schedule changed on %d: %S -> %s")
+                           (delschedule .  "Not scheduled, was %S on %t")
+                           (redeadline .  "Deadline changed on %d: %S -> %s")
+                           (deldeadline .  "Removed deadline, was %S on %t")
+                           (refile . "Refiled on %t")
+                           (clock-out . ""))
    ;; All entries in the subtree are considered todo items
    org-hierarchical-todo-statistics 'nil
    ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
