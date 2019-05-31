@@ -304,6 +304,8 @@
 (use-package whole-line-or-region
   ;; If no region is active, C-w M-w will act on current line
   :defer 5
+  ;; Right click to paste: I don't use the popup menu a lot.
+  :bind ("<mouse-3>" . whole-line-or-region-yank)
   :config
   (whole-line-or-region-global-mode)
   )
