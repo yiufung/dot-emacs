@@ -2660,6 +2660,10 @@ In that case, insert the number."
 
 ;;;; Julia
 (use-package julia-mode)
+;;;; PHP
+
+(use-package php-mode)
+
 ;;;; SQL
 (use-package sql-indent
   ;; SQL
