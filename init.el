@@ -1188,8 +1188,10 @@ will not be modified."
    ;; Logging settings: Better verbose than miss
    org-log-into-drawer t
    org-log-done 'note
-   org-log-redeadline 'note
    org-log-reschedule 'note
+   org-log-redeadline 'note
+   org-log-delschedule 'note
+   org-log-deldeadline 'note
    ;; Setup log note templates. Add "to [new date]" in reschedule and redeadline
    org-log-note-headings '((done        . "CLOSING NOTE %t")
                            (state       . "State %-12s from %-12S %t")
@@ -1777,6 +1779,7 @@ org-download-image to obtain a local copy."
                             (:name "(w)ic_it" :query "tag:wic_it" :key "w")
                             (:name "(i)nbox" :query "tag:inbox" :key "i")
                             (:name "(e)macs-devel" :query "tag:lists/emacs-devel" :key "e")
+                            (:name "(b)bdb-user" :query "tag:lists/bbdb-user" :key "b")
                             (:name "emacs-(o)rgmode" :query "tag:lists/emacs-orgmode" :key "o")
                             (:name "(n)as" :query "tag:nas" :key "n")
                             (:name "(s)ent" :query "tag:sent" :key "s")
