@@ -566,6 +566,8 @@ is already narrowed."
   :defer 3)
 
 (use-package visual-regexp
+  :straight t
+  :straight visual-regexp-steroids
   :defer 5
   :bind (("C-c r" . 'vr/replace)
          ("C-c %"   . 'vr/query-replace))
@@ -2159,6 +2161,7 @@ org-download-image to obtain a local copy."
   ;; Automatically cleanup whitespace
   :defer 3
   :config
+  (add-to-list 'whitespace-cleanup-mode-ignore-modes 'python-mode)
   (global-whitespace-cleanup-mode))
 
 (use-package hl-todo
@@ -2520,8 +2523,8 @@ In that case, insert the number."
  python-shell-completion-native-enable nil)
 
 (use-package elpy
-  :mode ("\\.py\\'" . python-mode)
-  :hook (elpy-mode . electric-indent-local-mode)
+  :hook (python-mode . turn-off-auto-fill)
+  :defer 3
   :config
   (elpy-enable)
   )
