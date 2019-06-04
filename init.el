@@ -3047,6 +3047,11 @@ In that case, insert the number."
   :defer 3
   )
 
+(use-package rfc
+  :straight (:host github :repo "galdor/rfc-mode")
+  :config
+  (setq rfc-mode-directory (expand-file-name "~/projects/rfc/")))
+
 (use-package calfw
   :straight t
   :straight calfw-org
