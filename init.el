@@ -1691,24 +1691,23 @@ org-download-image to obtain a local copy."
                    (org-present-read-write)))))
 
   ;; org-super-agenda
-  ;; Disabled for now. It seems rather distracting sometimes.
-  ;; (setq org-super-agenda-groups
-  ;;       '((:name "Schedule"
-  ;;                :time-grid t)
-  ;;         (:name "Due today"
-  ;;                :deadline today)
-  ;;         (:name "Today"
-  ;;                :and (:scheduled today :not (:habit t))) ;; Show habits separately.
-  ;;         (:name "Overdue"
-  ;;                :deadline past)
-  ;;         (:name "Habits"
-  ;;                :habit t)
-  ;;         (:name "Due soon"
-  ;;                :deadline future)
-  ;;         (:name "Scheduled earlier"
-  ;;                :scheduled past)
-  ;;         ))
-  ;; (org-super-agenda-mode)
+  (setq org-super-agenda-groups
+        '((:name "Schedule"
+                 :time-grid t)
+          (:name "Due today"
+                 :deadline today)
+          (:name "Today"
+                 :and (:scheduled today :not (:habit t))) ;; Show habits separately.
+          (:name "Overdue"
+                 :deadline past)
+          (:name "Habits"
+                 :habit t)
+          (:name "Due soon"
+                 :deadline future)
+          (:name "Scheduled earlier"
+                 :scheduled past)
+          ))
+  (org-super-agenda-mode)
 
   ;; helm-org-rifle
   (setq helm-org-rifle-show-path t)
