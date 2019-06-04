@@ -1227,7 +1227,7 @@ will not be modified."
   (setq org-habit-show-all-today t
         org-habit-show-habits-only-for-today t
         org-habit-show-done-always-green t
-        org-habit-graph-column 32
+        org-habit-graph-column 40
         org-habit-preceding-days 28
         org-habit-following-days 7)
 
