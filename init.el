@@ -355,7 +355,7 @@
   :defer 5
   :hook ((prog-mode markdown-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                                   (follow-mode))))
+                                               (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -705,6 +705,7 @@ is already narrowed."
   )
 
 ;;; Window and Buffer management
+
 (use-package window
   ;; Handier movement over default window.el
   :straight nil
@@ -800,7 +801,7 @@ horizontal mode."
   (setq nswbuff-display-intermediate-buffers t)
   )
 
-;;; Cursor navigation
+;;; Cursor navigation: avy
 
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
@@ -902,7 +903,7 @@ horizontal mode."
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   )
 
-;;; Projectile + eyebrowse
+;;; Workspace Mgmt: eyebrowse + projectile
 
 (use-package projectile
   :defer 5
@@ -1732,7 +1733,7 @@ org-download-image to obtain a local copy."
   (setq outshine-cycle-emulate-tab t)
   )
 
-;;; Mail
+;;; Mail: notmuch
 ;; My email chain
 ;; Mailbox synchronizer: mbsync/isync
 ;; Mailbox indexer: notmuch
