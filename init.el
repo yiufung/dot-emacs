@@ -677,7 +677,7 @@ is already narrowed."
   :bind ("C-x C-d" . dired) ;; Original list-directory is not useful.
   :config
   (require 'dired-x) ;; extra functionality for dired
-  (setq dired-listing-switches "-alh"
+  (setq dired-listing-switches "-aBhl --group-directories-first"
         dired-dwim-target t
         dired-no-confirm '(copy))
   (dired-async-mode 1))
@@ -2679,6 +2679,7 @@ In that case, insert the number."
 (use-package markdown-mode
   :straight markdown-toc
   :straight vmd-mode ; For GFM preview
+  :straight edit-indirect
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md" . gfm-mode)
@@ -2826,7 +2827,6 @@ In that case, insert the number."
 (display-time-mode +1)
 
 (use-package minions
-  :bind ("<mouse-3>" . minions-minor-modes-menu)
   :defer 2
   :init
   (setq-default minions-mode-line-lighter ";") ;; A better smile :)
@@ -3018,6 +3018,7 @@ In that case, insert the number."
 ;;; Misc Tools
 
 (use-package olivetti
+  ;; Center text for nicer writing and reading
   :defer 3
   ;; :hook (org-mode . olivetti-mode)
   ;; :hook (org-agenda-mode . olivetti-mode)
@@ -3025,7 +3026,14 @@ In that case, insert the number."
   (setq-default olivetti-body-width 0.9)
   )
 
+(use-package treemacs
+  :commands treemacs)
+
+(use-package anki-editor
+  :defer 10)
+
 (use-package dtk
+  ;; Bible Study
   :defer 3
   :straight (:host github :repo "dtk01/dtk" :branch "master")
   :init
@@ -3045,15 +3053,17 @@ In that case, insert the number."
   (setq alert-default-style 'libnotify))
 
 (use-package lorem-ipsum
-  :defer 3
-  )
+  ;; Random text generator
+  :defer 3)
 
 (use-package rfc
+  ;; Read RFC documentation
   :straight (:host github :repo "galdor/rfc-mode")
   :config
   (setq rfc-mode-directory (expand-file-name "~/projects/rfc/")))
 
 (use-package calfw
+  ;; Prettier calendar
   :straight t
   :straight calfw-org
   :straight calfw-cal
@@ -3088,6 +3098,7 @@ In that case, insert the number."
   )
 
 (use-package excorporate
+  ;; Sync office365 calendar
   :defer t
   :after (org calfw)
   :config
@@ -3156,6 +3167,7 @@ In that case, insert the number."
   (keyfreq-mode 1))
 
 (use-package beancount
+  ;; Manage personal finance
   :straight nil
   :mode ("\\.beancount\\'" . beancount-mode)
   :bind (:map beancount-mode-map
