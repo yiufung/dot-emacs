@@ -1034,7 +1034,8 @@ horizontal mode."
                           (expand-file-name "notes" org-directory)
                           (expand-file-name "projects" org-directory)
                           (expand-file-name "orgzly" org-directory)
-                          (expand-file-name "church" org-directory))
+                          (expand-file-name "church" org-directory)
+                          (expand-file-name "finance" my-sync-directory))
    ;; Refile candidates
    org-refile-targets '((org-agenda-files :maxlevel . 2))
    ;; Show candidates in one go
