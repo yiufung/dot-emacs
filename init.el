@@ -674,13 +674,18 @@ is already narrowed."
 (use-package dired
   :defer 3
   :straight async
-  :bind ("C-x C-d" . dired) ;; Original list-directory is not useful.
+  :straight dired-du ;; Only enable when needed
+  :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
+         :map dired-mode-map
+         ("C-x M-h" . dired-du--toggle-human-readable))
   :config
   (require 'dired-x) ;; extra functionality for dired
   (setq dired-listing-switches "-aBhl --group-directories-first"
         dired-dwim-target t
-        dired-no-confirm '(copy))
-  (dired-async-mode 1))
+        dired-no-confirm '(copy)
+        dired-du-bind-human-toggle 'nil) ;; C-h is remapped in my config. Map it to M-h.
+  (dired-async-mode 1)
+  )
 
 (use-package bookmark+
   ;; Bookmark utilities
