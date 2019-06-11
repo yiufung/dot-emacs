@@ -876,8 +876,7 @@ horizontal mode."
   (set-default 'magit-diff-refine-hunk t)
   ;; change default display behavior
   (setq magit-completing-read-function 'ivy-completing-read
-        magit-display-buffer-function
-        #'magit-display-buffer-fullframe-status-v1
+        magit-display-buffer-function 'magit-display-buffer-same-window-except-diff-v1
         magit-clone-set-remote.pushDefault nil
         magit-clone-default-directory "~/projects/")
 
