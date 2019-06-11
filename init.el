@@ -179,8 +179,6 @@
 (setq x-select-enable-clipboard t)
 ;; Don't blink
 (blink-cursor-mode 0)
-;; Auto save visited file.
-(auto-save-visited-mode 1)
 
 ;; ESC is mapped as metakey by default, very counter-intuitive.
 ;; Map escape to cancel (like C-g) everywhere
@@ -275,6 +273,12 @@
   (advice-add 'recentf-save-list :around #'suppress-messages)
   (recentf-mode +1)
   )
+
+(use-package super-save
+  :defer 3
+  :config
+  (setq auto-save-default nil)
+  (super-save-mode +1))
 
 (use-package aggressive-indent
   ;; Aggressive indent mode
