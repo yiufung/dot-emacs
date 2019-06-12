@@ -2379,7 +2379,9 @@ In that case, insert the number."
   :straight reftex
   :straight magic-latex-buffer
   :straight company-auctex
+  :straight cdlatex
   :hook (LaTeX-mode . magic-latex-buffer) ; Auto-enable fancy display of symbols.
+  :hook (LaTeX-mode . turn-on-cdlatex) ; fast insertion of environment templates and math stuff
   :hook (LaTeX-mode . flyspell-mode)
   :hook (LaTeX-mode . (lambda () (define-key LaTeX-mode-map "\C-xn" nil))) ;; see narrow-or-widen-dwim
   :config
