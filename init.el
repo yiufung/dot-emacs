@@ -632,7 +632,10 @@ is already narrowed."
         ivy-count-format "(%d/%d) "
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
-        max-mini-window-height 0.30)
+        max-mini-window-height 0.30
+        ;; Don't parse remote files
+        ivy-rich-parse-remote-buffer 'nil
+        )
 
   ;; Offer to create parent directories if they do not exist
   ;; http://iqbalansari.github.io/blog/2014/12/07/automatically-create-parent-directories-on-visiting-a-new-file-in-emacs/
