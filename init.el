@@ -2966,8 +2966,11 @@ In that case, insert the number."
 (use-package parchment-theme)
 (use-package emacs-one-themes
   :straight (:host github :repo "balajisivaraman/emacs-one-themes"))
+(use-package naysayer-theme
+  :straight (naysayer-theme :type git :host github :repo "nickav/naysayer-theme.el"))
 
-(load-theme 'kaolin-light t)
+;; (load-theme 'kaolin-light t)
+(load-theme 'naysayer t)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
