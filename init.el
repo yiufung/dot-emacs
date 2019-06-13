@@ -1891,8 +1891,8 @@ org-download-image to obtain a local copy."
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -2623,10 +2623,10 @@ In that case, insert the number."
       Start `ielm' if it's not already running."
     (interactive)
     (crux-start-or-switch-to 'ielm "*ielm*"))
-  :bind (:map emacs-lisp-mode-map
-              ("C-c C-z" . bozhidar-visit-ielm)
-              ("C-c C-c" . eval-defun)
-              ("C-c C-b" . eval-buffer))
+  :bind (("C-z C-z" . bozhidar-visit-ielm)
+         :map emacs-lisp-mode-map
+         ("C-c C-c" . eval-defun)
+         ("C-c C-b" . eval-buffer))
   )
 
 (use-package elisp-slime-nav
