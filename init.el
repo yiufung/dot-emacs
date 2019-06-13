@@ -584,8 +584,21 @@ is already narrowed."
   )
 
 (use-package unfill
-  :bind (("M-Q" . unfill-paragraph))
+  :bind (("M-Q" . unfill-paragraph)
+         ("M-W" . copy-region-as-kill-unfilled))
   :commands (unfill-paragraph unfill-region unfill-toggle)
+  :config
+  (defun copy-region-as-kill-unfilled (beg end)
+    "Copy region, but with all paragraphs unfilled.
+
+Useful when hard line wraps are unwanted (email/sharing article)."
+    (interactive "r")
+    (copy-region-as-kill beg end)
+    (with-temp-buffer
+      (yank)
+      (mark-whole-buffer)
+      (unfill-paragraph)
+      (kill-region (point-min) (point-max))))
   )
 
 ;;; Completion Framework: Ivy / Swiper / Counsel
