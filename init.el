@@ -359,7 +359,7 @@
   :defer 5
   :hook ((prog-mode markdown-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                               (follow-mode))))
+                                                   (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -1561,7 +1561,8 @@ org-download-image to obtain a local copy."
   (setq org-image-actual-width nil)
 
   (use-package org-recent-headings
-    :after counsel
+    :defer 3
+    :bind ("C-c r" . org-recent-headings)
     :config (org-recent-headings-mode))
 
   ;; org-chef
