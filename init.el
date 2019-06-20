@@ -1169,7 +1169,7 @@ horizontal mode."
           ("b" "finance book-keeping"
            plain
            (file+headline org-my-beancount-file "Expenses")
-           "bc%?"  ;; yasnippet template
+           "bct%?"  ;; yasnippet template
            :prepend t)
 
           ("d" "diary"
@@ -1430,8 +1430,7 @@ will not be modified."
   ;; Fix an incompatibility between the ob-async and ob-ipython packages
   (setq ob-async-no-async-languages-alist '("ipython"))
   ;; display/update images in the buffer after I evaluate
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images
-            'append)
+  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
   ;; Org export to doc
   (setq org-odt-preferred-output-format "docx"
