@@ -2729,6 +2729,7 @@ In that case, insert the number."
   :straight t
   :straight ob-restclient
   :straight company-restclient
+  :mode ("\\.http" . restclient-mode)
   :after company
   :defer 10
   :config
