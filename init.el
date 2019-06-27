@@ -1136,8 +1136,19 @@ horizontal mode."
   (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
   (setq org-my-life-file (expand-file-name "life.org" org-directory))
   (setq org-my-beancount-file (expand-file-name "finance/book.beancount" my-sync-directory))
+  (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
   (setq org-capture-templates
         '(
+          ("a" "Anki basic"
+           entry
+           (file+headline org-my-anki-file "Wait List")
+           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:END:\n** Front\n%^{Front}\n** Back\n%?\n")
+
+          ("A" "Anki cloze"
+           entry
+           (file+headline org-my-anki-file "Wait List")
+           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:END:\n** Text\n%^{Front}\n** Extra\n%?\n")
+
           ("c" "all todos" ;; Capture first, refile later
            entry
            (file+headline org-my-plan-free-file "Schedule")
@@ -1180,7 +1191,7 @@ horizontal mode."
 
   ;; Automatically add "CREATED" timestamp to org-capture entries
   ;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
-  ;; Change: Don't add property when filing at beancount files. It will create syntax error.
+  ;; Change: Don't add property when filing at beancount/anki files.
   (defvar org-created-property-name "CREATED"
     "The name of the org-mode property that stores the creation date of the entry")
   (defun org-set-created-property (&optional active NAME)
@@ -1195,7 +1206,8 @@ will not be modified."
            (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
       (unless (or (org-entry-get (point) created nil)
                   ;; Beancount format does not accept :PROPERTY: syntax
-                  (string-match "\\.beancount$" (buffer-name)))
+                  (string-match "\\.beancount$" (buffer-name))
+                  (string-match "anki.org" (buffer-name)))
         (org-set-property created now))))
   (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
 
