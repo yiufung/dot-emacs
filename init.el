@@ -1081,6 +1081,7 @@ horizontal mode."
                                            org-my-office-file
                                            org-default-notes-file
                                            (expand-file-name "projects" org-directory)
+                                           (expand-file-name "notes" org-directory)
                                            ))
                         ;; Show agenda for this whole week, and first 2 days of next week
                         (org-agenda-start-on-weekday 1) ;; Always start on Monday
@@ -1097,6 +1098,7 @@ horizontal mode."
                                       org-my-plan-free-file
                                       org-my-web-archive-file
                                       (expand-file-name "bible.org" org-directory)
+                                      (expand-file-name "notes" org-directory)
                                       (expand-file-name "church" org-directory)
                                       ))
                    (org-agenda-span 3) ;; Show upcoming 3 days
@@ -1606,6 +1608,7 @@ org-download-image to obtain a local copy."
     :straight t
     :straight ivy-bibtex
     :straight org-noter
+    :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
     :bind ("H-b" . ivy-bibtex) ;; open bibliography
     :init
     ;; Common variables
