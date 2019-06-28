@@ -2093,6 +2093,11 @@ org-download-image to obtain a local copy."
         sdcv-dictionary-data-dir (expand-file-name "stardict" my-private-conf-directory))
   )
 
+(use-package mw-thesaurus
+  :straight (:host github :repo "agzam/mw-thesaurus.el")
+  :bind (("C-c T" . mw-thesaurus-lookup-at-point))
+  )
+
 ;;; Programming
 
 ;; General conventions on keybindings:
@@ -3257,9 +3262,6 @@ In that case, insert the number."
 
 (use-package google-translate
   :defer 10
-  :bind (
-         ("C-c T" . 'google-translate-query-translate)
-         )
   :config
   (setq google-translate-default-source-language "auto"
         google-translate-default-target-language "zh-CN"
