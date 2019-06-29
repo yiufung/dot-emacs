@@ -2602,7 +2602,9 @@ In that case, insert the number."
 (use-package polymode
   :straight t
   :straight poly-markdown ; RMarkdown support
-  :mode ("\\.Rmd" . poly-markdown-mode)
+  :straight poly-R
+  :mode ("\\.md" . poly-markdown-mode)
+  :mode ("\\.Rmd\\'" . poly-markdown+r-mode)
   )
 
 (use-package ess
