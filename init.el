@@ -1293,6 +1293,10 @@ will not be modified."
                                 ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
                                 ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
                                 ("youtube" . "https://www.youtube.com/results?search_query=%s")))
+  ;; Enable link to manual pages
+  ;; Org-man.el is downloaded from https://orgmode.org/manual/Adding-hyperlink-types.html
+  (use-package org-man
+    :straight nil)
 
   (use-package org-my-html-export-style
     ;; My personal HTML export settings
