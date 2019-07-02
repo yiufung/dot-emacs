@@ -1144,7 +1144,7 @@ horizontal mode."
           ("a" "Anki basic"
            entry
            (file+headline org-my-anki-file "Wait List")
-           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:END:\n** Front\n%^{Front}\n** Back\n%?\n")
+           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:END:\n** Front\n%\\1\n** Back\n%?\n")
 
           ("A" "Anki cloze"
            entry
@@ -3087,7 +3087,9 @@ In that case, insert the number."
   :commands treemacs)
 
 (use-package anki-editor
-  :defer 10)
+  :defer 10
+  :config
+  (setq anki-editor-create-decks t))
 
 (use-package dtk
   ;; Bible Study
