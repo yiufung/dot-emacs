@@ -803,7 +803,7 @@ horizontal mode."
   :init
   (setq shackle-default-alignment 'below
         shackle-default-size 0.4
-        shackle-rules '((help-mode               :align below :select t)
+        shackle-rules '((help-mode               :align right :select t)
                         (compilation-mode        :select t    :size 0.25)
                         ("*compilation*"         :select t    :size 0.25 :inhibit-window-quit t)
                         ("*ag search*"           :select nil  :size 0.25)
@@ -3117,6 +3117,7 @@ In that case, insert the number."
 
 (use-package rfc
   ;; Read RFC documentation
+  :defer 10
   :straight (:host github :repo "galdor/rfc-mode")
   :config
   (setq rfc-mode-directory (expand-file-name "~/projects/rfc/")))
