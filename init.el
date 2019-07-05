@@ -2990,6 +2990,7 @@ In that case, insert the number."
 (use-package color-theme-sanityinc-tomorrow)
 (use-package kaolin-themes)
 (use-package parchment-theme)
+(use-package gruvbox-theme)
 (use-package emacs-one-themes
   :straight (:host github :repo "balajisivaraman/emacs-one-themes"))
 (use-package naysayer-theme
