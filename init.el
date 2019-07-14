@@ -1137,7 +1137,7 @@ horizontal mode."
   (setq org-my-office-file (expand-file-name "office.org" org-directory))
   (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
   (setq org-my-life-file (expand-file-name "life.org" org-directory))
-  (setq org-my-beancount-file (expand-file-name "finance/book.beancount" my-sync-directory))
+  (setq org-my-beancount-file (expand-file-name "finance/book.bean" my-sync-directory))
   (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
   (setq org-capture-templates
         '(
@@ -2989,6 +2989,7 @@ In that case, insert the number."
 
 (use-package color-theme-sanityinc-tomorrow)
 (use-package kaolin-themes)
+(use-package base16-theme)
 (use-package parchment-theme)
 (use-package gruvbox-theme)
 (use-package emacs-one-themes
