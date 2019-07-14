@@ -3115,6 +3115,13 @@ In that case, insert the number."
   ;; :hook (dtk-mode . auto-fill-mode) ;; Not implemented yet
   )
 
+(use-package wiki-summary
+  :defer 5
+  :straight (:host github :repo "jozefg/wiki-summary.el")
+  :config
+  (setq-default wiki-summary-language-string "zh")
+  )
+
 (use-package alert
   ;; Notification
   :config
