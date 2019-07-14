@@ -2524,6 +2524,10 @@ In that case, insert the number."
   (push 'company-lsp company-backends)
   )
 
+(use-package lsp-python-ms
+  :defer 3
+  :hook (python-mode . lsp)) ; or lsp-deferred
+
 ;;;; C/C++
 ;; [[https://www.reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/][Reddit post on creating C++ IDE in Emacs]].
 (use-package ccls
@@ -2575,10 +2579,13 @@ In that case, insert the number."
 
 (use-package elpy
   :hook (python-mode . turn-off-auto-fill)
-  :defer 3
+  :disabled
   :config
   (elpy-enable)
   )
+
+(use-package pyvenv
+  :defer 3)
 
 (use-package blacken
   ;; Reformat python buffers using the "black" formatter
