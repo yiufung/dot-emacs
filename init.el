@@ -979,6 +979,8 @@ horizontal mode."
   :straight org-pomodoro
   :straight org-present
   :straight org-chef
+  :straight ox-clip
+  :straight org-cliplink
   :straight ox-gfm
   :straight org-download
   :straight ox-hugo
@@ -1002,6 +1004,8 @@ horizontal mode."
          ("H-p" . org-pomodoro)
          :map org-mode-map
          ("C-c C-j" . counsel-org-goto)
+         ("s-P" . anki-editor-push-notes)
+         ("s-l"   . org-cliplink)
          )
   :bind (:map org-mode-map
               ;; Unbinding org-cycle-agenda-files
@@ -2090,6 +2094,7 @@ org-download-image to obtain a local copy."
                                         "Oxford Advanced Learner's Dictionary"
                                         "牛津现代英汉双解词典"
                                         "懒虫简明英汉词典"
+                                        "jmdict-ja-en"
                                         "WordNet"
                                         )
         sdcv-tooltip-border-width 5
@@ -2449,12 +2454,6 @@ In that case, insert the number."
   :straight posframe
   :straight flycheck-posframe
   :bind ("C-z !" . hydra-flycheck/body)
-  :bind (:map flycheck-mode-map
-              ("s-p" . 'flycheck-previous-error)
-              ("s-n" . 'flycheck-next-error)
-              ("s-c" . 'flycheck-buffer)
-              ("s-l" . 'flycheck-list-errors)
-              )
   :hook ((text-mode prog-mode) . flycheck-mode) ;; Auto enable flycheck on programming modes
   :hook (flycheck-mode . flycheck-posframe-mode) ;; Show error on posframe
   :config
