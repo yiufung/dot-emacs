@@ -223,7 +223,7 @@
   :defer 5
   :bind (("C-<f12>" . beacon-blink)) ;; useful when multiple windows
   :config
-  (setq beacon-size 5)
+  (setq beacon-size 10)
   (beacon-mode 1))
 
 (use-package uniquify
@@ -341,7 +341,7 @@
   :if (equal system-type 'gnu/linux)
   ;; Environment switcher to enable project-base environment variables
   ;; Checks for .envrc file and apply environment variable
-  :defer 3
+  :disabled
   :straight flycheck
   :straight t
   :config
@@ -980,6 +980,7 @@ horizontal mode."
   :straight org-present
   :straight org-chef
   :straight ox-clip
+  :straight ox-twbs
   :straight org-cliplink
   :straight ox-gfm
   :straight org-download
@@ -1005,7 +1006,7 @@ horizontal mode."
          :map org-mode-map
          ("C-c C-j" . counsel-org-goto)
          ("s-P" . anki-editor-push-notes)
-         ("s-l"   . org-cliplink)
+         ("s-L"   . org-cliplink)
          )
   :bind (:map org-mode-map
               ;; Unbinding org-cycle-agenda-files
@@ -2793,7 +2794,7 @@ In that case, insert the number."
 (use-package json-mode
   ;; JavaScript
   :mode ("\\.json\\'" . json-mode)
-  :bind (("s-j" . json-mode-beautify))
+  :bind (("s-J" . json-mode-beautify))
   :config
   ;; pretty print json, putting array in the same line
   (defun encode-json-array-of-numbers-on-one-line (encode array)
