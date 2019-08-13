@@ -3083,6 +3083,8 @@ In that case, insert the number."
 
 ;;; Misc Tools
 
+(defalias 'rot13-mode 'toggle-rot13-mode)
+
 (use-package olivetti
   ;; Center text for nicer writing and reading
   :defer 3
