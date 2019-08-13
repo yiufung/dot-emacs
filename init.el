@@ -731,6 +731,16 @@ Useful when hard line wraps are unwanted (email/sharing article)."
 
 ;;; Window and Buffer management
 
+(use-package windmove
+  :straight nil
+  :bind (
+         ("s-j" . windmove-down)
+         ("s-k" . windmove-up)
+         ("s-h" . windmove-left)
+         ("s-l" . windmove-right)
+         )
+  )
+
 (use-package window
   ;; Handier movement over default window.el
   :straight nil
