@@ -1775,6 +1775,9 @@ org-download-image to obtain a local copy."
   ;; Export to Confluence Wiki
   (require 'ox-confluence)
 
+  ;; Enable KOMA-script support
+  (require 'ox-koma-letter)
+
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
     :defer 3)
