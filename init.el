@@ -971,7 +971,7 @@ horizontal mode."
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
-        eyebrowse-mode-line-style 'current
+        eyebrowse-mode-line-style 'smart
         eyebrowse-tagged-slot-format "%t")
   (eyebrowse-mode)
   )
@@ -1851,6 +1851,8 @@ org-download-image to obtain a local copy."
                             (:name "(a)ll" :query "*" :key "a"))
    notmuch-always-prompt-for-sender t
    notmuch-show-empty-saved-searches t
+   ;; Show html where possible
+   notmuch-multipart/alternative-discouraged '("text/plain" "text/html")
    notmuch-archive-tags '("-inbox")
    notmuch-column-control t)
   :config
@@ -2712,6 +2714,11 @@ In that case, insert the number."
             scala-mode)
     (add-hook it 'turn-on-smartparens-strict-mode))
   )
+
+;;;; Clojure
+
+(use-package cider
+  :straight t)
 
 ;;;; Shell
 
