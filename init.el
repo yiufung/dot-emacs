@@ -1286,6 +1286,11 @@ will not be modified."
         org-habit-preceding-days 28
         org-habit-following-days 7)
 
+  ;; When clock in a task, don't show Org heading name in mode line
+  (defun myorg-remove-clock-in-string ()
+    (delete 'org-mode-line-string global-mode-string))
+  (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
+
   ;; Update cookie automatically
   (defun myorg-update-parent-cookie ()
     (when (equal major-mode 'org-mode)
