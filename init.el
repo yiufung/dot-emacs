@@ -129,6 +129,8 @@
  ;; Don't create lockfiles.
  ;; recentf frequently prompts for confirmation.
  create-lockfiles nil
+ ;; Leave some rooms when recentering to top, useful in emacs ipython notebook.
+ recenter-positions '(middle 1 bottom)
  ;; Move files to trash when deleting
  delete-by-moving-to-trash t
  ;; Show column number
