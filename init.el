@@ -3162,6 +3162,15 @@ In that case, insert the number."
 (use-package emacs-howdoyou
   :defer 10
   :straight (:host github :repo "thanhvg/emacs-howdoyou" :branch "master"))
+
+(use-package graphql
+  :straight (:host github :repo "vermiculus/graphql.el" :branch "master"))
+(use-package emacs-aio
+  :straight (:host github :repo "skeeto/emacs-aio" :branch "master"))
+(use-package emacs-leetcode
+  :defer 10
+  :straight (:host github :repo "kaiwk/leetcode.el" :branch "master"))
+
 (use-package dtk
   ;; Bible Study
   :defer 3
