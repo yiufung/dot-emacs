@@ -3157,6 +3157,11 @@ In that case, insert the number."
   :config
   (setq anki-editor-create-decks t))
 
+(use-package emacs-promise
+  :straight (:host github :repo "chuntaro/emacs-promise" :branch "master"))
+(use-package emacs-howdoyou
+  :defer 10
+  :straight (:host github :repo "thanhvg/emacs-howdoyou" :branch "master"))
 (use-package dtk
   ;; Bible Study
   :defer 3
