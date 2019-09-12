@@ -212,6 +212,13 @@
     (dotimes (i 10)
       (when (= p (point)) ad-do-it))))
 
+;; Confirm when trying to kill frame in emacsclient
+(define-advice delete-frame (:around (oldfun &rest args) confirm-frame-deletion)
+  "Confirm deleting the frame."
+  (interactive)
+  (when (y-or-n-p "Delete frame? ")
+    (apply oldfun args)))
+
 ;; Early unbind keys for customization
 (unbind-key "C-s") ; Reserve for search related commands
 (unbind-key "C-z") ;; Reserve for hydra related commands
