@@ -2648,6 +2648,9 @@ In that case, insert the number."
   :bind (("H-j" . 'ein:notebooklist-login)
          ("H-h" . 'ein:jupyterhub-connect)
          ("H-J" . 'ein:jupyter-server-start))
+  :bind (:map ein:notebook-mode-map
+              ("s-n" . ein:worksheet-goto-next-input)
+              ("s-p" . ein:worksheet-goto-prev-input))
   :commands (ein:jupyter-server-start ein:jupyterhub-connect)
   :init
   (straight-use-package '(simple-httpd :host github
@@ -2655,7 +2658,9 @@ In that case, insert the number."
                                        :local-repo "simple-httpd"))
   :hook (ein:notebook-mode . visual-line-mode)
   :config
-  (setq ein:worksheet-enable-undo 't)
+  (setq-default ein:worksheet-enable-undo 't
+                ein:polymode 't)
+  (add-to-list 'ein:notebook-mode-hook '(lambda () (show-paren-mode -1)))
   )
 
 ;;;; R
@@ -2927,7 +2932,7 @@ In that case, insert the number."
 ;; <f3> <f4> for macro
 (global-set-key (kbd "<f5>") 'org-agenda-list)
 ;; <f6> for ivy-resume
-(global-set-key (kbd "<f7>") 'follow-delete-other-windows-and-split)
+(global-set-key (kbd "<f7>") 'rot13-mode)
 (global-set-key (kbd "<f8>") 'follow-mode)
 ;; <f9> - <f12> for eyebrowse workspace
 
