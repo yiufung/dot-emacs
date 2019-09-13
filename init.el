@@ -158,6 +158,8 @@
  save-place t
  ;; smooth scrolling
  scroll-conservatively 101
+ ;; Reserve one line when scrolling
+ scroll-margin 1
  ;; turn off the bell
  ring-bell-function 'ignore
  ;; Smoother scrolling
