@@ -2667,6 +2667,8 @@ In that case, insert the number."
                                        :local-repo "simple-httpd"))
   :hook (ein:notebook-mode . visual-line-mode)
   :config
+  ;; Need to require here to initialize 'ein:notebook-mode-map, so that :bind directive works.
+  (require 'ein-notebook)
   (setq-default ein:worksheet-enable-undo 't
                 ein:polymode 't)
   (add-to-list 'ein:notebook-mode-hook '(lambda () (show-paren-mode -1)))
