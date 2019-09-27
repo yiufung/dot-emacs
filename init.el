@@ -1627,7 +1627,7 @@ org-download-image to obtain a local copy."
                 (expand-file-name "images/misc" org-directory)
                 org-download-heading-lvl nil
                 org-download-screenshot-method "maim -s %s"
-                org-download-image-org-width 400
+                org-download-image-org-width 800
                 ;; org-download-image-latex-width 5
                 ;; org-download-image-html-width 400
                 org-download-annotate-function (lambda (link) "") ;; Don't annotate
