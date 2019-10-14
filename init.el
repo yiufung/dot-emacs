@@ -596,6 +596,10 @@ is already narrowed."
   :bind (("C-c u" . undo-propose))
   )
 
+;; Save undo history across sessions
+(require 'undohist)
+(undohist-initialize)
+
 (use-package unfill
   :bind (("M-Q" . unfill-paragraph)
          ("M-W" . copy-region-as-kill-unfilled))
