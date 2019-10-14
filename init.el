@@ -1831,6 +1831,12 @@ org-download-image to obtain a local copy."
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
     :defer 3)
+
+  ;; Enable org sidebar
+  (straight-use-package '(ts :host github :repo "alphapapa/ts.el"))
+  (straight-use-package '(org-ql :host github :repo "alphapapa/org-ql"))
+  (straight-use-package '(org-sidebar :host github :repo "alphapapa/org-sidebar"))
+
   )
 
 (use-package outshine
