@@ -226,7 +226,9 @@
 (unbind-key "C-z") ;; Reserve for hydra related commands
 
 ;; Quick access to commonly used files
-(global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el" my-emacs-conf-directory))))
+(global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
+                                                                                my-emacs-conf-directory))))
+(global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 
 (use-package beacon
