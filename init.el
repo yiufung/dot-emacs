@@ -2688,14 +2688,6 @@ In that case, insert the number."
 
 ;;;; R
 
-(use-package polymode
-  :straight t
-  :straight poly-markdown ; RMarkdown support
-  :straight poly-R
-  :mode ("\\.md" . poly-markdown-mode)
-  :mode ("\\.Rmd\\'" . poly-markdown+r-mode)
-  )
-
 (use-package ess
   :defer 5
   ;; NOTE: When using with flycheck-lintr-caching = t (default), make sure
@@ -2837,6 +2829,20 @@ In that case, insert the number."
   :config
   (setq markdown-enable-math t
         markdown-asymmetric-header t)
+  )
+
+(use-package polymode
+  :straight t
+  :straight poly-markdown ; RMarkdown support
+  :straight poly-R
+  :mode ("\\.md" . poly-markdown-mode)
+  :mode ("\\.Rmd\\'" . poly-markdown+r-mode)
+  :bind (:map markdown-mode-map
+              ("s-n" . polymode-next-chunk)
+              ("s-p" . polymode-previous-chunk)
+              ("s-N" . polymode-next-chunk-same-type)
+              ("s-P" . polymode-previous-chunk-same-type)
+              )
   )
 
 ;;;; HTTP
