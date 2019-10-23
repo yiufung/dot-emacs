@@ -697,6 +697,17 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ;; Don't parse remote files
         ivy-rich-parse-remote-buffer 'nil
         )
+  (defvar dired-compress-files-alist
+    '(("\\.tar\\.gz\\'" . "tar -c %i | gzip -c9 > %o")
+      ("\\.zip\\'" . "zip %o -r --filesync %i"))
+    "Control the compression shell command for `dired-do-compress-to'.
+
+Each element is (REGEXP . CMD), where REGEXP is the name of the
+archive to which you want to compress, and CMD the the
+corresponding command.
+
+Within CMD, %i denotes the input file(s), and %o denotes the
+output file. %i path(s) are relative, while %o is absolute.")
 
   ;; Offer to create parent directories if they do not exist
   ;; http://iqbalansari.github.io/blog/2014/12/07/automatically-create-parent-directories-on-visiting-a-new-file-in-emacs/
@@ -2667,7 +2678,8 @@ In that case, insert the number."
          ("H-J" . 'ein:jupyter-server-start))
   :bind (:map ein:notebook-mode-map
               ("s-n" . ein:worksheet-goto-next-input)
-              ("s-p" . ein:worksheet-goto-prev-input))
+              ("s-p" . ein:worksheet-goto-prev-input)
+              ("s-'" . ein:worksheet-turn-on-autoexec))
   :commands (ein:jupyter-server-start ein:jupyterhub-connect)
   :init
   (straight-use-package '(simple-httpd :host github
@@ -2678,7 +2690,7 @@ In that case, insert the number."
   ;; Need to require here to initialize 'ein:notebook-mode-map, so that :bind directive works.
   (require 'ein-notebook)
   (setq-default ein:worksheet-enable-undo 't
-                ein:polymode 't)
+                ein:polymode 'nil)
   (add-to-list 'ein:notebook-mode-hook '(lambda () (show-paren-mode -1)))
   )
 
