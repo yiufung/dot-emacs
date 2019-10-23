@@ -2636,8 +2636,6 @@ In that case, insert the number."
   ;; connect to remote kernel (which is normal case during development), and
   ;; when SSH is available, use emacs-jupyter. If only web frontend is
   ;; available, use EIN.
-  :init
-  (straight-use-package 'zmq)
   :if (equal system-type 'gnu/linux)
   :defer 5
   :after org
