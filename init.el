@@ -913,8 +913,7 @@ horizontal mode."
   ;;display flycheck errors only on added/modified lines
   :straight magit-todos
   :straight ediff
-  :init
-  (straight-use-package '(magit-diff-flycheck :host github :repo "ragone/magit-diff-flycheck"))
+  :straight magit-diff-flycheck
   :bind (:map vc-prefix-map
               ("s" . 'git-gutter:stage-hunk)
               ("c" . 'magit-clone))
@@ -1035,6 +1034,7 @@ horizontal mode."
   :straight org-bullets
   :straight org-super-agenda
   :straight org-pomodoro
+  :straight org-sidebar
   :straight org-present
   :straight org-chef
   :straight ox-clip
@@ -1834,12 +1834,6 @@ org-download-image to obtain a local copy."
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
     :defer 3)
-
-  ;; Enable org sidebar
-  (straight-use-package '(ts :host github :repo "alphapapa/ts.el"))
-  (straight-use-package '(org-ql :host github :repo "alphapapa/org-ql"))
-  (straight-use-package '(org-sidebar :host github :repo "alphapapa/org-sidebar"))
-
   )
 
 (use-package outshine
@@ -2178,7 +2172,6 @@ org-download-image to obtain a local copy."
   )
 
 (use-package mw-thesaurus
-  :straight (:host github :repo "agzam/mw-thesaurus.el")
   :bind (("C-c T" . mw-thesaurus-lookup-at-point))
   )
 
@@ -2794,10 +2787,7 @@ In that case, insert the number."
 
 ;;;; Scala
 
-(use-package ensime
-  ;; Scala IDE
-  :straight (:host github :repo "ensime/ensime-emacs" :branch "2.0")
-  )
+;; TODO: Ensime is no longer being developed. Replace with something else.
 
 ;;;; Julia
 (use-package julia-mode)
@@ -3094,13 +3084,11 @@ In that case, insert the number."
 (use-package base16-theme)
 (use-package parchment-theme)
 (use-package gruvbox-theme)
-(use-package emacs-one-themes
-  :straight (:host github :repo "balajisivaraman/emacs-one-themes"))
-(use-package naysayer-theme
-  :straight (naysayer-theme :type git :host github :repo "nickav/naysayer-theme.el"))
+(use-package one-themes)
+(use-package naysayer-theme)
 
-;; (load-theme 'kaolin-light t)
-(load-theme 'naysayer t)
+(load-theme 'kaolin-light t)
+;; (load-theme 'naysayer t)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
@@ -3197,24 +3185,15 @@ In that case, insert the number."
   :config
   (setq anki-editor-create-decks t))
 
-(use-package emacs-promise
-  :straight (:host github :repo "chuntaro/emacs-promise" :branch "master"))
 (use-package emacs-howdoyou
-  :defer 10
-  :straight (:host github :repo "thanhvg/emacs-howdoyou" :branch "master"))
+  :defer 10)
 
-(use-package graphql
-  :straight (:host github :repo "vermiculus/graphql.el" :branch "master"))
-(use-package emacs-aio
-  :straight (:host github :repo "skeeto/emacs-aio" :branch "master"))
 (use-package emacs-leetcode
-  :defer 10
-  :straight (:host github :repo "kaiwk/leetcode.el" :branch "master"))
+  :defer 10)
 
 (use-package dtk
   ;; Bible Study
   :defer 3
-  :straight (:host github :repo "dtk01/dtk" :branch "master")
   :init
   (straight-use-package '(sword-to-org :host github :repo "alphapapa/sword-to-org"))
   :bind (("C-c B" . dtk-bible))
@@ -3228,7 +3207,6 @@ In that case, insert the number."
 
 (use-package wiki-summary
   :defer 5
-  :straight (:host github :repo "jozefg/wiki-summary.el")
   :config
   (setq-default wiki-summary-language-string "zh")
   )
@@ -3245,7 +3223,6 @@ In that case, insert the number."
 (use-package rfc
   ;; Read RFC documentation
   :defer 10
-  :straight (:host github :repo "galdor/rfc-mode")
   :config
   (setq rfc-mode-directory (expand-file-name "~/projects/rfc/")))
 
@@ -3307,6 +3284,8 @@ In that case, insert the number."
 
   (excorporate-diary-enable)
   )
+
+(use-package telega)
 
 (use-package operate-on-number
   :bind ("C-c N" . operate-on-number-at-point))
