@@ -370,7 +370,7 @@
   ;; Improvements over simple editing commands
   :straight nil
   :defer 5
-  :hook ((prog-mode markdown-mode) . auto-fill-mode)
+  :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
                                                (follow-mode))))
          ;; M-backspace to backward-delete-word
@@ -428,6 +428,9 @@ Otherwise, call `delete-blank-lines'."
            (time-duration (read-string "Time: ")))
       (message time-duration)
       (run-at-time time-duration nil #'alert msg-to-show)))
+
+  ;; Activate `visual-fill-column-mode' in every buffer that uses `visual-line-mode'
+  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
   )
 
 ;;;; Misc defuns
@@ -2813,8 +2816,9 @@ In that case, insert the number."
 
 (use-package markdown-mode
   :straight markdown-toc
-  :straight vmd-mode ; For GFM preview
+  ;; :straight vmd-mode ; For GFM preview
   :straight edit-indirect
+  :straight grip-mode
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md" . gfm-mode)
@@ -2825,10 +2829,12 @@ In that case, insert the number."
                ("M-<down>" . markdown-move-down)
                ("M-<left>" . markdown-promote)
                ("M-<right>" . markdown-demote)))
+  :hook (markdown-mode . grip-mode)
   :init (setq markdown-command "multimarkdown")
   :config
-  (setq markdown-enable-math t
-        markdown-asymmetric-header t)
+  (setq-default markdown-enable-math t
+                markdown-asymmetric-header t
+                markdown-hide-urls t)
   )
 
 (use-package polymode
