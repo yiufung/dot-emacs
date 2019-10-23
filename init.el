@@ -227,7 +227,7 @@
 
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
-                                                                                my-emacs-conf-directory))))
+                                                                                    my-emacs-conf-directory))))
 (global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 
@@ -372,7 +372,7 @@
   :defer 5
   :hook ((prog-mode markdown-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                                   (follow-mode))))
+                                               (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -1985,8 +1985,8 @@ org-download-image to obtain a local copy."
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                        (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                          my-emacs-conf-directory)))
+                            (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                              my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
