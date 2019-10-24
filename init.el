@@ -315,6 +315,7 @@
 (use-package which-key
   :defer 3
   :config
+  (setq which-key-idle-delay 5.0)
   (which-key-mode)
   )
 
@@ -3195,10 +3196,10 @@ In that case, insert the number."
   :config
   (setq anki-editor-create-decks t))
 
-(use-package emacs-howdoyou
+(use-package howdoyou
   :defer 10)
 
-(use-package emacs-leetcode
+(use-package leetcode
   :defer 10)
 
 (use-package dtk
