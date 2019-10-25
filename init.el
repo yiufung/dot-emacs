@@ -755,15 +755,22 @@ output file. %i path(s) are relative, while %o is absolute.")
   :defer 3
   :straight async
   :straight dired-du ;; Only enable when needed
+  :straight dired-git-info ;; Show last git commit message alongside with file
+  :straight diredfl ;; Colorful columns
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
-         ("C-x M-h" . dired-du--toggle-human-readable))
+         ("C-x M-h" . dired-du--toggle-human-readable)
+         (")" . dired-git-info-mode))
   :config
   (require 'dired-x) ;; extra functionality for dired
   (setq dired-listing-switches "-aBhl --group-directories-first"
         dired-dwim-target t
         dired-no-confirm '(copy)
         dired-du-bind-human-toggle 'nil) ;; C-h is remapped in my config. Map it to M-h.
+  (diredfl-global-mode 1)
+
+  ;; Fix copy error over TRAMP in dired-async-mode. See async-manual.
+  (setq async-quiet-switch "-q")
   (dired-async-mode 1)
   )
 
