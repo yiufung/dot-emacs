@@ -758,6 +758,7 @@ output file. %i path(s) are relative, while %o is absolute.")
   :straight dired-du ;; Only enable when needed
   :straight dired-git-info ;; Show last git commit message alongside with file
   :straight diredfl ;; Colorful columns
+  :hook ((dired-mode . dired-hide-details-mode))
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
          ("C-x M-h" . dired-du--toggle-human-readable)
