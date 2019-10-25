@@ -2777,7 +2777,7 @@ In that case, insert the number."
             emacs-lisp-mode-hook
             ruby-mode
             ;; org-mode-hook
-            ess-mode-hook
+            ;; ess-mode-hook
             markdown-mode
             groovy-mode
             scala-mode)
