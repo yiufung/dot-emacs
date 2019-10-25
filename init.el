@@ -2914,7 +2914,22 @@ In that case, insert the number."
   )
 (use-package yaml-mode)
 
-;;; Code Searching/Replacing
+;;; Code Highlighting/Searching/Replacing
+
+(use-package highlight-indentation
+  :disabled
+  :init
+  (require 'highlight-indentation)
+  :custom-face (highlight-indentation-face ((t (:background "#e3e3d3"))))
+  :custom-face (highlight-indentation-current-column-face ((t (:background "#c3b3b3"))))
+  :hook (python-mode . highlight-indentation-mode)
+  ;; :hook (python-mode . highlight-indentation-current-column-mode)
+  ;; (defun set-hl-indent-color ()
+  ;;   (set-face-background 'highlight-indentation-face "#e3e3d3")
+  ;;   (set-face-background 'highlight-indentation-current-column-face "#c3b3b3"))
+  ;; (add-hook 'python-mode-hook 'highlight-indentation-mode)
+  ;; (add-hook 'python-mode-hook 'set-hl-indent-color)
+  )
 
 (use-package color-moccur
   ;; :commands (moccur)
