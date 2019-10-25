@@ -2838,7 +2838,6 @@ In that case, insert the number."
                ("M-<down>" . markdown-move-down)
                ("M-<left>" . markdown-promote)
                ("M-<right>" . markdown-demote)))
-  :hook (markdown-mode . grip-mode)
   :init (setq markdown-command "multimarkdown")
   :config
   (setq-default markdown-enable-math t
@@ -2850,6 +2849,7 @@ In that case, insert the number."
   :straight t
   :straight poly-markdown ; RMarkdown support
   :straight poly-R
+  :after markdown-mode
   :mode ("\\.md" . poly-markdown-mode)
   :mode ("\\.Rmd\\'" . poly-markdown+r-mode)
   :bind (:map markdown-mode-map
@@ -3202,6 +3202,12 @@ In that case, insert the number."
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
 
+;; Emacs Application Framework
+;; https://github.com/manateelazycat/emacs-application-framework
+(use-package eaf
+  :disabled
+  :straight (:host github :repo "manateelazycat/emacs-application-framework"))
+
 (use-package olivetti
   ;; Center text for nicer writing and reading
   :defer 3
@@ -3329,6 +3335,7 @@ In that case, insert the number."
   :defer 3
   :straight t
   :straight elfeed-org
+  :straight elfeed-goodies
   :bind (("C-c e" . bjm/elfeed-load-db-and-open)
          :map elfeed-search-mode-map
          ("q" . bjm/elfeed-save-db-and-bury))
