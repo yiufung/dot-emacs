@@ -215,11 +215,12 @@
       (when (= p (point)) ad-do-it))))
 
 ;; Confirm when trying to kill frame in emacsclient
-(define-advice delete-frame (:around (oldfun &rest args) confirm-frame-deletion)
-  "Confirm deleting the frame."
-  (interactive)
-  (when (y-or-n-p "Delete frame? ")
-    (apply oldfun args)))
+;; TODO: Disable for now. It seems to clash with sdcv
+;; (define-advice delete-frame (:around (oldfun &rest args) confirm-frame-deletion)
+;;   "Confirm deleting the frame."
+;;   (interactive)
+;;   (when (y-or-n-p "Delete frame? ")
+;;     (apply oldfun args)))
 
 ;; Early unbind keys for customization
 (unbind-key "C-s") ; Reserve for search related commands
@@ -340,7 +341,6 @@
          ("C-x C-k"       . 'crux-delete-buffer-and-file)
          ("C-c n"         . 'crux-cleanup-buffer-or-region)
          ("s-<return>"    . 'crux-cleanup-buffer-or-region)
-         ("C-<backspace>" . 'crux-kill-line-backwards)
          )
   :init
   (global-set-key [remap move-beginning-of-line] #'crux-move-beginning-of-line)
@@ -601,8 +601,9 @@ is already narrowed."
   )
 
 ;; Save undo history across sessions
-(require 'undohist)
-(undohist-initialize)
+;; TODO: Annoying prompts in magit
+;; (require 'undohist)
+;; (undohist-initialize)
 
 (use-package unfill
   :bind (("M-Q" . unfill-paragraph)
