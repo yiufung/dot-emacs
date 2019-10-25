@@ -2681,18 +2681,15 @@ In that case, insert the number."
 
 (use-package ein
   ;; Jupyter Notebook in Emacs
+  :after simple-httpd ;; Must be loaded after simple-httpd. See https://github.com/dzop/emacs-jupyter/issues/160
   :bind (("H-j" . 'ein:notebooklist-login)
          ("H-h" . 'ein:jupyterhub-connect)
-         ("H-J" . 'ein:jupyter-server-start))
-  :bind (:map ein:notebook-mode-map
-              ("s-n" . ein:worksheet-goto-next-input)
-              ("s-p" . ein:worksheet-goto-prev-input)
-              ("s-'" . ein:worksheet-turn-on-autoexec))
+         ("H-J" . 'ein:jupyter-server-start)
+         :map ein:notebook-mode-map
+         ("s-n" . ein:worksheet-goto-next-input)
+         ("s-p" . ein:worksheet-goto-prev-input)
+         ("s-'" . ein:worksheet-turn-on-autoexec))
   :commands (ein:jupyter-server-start ein:jupyterhub-connect)
-  :init
-  (straight-use-package '(simple-httpd :host github
-                                       :repo "skeeto/emacs-web-server"
-                                       :local-repo "simple-httpd"))
   :hook (ein:notebook-mode . visual-line-mode)
   :config
   ;; Need to require here to initialize 'ein:notebook-mode-map, so that :bind directive works.
