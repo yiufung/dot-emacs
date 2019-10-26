@@ -869,8 +869,14 @@ horizontal mode."
 
 (use-package ace-window
   :defer 3
-  :bind (("<C-return>" . ace-window)
-         ("M-o"        . other-window)))
+  :bind (("<C-return>" . ace-window))
+  :custom-face (aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0))))
+  :config
+  (setq
+   ;; Home row is more convenient. Use home row keys that prioritize fingers that don't move.
+   aw-keys '(?j ?k ?l ?f ?d ?s ?g ?h ?\; ?a)
+   aw-scope 'visible)
+  )
 
 (use-package winner
   ;; Enable window restoration
