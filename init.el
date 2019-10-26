@@ -762,6 +762,7 @@ output file. %i path(s) are relative, while %o is absolute.")
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
          ("C-x M-h" . dired-du--toggle-human-readable)
+         ("M-k" . dired-kill-subdir)
          (")" . dired-git-info-mode))
   :config
   (require 'dired-x) ;; extra functionality for dired
@@ -1060,6 +1061,7 @@ horizontal mode."
   :straight org-chef
   :straight ox-clip
   :straight ox-twbs
+  :straight ox-tufte
   :straight org-cliplink
   :straight ox-gfm
   :straight org-download
@@ -2003,8 +2005,8 @@ org-download-image to obtain a local copy."
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
