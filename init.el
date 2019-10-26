@@ -2342,6 +2342,19 @@ org-download-image to obtain a local copy."
   (setq fci-rule-color "#111122")
   )
 
+;;;; Terminal Support
+
+(use-package vterm
+  :bind (:map vterm-mode-map
+              ("<f5>" . nil)
+              ("<f6>" . nil)
+              ("<f7>" . nil)
+              ("<f8>" . nil)
+              ("<f9>" . nil)
+              ("<f10>" . nil)
+              ("<f11>" . nil)
+              ("<f12>" . nil)))
+
 ;;;; Auto-completion with Company
 
 (use-package company
