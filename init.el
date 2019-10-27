@@ -1067,6 +1067,7 @@ horizontal mode."
   :straight org-pomodoro
   :straight org-sidebar
   :straight org-present
+  :straight org-msg
   :straight org-chef
   :straight ox-clip
   :straight ox-twbs
@@ -1865,6 +1866,21 @@ org-download-image to obtain a local copy."
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
     :defer 3)
+
+  ;; Org-msg mode. Send email the Outlook style
+  (require 'org-msg)
+  (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil"
+        org-msg-startup "hidestars indent inlineimages"
+        org-msg-greeting-fmt "\nHi %s,\n\n"
+        org-msg-greeting-fmt-mailto t
+        org-msg-signature "
+Regards,
+#+begin_signature
+Yiufung
+#+end_signature")
+  ;; org-msg doesn't support notmuch for now.
+  (setq mail-user-agent 'message-user-agent)
+  (org-msg-mode)
   )
 
 (use-package outshine
