@@ -1679,7 +1679,6 @@ org-download-image to obtain a local copy."
 
   (use-package org-recent-headings
     :defer 3
-    :bind ("C-c r" . org-recent-headings)
     :config (org-recent-headings-mode))
 
   ;; org-chef
