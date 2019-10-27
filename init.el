@@ -593,7 +593,10 @@ is already narrowed."
   :bind (("C-c r" . 'vr/replace)
          ("C-c %"   . 'vr/query-replace))
   :config
-  (global-set-key [remap query-replace] 'vr/query-replace) ;; M-%
+  (global-set-key [remap query-replace] 'vr/query-replace) ; M-%
+  ;; Build up regexp with different backend engine. This supports Emacs, Python, pcre2el. I mostly use it to build up
+  ;; Python regexp but frequently forgot about the name, so an alias is set.
+  (defalias 'regexp-visualize 'vr/select-replace)
   )
 
 (use-package undo-propose
