@@ -432,6 +432,7 @@ Otherwise, call `delete-blank-lines'."
 
   ;; Activate `visual-fill-column-mode' in every buffer that uses `visual-line-mode'
   (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+  (setq-default visual-fill-column-width 120)
   )
 
 ;;;; Misc defuns
@@ -1079,8 +1080,10 @@ horizontal mode."
   :straight easy-hugo
   :straight gnuplot
   :straight helm-org-rifle
-  :hook (org-mode . auto-fill-mode)
   :hook (org-mode . org-bullets-mode)
+  :hook (org-mode . org-indent-mode)
+  :hook (org-mode . turn-off-auto-fill)
+  :hook (org-mode . visual-line-mode)
   :init
   ;; customized export formats
   (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
@@ -1311,6 +1314,11 @@ will not be modified."
 
   ;; General org settings
   (setq-default
+   ;; Indentation setting
+   ;; Always indent to the left
+   org-indent-indentation-per-level 2
+   ;; Start up indented
+   org-startup-indented 't
    ;; Narrowing behavior
    org-indirect-buffer-display 'current-window
    ;; Insert Org-mode mode-line automatically on an empty line when `org-mode' is called
