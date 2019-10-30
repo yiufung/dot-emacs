@@ -432,7 +432,7 @@ Otherwise, call `delete-blank-lines'."
 
   ;; Activate `visual-fill-column-mode' in every buffer that uses `visual-line-mode'
   (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-  (setq-default visual-fill-column-width 120)
+  (setq-default visual-fill-column-width 119)
   )
 
 ;;;; Misc defuns
@@ -3423,7 +3423,11 @@ In that case, insert the number."
 (use-package beancount
   ;; Manage personal finance
   :straight nil
-  :mode ("\\.beancount\\'" . beancount-mode)
+  :mode (("\\.beancount\\'" . beancount-mode)
+         ("\\.bean\\'"      . beancount-mode))
+  :hook (beancount-mode . turn-off-auto-fill)
+  ;; We only want indentation in org-mode but not beancount-mode
+  :hook (beancount-mode . (lambda () (org-indent-mode -1)))
   :bind (:map beancount-mode-map
               ;; Originally uses crux to cleanup buffer, but not quite useful for beancount so we rebind
               ("C-c n" . (lambda () (interactive) (beancount-align-numbers (point-min) (point-max))))
