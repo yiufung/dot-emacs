@@ -2377,7 +2377,9 @@ Yiufung
 ;;;; Terminal Support
 
 (use-package vterm
+  :defer 3
   :bind (:map vterm-mode-map
+              ("C-y"  . vterm-yank)
               ("<f5>" . nil)
               ("<f6>" . nil)
               ("<f7>" . nil)
@@ -2755,10 +2757,13 @@ In that case, insert the number."
   ;; NOTE: When using with flycheck-lintr-caching = t (default), make sure
   ;; ~/.R/lintr_cache directory is created.
   :straight t
+  :hook (ess-r-mode . turn-off-auto-fill)
+  ;;  :bind (:map ess-r-mode-map ("<C-return>" . nil))
   :config
   (setq  ess-default-style 'RStudio ;; Default code style: RStudio
          ess-tab-complete-in-script t ;; Tries to complete in script buffers
          ess-eldoc-show-on-symbol 'nil
+         ess-eval-visibly 'nowait ;; whether ess-eval-* commands display commands in process buffer
          ess-indent-with-fancy-comments 'nil  ;; Don't distinguish between #, ## and ###
          ess-smart-S-assign-key 'nil ;; Disabled auto replace of "_" to "<-"
          ess-directory 'nil ;; By default starts ESS at current buffer default directory
@@ -2983,6 +2988,7 @@ In that case, insert the number."
 (use-package color-moccur
   ;; :commands (moccur)
   ;; TODO
+  :disabled
   :bind (("C-s o" . 'moccur)
          ;; :map isearch-mode-map
          ;; ("C-s o" . isearch-moccur)
