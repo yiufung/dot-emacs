@@ -3417,8 +3417,10 @@ In that case, insert the number."
 
 (use-package keyfreq
   ;; Track key frequencies
+  :defer 10
   :config
-  (keyfreq-mode 1))
+  (keyfreq-mode 1)
+  (keyfreq-autosave-mode 1))
 
 (use-package beancount
   ;; Manage personal finance
