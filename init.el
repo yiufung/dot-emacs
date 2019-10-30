@@ -648,9 +648,9 @@ Useful when hard line wraps are unwanted (email/sharing article)."
          ("C-x C-r" . counsel-recentf)
          ;; Search-replace with ag and rg:
          ;; C-u prefix to choose search directory
-         ;; C-c C-o opens an editable buffer
-         ("C-s a"   . counsel-ag)
-         ;; ("C-s R"   . counsel-rg)
+         ;; C-c C-o opens an occur buffer
+         ;; e to toggle writable state
+         ("C-s C-s" . counsel-ag)
          ("C-s r"   . counsel-rg)
          ("C-s f"   . counsel-file-jump) ;; Jump to a file below the current directory.
          ("C-s j"   . counsel-dired-jump);; Jump to directory under current directory
