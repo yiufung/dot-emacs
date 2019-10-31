@@ -1042,16 +1042,16 @@ horizontal mode."
    ("<f11>"     . 'eyebrowse-switch-to-window-config)
    ("<f12>"     . 'eyebrowse-next-window-config)
    ("C-c w s"   . 'eyebrowse-switch-to-window-config)
-   ("C-c w w"   . 'eyebrowse-switch-to-window-config)
-   ("C-c w TAB" . 'eyebrowse-last-window-config)
    ("C-c w k"   . 'eyebrowse-close-window-config)
+   ("C-c w w"   . 'eyebrowse-last-window-config)
    ("C-c w n"   . 'eyebrowse-next-window-config)
    ("C-c w p"   . 'eyebrowse-prev-window-config))
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
         eyebrowse-mode-line-style 'smart
-        eyebrowse-tagged-slot-format "%t")
+        eyebrowse-tagged-slot-format "%t"
+        eyebrowse-new-workspace t)
   (eyebrowse-mode)
   )
 
@@ -1471,6 +1471,7 @@ will not be modified."
      (emacs-lisp . t)
      (R          . t)
      (haskell    . t)
+     (lilypond . t)
      (python     .t)
      (org        .t)
      (dot        .t)
@@ -2021,6 +2022,9 @@ Yiufung
         (format "%s\\|%s"
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp))
+  ;; Allow loading .dir-locals.el in remote.
+  ;; Might be slower but very useful when code base is in remote.
+  (setq enable-remote-dir-locals t)
   (setq tramp-verbose 1)
   )
 
@@ -2655,10 +2659,10 @@ In that case, insert the number."
   :straight company-lsp
   :after company
   :commands lsp-ui-mode
-  :hook (prog-mode . lsp) ; Start LSP server in prog-mode
+  :hook (prog-mode . lsp-mode) ; Start LSP server in prog-mode
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (push 'company-lsp company-backends)
+  ;; (push 'company-lsp company-backends)
   )
 
 (use-package lsp-python-ms
@@ -3412,6 +3416,9 @@ In that case, insert the number."
   (setq elfeed-db-directory (expand-file-name "elfeed" my-private-conf-directory))
 
   (elfeed-org)
+  (elfeed-goodies/setup)
+  ;; Remove strange choice of keymap in elfeed-goodies
+  (define-key elfeed-show-mode-map (kbd "M-v") nil)
   )
 
 (use-package docker
