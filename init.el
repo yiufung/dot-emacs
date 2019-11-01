@@ -316,7 +316,7 @@
 (use-package which-key
   :defer 3
   :config
-  (setq which-key-idle-delay 5.0)
+  (setq which-key-idle-delay 1.0)
   (which-key-mode)
   )
 
@@ -373,7 +373,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                               (follow-mode))))
+                                                   (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -634,6 +634,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   :straight ivy-hydra
   :straight ivy-rich
   :straight counsel-projectile
+  :straight ivy-posframe
   :straight smex
   :bind (("M-s"     . swiper)
          ("C-c C-r" . ivy-resume)
@@ -747,6 +748,9 @@ output file. %i path(s) are relative, while %o is absolute.")
                      ("k" delete-file "delete")
                      ("g" magit-status-internal "magit status")
                      ("r" counsel-find-file-as-root "open as root")))
+  ;; display at `ivy-posframe-style'
+  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
+  (ivy-posframe-mode 1)
   )
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
@@ -762,6 +766,7 @@ output file. %i path(s) are relative, while %o is absolute.")
   :straight dired-du ;; Only enable when needed
   :straight dired-git-info ;; Show last git commit message alongside with file
   :straight diredfl ;; Colorful columns
+  :straight dired-hacks ;; some utilities function
   :hook ((dired-mode . dired-hide-details-mode))
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
@@ -1210,7 +1215,9 @@ horizontal mode."
    ;; avoid this, set the emacs-lock-mode
    org-agenda-sticky t
    ;; Don’t show scheduled items in agenda when they are done
-   org-agenda-skip-scheduled-if-done t)
+   org-agenda-skip-scheduled-if-done t
+   ;; Show meetings in org agenda
+   org-agenda-include-diary t)
 
   ;; Auto save org-files, so that we prevent the locking problem between computers
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -2041,8 +2048,8 @@ Yiufung
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                        (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                          my-emacs-conf-directory)))
+                            (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                              my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -3360,7 +3367,7 @@ In that case, insert the number."
 
 (use-package excorporate
   ;; Sync office365 calendar
-  :defer t
+  :defer 3
   :after (org calfw)
   :config
   (setq-default excorporate-configuration '((auth-source-pass-get "email" "outlook365")
@@ -3371,9 +3378,7 @@ In that case, insert the number."
                                                   "excorporate/diary-excorporate-transient"
                                                   org-directory)
                 ;; Press e and show exco in calfw
-                excorporate-calendar-show-day-function 'exco-org-show-day
-                ;; Show meetings in org agenda
-                org-agenda-include-diary t)
+                excorporate-calendar-show-day-function 'exco-org-show-day)
 
   ;; Make sure that Emacs diary knows how to follow `#include "..."'
   ;; directives (needed by excorporate)
