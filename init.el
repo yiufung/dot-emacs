@@ -1250,12 +1250,12 @@ horizontal mode."
           ("a" "Anki basic"
            entry
            (file+headline org-my-anki-file "Wait List")
-           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:END:\n** Front\n%\\1\n** Back\n%?\n")
+           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%\\1\n** Back\n%?\n")
 
           ("A" "Anki cloze"
            entry
            (file+headline org-my-anki-file "Wait List")
-           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:END:\n** Text\n%^{Front}\n** Extra\n%?\n")
+           "* %^{Card Name}\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze:ANKI_DECK: Mega\n\n:END:\n** Text\n%^{Front}\n** Extra\n%?\n")
 
           ("c" "all todos" ;; Capture first, refile later
            entry
