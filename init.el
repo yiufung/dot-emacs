@@ -281,8 +281,8 @@
         ;; disable recentf-cleanup on Emacs start, because it can cause
         ;; problems with remote files
         recentf-auto-cleanup 'never)
-  ;; save it every 5 minutes
-  (run-at-time t (* 5 60) 'recentf-save-list)
+  ;; save it every 60 minutes
+  (run-at-time t (* 60 60) 'recentf-save-list)
   ;; Suppress output "Wrote /home/yiufung/.emacs.d/recentf"
   (advice-add 'recentf-save-list :around #'suppress-messages)
   (recentf-mode +1)
@@ -373,7 +373,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                                   (follow-mode))))
+                                               (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -1288,7 +1288,7 @@ horizontal mode."
           ("b" "finance book-keeping"
            plain
            (file+headline org-my-beancount-file "Expenses")
-           "bct%?"  ;; yasnippet template
+           "bc%?"  ;; yasnippet template
            :prepend t)
 
           ("d" "diary"
@@ -1315,6 +1315,7 @@ will not be modified."
       (unless (or (org-entry-get (point) created nil)
                   ;; Beancount format does not accept :PROPERTY: syntax
                   (string-match "\\.beancount$" (buffer-name))
+                  (string-match "\\.bean$" (buffer-name))
                   (string-match "anki.org" (buffer-name)))
         (org-set-property created now))))
   (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
@@ -2141,8 +2142,8 @@ Yiufung
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
