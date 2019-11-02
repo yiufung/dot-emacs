@@ -108,6 +108,7 @@
   ;; auth-source-pass-get is the main entrance.
   (auth-source-pass-enable)
 
+  ;; Need to set allow allow-emacs-pinentry & allow-loopback-pinentry in ~/.gnupg/gpg-agent.conf
   (setq epa-pinentry-mode 'loopback)
   ;; Top debug, set auth-source-debug to t.
   ;; Also use auth-source-forget-all-cached
@@ -2123,24 +2124,16 @@ Yiufung
    org-icalendar-use-scheduled '(event-if-todo todo-start)
    )
 
-  ;; This is the delayed sync function; it waits until emacs has been idle for
-  ;; "secs" seconds before syncing.  The delay is important because the caldav-sync
-  ;; can take five or ten seconds, which would be painful if it did that right at save.
-  ;; This way it just waits until you've been idle for a while to avoid disturbing
-  ;; the user.
   (defvar org-caldav-sync-timer nil
     "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
-  (defun org-caldav-sync-with-delay (secs)
+  (defun org-caldav-sync-with-delay (mins)
     (when org-caldav-sync-timer
       (cancel-timer org-caldav-sync-timer))
     (setq org-caldav-sync-timer
           (run-with-idle-timer
-           (* 1 secs) nil 'org-caldav-sync)))
+           (* 60 mins) nil 'org-caldav-sync)))
   ;; Add the delayed save hook with a half-hour idle timer
-  (add-hook 'after-save-hook
-            (lambda ()
-              (org-caldav-sync-with-delay 1800)))
-
+  (add-hook 'after-save-hook (lambda () (org-caldav-sync-with-delay 30)))
   )
 
 ;;; Contacts: bbdb
