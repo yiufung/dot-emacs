@@ -71,6 +71,18 @@
   (defun auth-source-pass--reset-cache ()
     (setq auth-source-pass--cache (make-hash-table :test #'equal)))
 
+  (defun lookup-password (host user port)
+    (require 'auth-source)
+    (require 'auth-source-pass)
+    (let ((auth (auth-source-search :host host :user user :port port)))
+      (if auth
+          (let ((secretf (plist-get (car auth) :secret)))
+            (if secretf
+                (funcall secretf)
+              (error "Auth entry for %s@%s:%s has no secret!"
+                     user host port)))
+        (error "No auth entry found for %s@%s:%s" user host port))))
+
   (defun auth-source-pass--read-entry (entry)
     "Return a string with the file content of ENTRY."
     (run-at-time 45 nil #'auth-source-pass--reset-cache)
@@ -96,7 +108,8 @@
   ;; auth-source-pass-get is the main entrance.
   (auth-source-pass-enable)
 
-  ;; To debug, set auth-source-debug to t.
+  (setq epa-pinentry-mode 'loopback)
+  ;; Top debug, set auth-source-debug to t.
   ;; Also use auth-source-forget-all-cached
   )
 
@@ -2030,6 +2043,8 @@ Yiufung
    org-caldav-calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
    ;; Local file that gets events from the server
    org-caldav-inbox org-my-calendar-file
+   ;; Only entries with "schedule" tags should be exported to CalDAV
+   org-caldav-select-tags '("schedule")
    ;; Multiple calendar setup
    org-caldav-calendars `(
                           (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
@@ -2059,6 +2074,11 @@ Yiufung
    ;; Change org-caldav save directory
    org-caldav-save-directory my-private-calendar-directory
    )
+
+  ;; Hack warning: url.el won't read my password-store properly. After a little digging I find them using this variable.
+  (setq url-http-real-basic-auth-storage
+        `(("caldav.fastmail.com:443"
+           ("caldav.fastmail.com" . ,(auth-source-pass-get "hash" "Fastmail CalDAV")))))
 
   ;; Org-icalendar setting
   (setq
