@@ -750,7 +750,7 @@ output file. %i path(s) are relative, while %o is absolute.")
                      ("r" counsel-find-file-as-root "open as root")))
   ;; display at `ivy-posframe-style'
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
-  (ivy-posframe-mode 1)
+  ;; (ivy-posframe-mode 1)
   )
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
@@ -1681,8 +1681,7 @@ org-download-image to obtain a local copy."
   (require 'org-download)
   ;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
   ;; folder.
-  (setq-default org-download-image-dir
-                (expand-file-name "images/misc" org-directory)
+  (setq-default org-download-image-dir (expand-file-name "images/misc" org-directory)
                 org-download-heading-lvl nil
                 org-download-screenshot-method "maim -s %s"
                 org-download-image-org-width 800
