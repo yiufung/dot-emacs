@@ -1267,7 +1267,7 @@ horizontal mode."
           ("a" "Anki basic"
            entry
            (file+headline org-my-anki-file "Dispatch Shelf")
-           "* %u\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%i%x\n")
+           "* %T   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n")
 
           ("A" "Anki cloze"
            entry
@@ -1703,10 +1703,10 @@ org-download-image to obtain a local copy."
                 org-download-heading-lvl nil
                 ;; Workaround to setup flameshot, which enables annotation. In flameshot, set filename as "screenshot",
                 ;; and the command as "flameshot gui -p /tmp", so that we always ends up with /tmp/screenshot.png.
-                ;; Nullify org-download-screenshot-method by setting it to `ls', so that essentially we are only
+                ;; Nullify org-download-screenshot-method by setting it to `echo', so that essentially we are only
                 ;; calling (org-download-image org-download-screenshot-file).
                 org-download-delete-image-after-download t
-                org-download-screenshot-method "ls"
+                org-download-screenshot-method "echo"
                 org-download-screenshot-file "/tmp/screenshot.png"
                 org-download-image-org-width 800
                 org-download-annotate-function (lambda (link) "") ;; Don't annotate
@@ -3427,7 +3427,8 @@ In that case, insert the number."
 (use-package anki-editor
   :defer 10
   :config
-  (setq anki-editor-create-decks t))
+  (setq anki-editor-create-decks t
+        anki-editor-org-tags-as-anki-tags t))
 
 (use-package howdoyou
   :defer 10)
