@@ -2009,6 +2009,100 @@ Yiufung
   (define-key 'notmuch-show-part-map "d" 'my-notmuch-show-view-as-patch)
   )
 
+(use-package org-caldav
+  ;; Fastmail Calendar integration
+  :defer 3
+  :after org
+  :config
+  (setq
+   ;; Mainly for saving sync states. The main inbox file is another one.
+   my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory)
+   ;; Default calendar file to receive entries downloaded from remote
+   org-my-calendar-file (expand-file-name "calendar.org" org-directory)
+   ;; The CalDAV URL with your full and primary email address at the end.
+   org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/mail@yiufung.net"
+   ;; Default calendar ID
+   org-caldav-calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
+   ;; Local file that gets events from the server
+   org-caldav-inbox org-my-calendar-file
+   ;; Multiple calendar setup
+   org-caldav-calendars `(
+                          (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
+                                        :files (,org-my-office-file ,org-default-notes-file) ;; default note is plan-office
+                                        :inbox (file+headline ,org-my-calendar-file "Office"))
+                          (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
+                                        :files (,org-my-plan-church-file)
+                                        :inbox (file+headline ,org-my-calendar-file "Church"))
+                          (:calendar-id "1fe12417-fe19-41d2-a105-a94d1a562e21"
+                                        :files (,org-my-plan-free-file ,org-my-life-file)
+                                        :inbox (file+headline ,org-my-calendar-file "Free"))
+                          (:calendar-id "4ce46e49-3f0c-45b9-abd4-556837488961"
+                                        :files (,org-my-calendar-file)
+                                        :inbox (file+headline ,org-my-calendar-file "Default"))
+                          ;; (:calendar-id "12d9cc19-2efb-4a81-ae78-3b0597f56551"
+                          ;;               :files (org-my-calendar-file)
+                          ;;               :inbox (expand-file-name "hk-public-holiday.org" my-private-calendar-directory))
+                          )
+   ;; If entries are deleted in Org, always delete at the CALDAV end without asking
+   org-caldav-delete-calendar-entries 'always
+   ;; Never delete at local Org side
+   org-caldav-delete-org-entries 'never
+   ;; Never resume aborted sync
+   org-caldav-resume-aborted 'never
+   ;; Debug like crazy
+   org-caldav-debug-level 2
+   ;; Change org-caldav save directory
+   org-caldav-save-directory my-private-calendar-directory
+   )
+
+  ;; Org-icalendar setting
+  (setq
+   ;; Please make sure to set your correct timezone here
+   org-icalendar-timezone "Asia/Hong_Kong"
+   org-icalendar-date-time-format ";TZID=%Z:%Y%m%dT%H%M%S"
+   ;; Alarm me 15 minutes in advance
+   org-icalendar-alarm-time 15
+   ;; This makes sure to-do items as a category can show up on the calendar
+   org-icalendar-include-todo t
+   ;; ensures all org "deadlines" show up, and show up as due dates
+   org-icalendar-use-deadline '(event-if-todo todo-due)
+   ;; ensures "scheduled" org items show up, and show up as start times
+   org-icalendar-use-scheduled '(event-if-todo todo-start)
+   )
+
+  ;; This is the delayed sync function; it waits until emacs has been idle for
+  ;; "secs" seconds before syncing.  The delay is important because the caldav-sync
+  ;; can take five or ten seconds, which would be painful if it did that right at save.
+  ;; This way it just waits until you've been idle for a while to avoid disturbing
+  ;; the user.
+  (defvar org-caldav-sync-timer nil
+    "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
+  (defun org-caldav-sync-with-delay (secs)
+    (when org-caldav-sync-timer
+      (cancel-timer org-caldav-sync-timer))
+    (setq org-caldav-sync-timer
+          (run-with-idle-timer
+           (* 1 secs) nil 'org-caldav-sync)))
+  ;; Add the delayed save hook with a half-hour idle timer
+  (add-hook 'after-save-hook
+            (lambda ()
+              (org-caldav-sync-with-delay 1800)))
+
+  )
+
+;;; Contacts: bbdb
+
+(use-package bbdb
+  :commands bbdb
+  :config
+  (setq bbdb-file (expand-file-name "bbdb" my-private-conf-directory))
+  (bbdb-initialize 'message 'anniv)
+  (bbdb-mua-auto-update-init 'message)
+  (setq bbdb-mua-pop-up-window-size 10)
+
+  ;; Make sure we look at every address in a message and not only the first one
+  (setq bbdb-message-all-addresses t)
+  )
 ;;; Remote Editing: Tramp
 
 (use-package tramp
