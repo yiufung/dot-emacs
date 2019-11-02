@@ -1098,7 +1098,6 @@ horizontal mode."
   :straight easy-hugo
   :straight gnuplot
   :straight helm-org-rifle
-  :straight org-journal
   :hook (org-mode . org-bullets-mode)
   :hook (org-mode . org-indent-mode)
   :hook (org-mode . turn-off-auto-fill)
@@ -1723,22 +1722,29 @@ org-download-image to obtain a local copy."
   (require 'org-chef)
 
   ;; org-journal
-  (require 'org-journal)
-  (setq org-journal-dir (expand-file-name "journal/" org-directory)
-        org-journal-date-format "%A, %d %B %Y"
-        org-journal-time-format ""
-        org-journal-enable-agenda-integration t
-        org-journal-file-type 'daily
-        org-journal-tag-alist '(("idea" . ?i) ("spirituality" . ?s)))
-
-  (defun org-journal-save-entry-and-exit()
-    "Simple convenience function.
+  (use-package org-journal
+    :after org
+    :defer 3
+    :custom
+    (org-journal-dir (expand-file-name "journal/" org-directory))
+    (org-journal-date-format "%A, %d %B %Y")
+    (org-journal-time-format "%H:%M")
+    (org-journal-enable-agenda-integration t)
+    (org-journal-file-type 'daily)
+    (org-journal-tag-alist '(("idea" . ?i) ("spirituality" . ?s)))
+    (org-journal-time-prefix "** ")
+    (org-journal-enable-encryption t)
+    :preface
+    (defun org-journal-save-entry-and-exit()
+      "Simple convenience function.
   Saves the buffer of the current day's entry and kills the window
   Similar to org-capture like behavior"
-    (interactive)
-    (save-buffer)
-    (kill-buffer-and-window))
-  (define-key org-journal-mode-map (kbd "C-x C-s") 'org-journal-save-entry-and-exit)
+      (interactive)
+      (save-buffer)
+      (kill-buffer-and-window))
+    :bind (:map org-journal-mode-map
+                ("C-x C-s" . org-journal-save-entry-and-exit))
+    )
 
   ;; org-contacts
   (use-package org-contacts
