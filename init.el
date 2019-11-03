@@ -1722,6 +1722,12 @@ org-download-image to obtain a local copy."
   ;; org-chef
   (require 'org-chef)
 
+  ;; org-crypt
+  (require 'org-crypt)
+  (org-crypt-use-before-save-magic)
+  (setq org-tags-exclude-from-inheritance '("crypt")
+        org-crypt-key "")
+
   ;; org-journal
   (use-package org-journal
     :after org
@@ -1734,7 +1740,7 @@ org-download-image to obtain a local copy."
     (org-journal-file-type 'daily)
     (org-journal-tag-alist '(("idea" . ?i) ("spirituality" . ?s)))
     (org-journal-time-prefix "** ")
-    (org-journal-enable-encryption t)
+    (org-journal-encrypt-journal t)
     :preface
     (defun org-journal-save-entry-and-exit()
       "Simple convenience function.
@@ -2528,6 +2534,8 @@ Yiufung
 
 (use-package vterm
   :defer 3
+  ;; Don't let whole-line-or-region shadows the C-y
+  :hook (vterm-mode . (lambda () (whole-line-or-region-local-mode -1)))
   :bind (:map vterm-mode-map
               ("C-y"  . vterm-yank)
               ("<f5>" . nil)
