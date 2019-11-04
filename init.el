@@ -111,7 +111,8 @@
   ;; Need to set allow allow-emacs-pinentry & allow-loopback-pinentry in ~/.gnupg/gpg-agent.conf
   (setq epa-pinentry-mode 'loopback)
   ;; Top debug, set auth-source-debug to t.
-  ;; Also use auth-source-forget-all-cached
+  (setq auth-source-debug t)
+  ;; also use auth-source-forget-all-cached
   )
 
 
@@ -290,11 +291,10 @@
   :defer 5
   :config
   (setq recentf-save-file (expand-file-name "recentf" my-private-conf-directory)
-        recentf-max-saved-items 500
-        recentf-max-menu-items 15
-        ;; disable recentf-cleanup on Emacs start, because it can cause
-        ;; problems with remote files
-        recentf-auto-cleanup 'never)
+        recentf-max-saved-items 'nil ;; Save the whole list
+        recentf-max-menu-items 50
+        ;; Cleanup list if idle for 10 secs
+        recentf-auto-cleanup 10)
   ;; save it every 60 minutes
   (run-at-time t (* 60 60) 'recentf-save-list)
   ;; Suppress output "Wrote /home/yiufung/.emacs.d/recentf"
@@ -387,7 +387,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                               (follow-mode))))
+                                                   (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -1803,7 +1803,8 @@ org-download-image to obtain a local copy."
                                  my-bibliography-directory))
     ;; variables for org-noter
     (setq org-noter-notes-search-path `(,(expand-file-name "notes" org-directory))
-          org-noter-default-notes-file-names '("paper-notes.org"))
+          org-noter-default-notes-file-names '("paper-notes.org")
+          org-noter-auto-save-last-location t)
 
     ;; Integrate org-ref + org-noter
     ;; Add NOTER_DOCUMENT to org-ref template
@@ -1921,6 +1922,21 @@ org-download-image to obtain a local copy."
                  :scheduled past)
           ))
   (org-super-agenda-mode)
+
+  ;; Org-icalendar setting
+  (setq-default
+   ;; Please make sure to set your correct timezone here
+   org-icalendar-timezone "Asia/Hong_Kong"
+   org-icalendar-date-time-format ";TZID=%Z:%Y%m%dT%H%M%S"
+   ;; Alarm me 15 minutes in advance
+   org-icalendar-alarm-time 15
+   ;; This makes sure to-do items as a category can show up on the calendar
+   org-icalendar-include-todo t
+   ;; ensures all org "deadlines" show up, and show up as due dates
+   org-icalendar-use-deadline '(event-if-todo todo-due)
+   ;; ensures "scheduled" org items show up, and show up as start times
+   org-icalendar-use-scheduled '(event-if-todo todo-start)
+   )
 
   ;; helm-org-rifle
   (setq helm-org-rifle-show-path t)
@@ -2114,21 +2130,6 @@ Yiufung
   (setq url-http-real-basic-auth-storage
         `(("caldav.fastmail.com:443"
            ("caldav.fastmail.com" . ,(auth-source-pass-get "hash" "Fastmail CalDAV")))))
-
-  ;; Org-icalendar setting
-  (setq
-   ;; Please make sure to set your correct timezone here
-   org-icalendar-timezone "Asia/Hong_Kong"
-   org-icalendar-date-time-format ";TZID=%Z:%Y%m%dT%H%M%S"
-   ;; Alarm me 15 minutes in advance
-   org-icalendar-alarm-time 15
-   ;; This makes sure to-do items as a category can show up on the calendar
-   org-icalendar-include-todo t
-   ;; ensures all org "deadlines" show up, and show up as due dates
-   org-icalendar-use-deadline '(event-if-todo todo-due)
-   ;; ensures "scheduled" org items show up, and show up as start times
-   org-icalendar-use-scheduled '(event-if-todo todo-start)
-   )
 
   (defvar org-caldav-sync-timer nil
     "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
@@ -3127,6 +3128,7 @@ In that case, insert the number."
   (advice-add 'json-encode-array :around #'encode-json-array-of-numbers-on-one-line))
 (use-package rainbow-mode
   ;; Prettify CSS colors in-place
+  :defer 3
   )
 (use-package csv-mode
   ;; CSV
