@@ -1738,10 +1738,10 @@ org-download-image to obtain a local copy."
     (org-journal-time-format "%H:%M")
     (org-journal-enable-agenda-integration t)
     (org-journal-file-type 'daily)
-    (org-journal-tag-alist '(("idea" . ?i) ("spirituality" . ?s)))
+    (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
     (org-journal-time-prefix "** ")
     (org-journal-encrypt-journal t)
-    :preface
+    :config
     (defun org-journal-save-entry-and-exit()
       "Simple convenience function.
   Saves the buffer of the current day's entry and kills the window
