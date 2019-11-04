@@ -3103,6 +3103,13 @@ In that case, insert the number."
 
 ;;;; Misc programming supporting modes
 
+(use-package wakatime-mode
+  ;; Programming statistics
+  :defer 3
+  :config
+  (setq wakatime-api-key (auth-source-pass-get "api" "wakatime"))
+  (global-wakatime-mode)
+  )
 (use-package ahk-mode
   :mode "\\.ahk\\'")
 (use-package json-mode
