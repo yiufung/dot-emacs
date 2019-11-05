@@ -1328,9 +1328,9 @@ horizontal mode."
   (defun org-set-created-property (&optional active NAME)
     "Set a property on the entry giving the creation time.
 
-By default the property is called CREATED. If given the `NAME'
-argument will be used instead. If the property already exists, it
-will not be modified."
+    By default the property is called CREATED. If given the `NAME'
+    argument will be used instead. If the property already exists, it
+    will not be modified."
     (interactive)
     (let* ((created (or NAME org-created-property-name))
            (fmt (if active "<%s>" "[%s]"))
@@ -1651,7 +1651,7 @@ will not be modified."
 
     (defun search-forward-and-org-download-images()
       "Search forward for HTTP Image URLs, replace each using
-org-download-image to obtain a local copy."
+    org-download-image to obtain a local copy."
       (interactive)
       (while (re-search-forward org-bracket-link-regexp nil t)
         (let* (
@@ -1682,7 +1682,7 @@ org-download-image to obtain a local copy."
   (with-eval-after-load 'org-capture
     (defun org-hugo-new-subtree-post-capture-template ()
       "Returns `org-capture' template string for new Hugo post.
-          See `org-capture-templates' for more information."
+    See `org-capture-templates' for more information."
       (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
              (fname (org-hugo-slug title)))
         (mapconcat #'identity
@@ -1750,8 +1750,8 @@ org-download-image to obtain a local copy."
     :config
     (defun org-journal-save-entry-and-exit()
       "Simple convenience function.
-  Saves the buffer of the current day's entry and kills the window
-  Similar to org-capture like behavior"
+    Saves the buffer of the current day's entry and kills the window
+    Similar to org-capture like behavior"
       (interactive)
       (save-buffer)
       (kill-buffer-and-window))
@@ -1769,14 +1769,14 @@ org-download-image to obtain a local copy."
                  '("lc"  "contact" entry
                    (file+headline "contacts.org" "To File")
                    "* %(org-contacts-template-name)
-      :PROPERTIES:
-      :EMAIL: %(org-contacts-template-email)
-      :PHONE: %^{Phone}
-      :ADDRESS: %^{Home Address}
-      :BIRTHDAY: %^{yyyy-mm-dd}
-      :ORG:  %^{Company}
-      :NOTE: %^{NOTE}
-      :END:"
+    :PROPERTIES:
+    :EMAIL: %(org-contacts-template-email)
+    :PHONE: %^{Phone}
+    :ADDRESS: %^{Home Address}
+    :BIRTHDAY: %^{yyyy-mm-dd}
+    :ORG:  %^{Company}
+    :NOTE: %^{NOTE}
+    :END:"
                    :empty-lines 1))
     )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Org-ref + Org-noter integration ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2200,8 +2200,8 @@ Yiufung
   :straight tablist
   :straight hydra
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                        (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                          my-emacs-conf-directory)))
+                            (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                              my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
