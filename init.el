@@ -954,6 +954,12 @@ horizontal mode."
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
 
+(use-package jieba
+  :straight (:host github :repo "cireu/jieba.el" :files (:defaults "*.js"))
+  :defer 3
+  :config
+  (jieba-mode))
+
 ;;; Version-control: Magit
 
 (use-package magit
