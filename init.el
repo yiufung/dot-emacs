@@ -299,6 +299,8 @@
   (run-at-time t (* 60 60) 'recentf-save-list)
   ;; Suppress output "Wrote /home/yiufung/.emacs.d/recentf"
   (advice-add 'recentf-save-list :around #'suppress-messages)
+  ;; Suppress output "Cleaning up the recentf list...done (0 removed)"
+  (advice-add 'recentf-cleanup :around #'suppress-messages)
   (recentf-mode +1)
   )
 
@@ -387,7 +389,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                                   (follow-mode))))
+                                               (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -955,7 +957,7 @@ horizontal mode."
          ("M-Z" . avy-zap-up-to-char-dwim)))
 
 (use-package jieba
-  :straight (:host github :repo "cireu/jieba.el" :files (:defaults "*.js"))
+  :straight (:host github :repo "cireu/jieba.el" :files (:defaults "*.js")) ;; Need to symlink js for server too
   :defer 3
   :config
   (jieba-mode))
@@ -1145,6 +1147,8 @@ horizontal mode."
   (setq org-directory (expand-file-name "journals" my-sync-directory))
   ;; Setup diary too
   (setq diary-file (expand-file-name "diary" org-directory))
+  ;; See also org-caldav
+  (setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
 
   ;; Default org-mode startup
   (setq org-startup-folded t
@@ -1159,7 +1163,7 @@ horizontal mode."
   (setq org-todo-keywords
         '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAIT(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
   ;; Setup for ordered tasks. Initiate with C-c C-x o
-  (setq org-enforce-todo-dependencies t)
+  (setq org-enforce-todo-dependencies nil)
   ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
   (setq org-todo-state-tags-triggers
         '(("CANCELLED" ("ARCHIVE" . t))
@@ -1174,7 +1178,7 @@ horizontal mode."
   ;; Org-agenda
   (setq
    ;; All files for agenda
-   org-agenda-files (list org-directory
+   org-agenda-files (list org-directory my-private-calendar-directory
                           (expand-file-name "notes" org-directory)
                           (expand-file-name "projects" org-directory)
                           (expand-file-name "orgzly" org-directory)
@@ -1242,23 +1246,20 @@ horizontal mode."
    ;; Show meetings in org agenda
    org-agenda-include-diary t)
 
+  (setq org-agenda-exporter-settings
+        '((ps-number-of-columns 1)
+          (ps-landscape-mode t)
+          (org-agenda-add-entry-text-maxlines 5)
+          (org-agenda-prefix-format " [ ] ")
+          (org-agenda-with-colors t)
+          (org-agenda-remove-tags t)
+          (htmlize-output-type 'css)))
+
   ;; Auto save org-files, so that we prevent the locking problem between computers
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
   ;; Suppress output "Saving all Org buffers... done"
   (advice-add 'org-save-all-org-buffers :around #'suppress-messages)
 
-  ;; Tags
-  (setq org-tag-alist '((:startgroup    . nil)
-                        ("@home"        . ?h)
-                        ("@office"      . ?o)
-                        (:endgroup      . nil)
-                        ("@project"     . ?p)
-                        ("@appointment" . ?a)
-                        ("@study"       . ?s)
-                        ("@sport"       . ?S)
-                        ("@finance"     . ?f)
-                        ("@game"        . ?g)
-                        ("@emacs"       . ?e)))
   ;; Capturing thoughts and Level 1 Headings.
   (setq org-default-notes-file (expand-file-name "plan-office.org" org-directory))
   (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
@@ -1273,7 +1274,7 @@ horizontal mode."
           ("a" "Anki basic"
            entry
            (file+headline org-my-anki-file "Dispatch Shelf")
-           "* %T   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n")
+           "* %<%H:%m>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n")
 
           ("A" "Anki cloze"
            entry
@@ -1738,6 +1739,10 @@ horizontal mode."
   (use-package org-journal
     :after org
     :defer 3
+    :bind (("C-c J" . org-journal-new-entry)
+           :map org-journal-mode-map
+           ("C-x C-s" . org-journal-save-entry-and-exit))
+
     :custom
     (org-journal-dir (expand-file-name "journal/" org-directory))
     (org-journal-date-format "%A, %d %B %Y")
@@ -1788,6 +1793,7 @@ horizontal mode."
     :straight org-noter
     :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
     :bind ("H-b" . ivy-bibtex) ;; open bibliography
+    :hook ((org-noter-notes-mode org-noter-doc-mode) . hide-mode-line-mode) ;; Hide modeline when taking notes
     :init
     ;; Common variables
     (setq my-bibliography-directory (expand-file-name "bibliography" my-sync-directory))
@@ -2773,7 +2779,7 @@ In that case, insert the number."
 (use-package yasnippet
   :straight yasnippet-snippets
   :defer 5
-  :bind (("C-c y" . 'yas/insert-snippet))
+  :bind (("C-c y" . 'yas-insert-snippet))
   :config
   (add-to-list 'yas-snippet-dirs
                (expand-file-name "yasnippets" my-private-conf-directory))
@@ -3095,7 +3101,6 @@ In that case, insert the number."
   )
 
 (use-package polymode
-  :straight t
   :straight poly-markdown ; RMarkdown support
   :straight poly-R
   :after markdown-mode
@@ -3459,6 +3464,13 @@ In that case, insert the number."
 ;;; Misc Tools
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
+
+;; Viewing Image in Emacs
+(use-package image-mode
+  :straight nil
+  :init
+  (add-hook 'image-mode-hook 'hide-mode-line-mode)
+  )
 
 ;; Emacs Application Framework
 ;; https://github.com/manateelazycat/emacs-application-framework
