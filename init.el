@@ -1051,6 +1051,10 @@ horizontal mode."
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   )
 
+(use-package monky
+  ;; Mercurial support
+  )
+
 ;;; Workspace Mgmt: eyebrowse + projectile
 
 (use-package projectile
@@ -1966,6 +1970,11 @@ horizontal mode."
 
   ;; Enable KOMA-script support
   (require 'ox-koma-letter)
+
+  ;; org-pdftools
+  (use-package org-pdftools
+    :straight (:host github :repo "fuxialexander/org-pdftools")
+    :defer 3)
 
   ;; Use org-bookmark-heading
   (use-package org-bookmark-heading
