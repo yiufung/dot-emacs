@@ -1217,35 +1217,28 @@ horizontal mode."
    org-agenda-custom-commands
    '(("x" agenda)
      ("y" agenda*)
-     ("o" "Office"
-      ((agenda "Hello" ((org-agenda-files (list
-                                           org-my-office-file
-                                           org-default-notes-file
-                                           (expand-file-name "projects" org-directory)
-                                           (expand-file-name "notes" org-directory)
-                                           ))
-                        ;; Show agenda for this whole week, and first 2 days of next week
-                        (org-agenda-start-on-weekday 1) ;; Always start on Monday
-                        (org-agenda-span 9)
-                        ))))
-     ;; ("o" "Office-related Agenda"
-     ;;  ((agenda "" ((org-agenda-start-day "0d")
-     ;;               (org-agenda-start-on-weekday nil)
-     ;;               (org-agenda-span 1)
-     ;;               (tags "@office")))))
+     ("o" "Agenda and Office-related Tasks"
+      ((agenda "" ((org-agenda-tag-filter-preset '("+office"))
+                   ;; Show agenda for this whole week, and first 2 days of next week
+                   (org-agenda-start-on-weekday 1) ;; Always start on Monday
+                   (org-agenda-span 9))))
+      nil ("/tmp/office.html" "/tmp/office.txt" "/tmp/office.pdf" "/tmp/office.ps"))
      ("h" "Home"
-      ((agenda "" ((org-agenda-files (list
-                                      org-my-life-file
-                                      org-my-plan-free-file
-                                      org-my-web-archive-file
-                                      (expand-file-name "bible.org" org-directory)
-                                      (expand-file-name "notes" org-directory)
-                                      (expand-file-name "church" org-directory)
-                                      ))
-                   (org-agenda-span 3) ;; Show upcoming 3 days
-                   ))))
+      ((agenda "" ((org-agenda-tag-filter-preset '("+home"))
+                   ;; Show upcoming 3 days
+                   (org-agenda-span 3))))
+      nil ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
      ("c" "Church"
-      ((agenda "" ((org-agenda-files (list (expand-file-name "church" org-directory)))))))
+      ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
+     ("to" "things TODO in Office"
+      ((tags-todo "office/TODO"))
+      nil ("/tmp/todo-office.pdf"))
+     ("th" "things TODO at Home"
+      ((tags-todo "home/TODO"))
+      nil ("/tmp/todo-home.pdf"))
+     ("tc" "things TODO in Church"
+      ((tags-todo "church/TODO"))
+      nil ("/tmp/todo-church.pdf"))
      )
    ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
    ;; refresh instead. Note that it can still be killed by kill-buffer. To
@@ -1720,17 +1713,25 @@ horizontal mode."
   ;; folder.
   (setq-default org-download-image-dir (expand-file-name "images/misc" org-directory)
                 org-download-heading-lvl nil
-                ;; Workaround to setup flameshot, which enables annotation. In flameshot, set filename as "screenshot",
-                ;; and the command as "flameshot gui -p /tmp", so that we always ends up with /tmp/screenshot.png.
-                ;; Nullify org-download-screenshot-method by setting it to `echo', so that essentially we are only
-                ;; calling (org-download-image org-download-screenshot-file).
                 org-download-delete-image-after-download t
                 org-download-screenshot-method "echo"
                 org-download-screenshot-file "/tmp/screenshot.png"
                 org-download-image-org-width 800
                 org-download-annotate-function (lambda (link) "") ;; Don't annotate
                 )
-  (global-set-key (kbd "C-c S") 'org-download-screenshot)
+
+  ;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
+  ;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
+  ;; with /tmp/screenshot.png. Nullify org-download-screenshot-method by setting it to `echo', so that essentially we
+  ;; are only calling (org-download-image org-download-screenshot-file).
+  (defun my-org-download-screenshot ()
+    "Capture screenshot and insert the resulting file.
+The screenshot tool is determined by `org-download-screenshot-method'."
+    (interactive)
+    (delete-file "/tmp/screenshot.png")
+    (call-process-shell-command "flameshot gui -p /tmp/"))
+  (global-set-key (kbd "C-c S") (lambda () (interactive) (org-download-image "/tmp/screenshot.png")))
+  (global-set-key (kbd "M-<print>") 'my-org-download-screenshot)
   ;; Use #+ATTR_ORG: :width 300px to customized image display width
   (setq org-image-actual-width nil)
 
