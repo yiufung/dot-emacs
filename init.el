@@ -341,6 +341,14 @@
   :defer 5
   ;; Right click to paste: I don't use the popup menu a lot.
   :bind ("<mouse-3>" . whole-line-or-region-yank)
+  :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
+  :init
+  (defun kill-region-or-backward-word ()
+    "Kill selected region if region is active. Otherwise kill a backward word."
+    (interactive)
+    (if (region-active-p)
+        (kill-region (region-beginning) (region-end))
+      (backward-kill-word 1)))
   :config
   (whole-line-or-region-global-mode)
   )
