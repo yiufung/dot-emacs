@@ -2114,35 +2114,21 @@ Yiufung
   :after org
   :config
   (setq
-   ;; Mainly for saving sync states. The main inbox file is another one.
-   my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory)
-   ;; Default calendar file to receive entries downloaded from remote
-   org-my-calendar-file (expand-file-name "calendar.org" org-directory)
    ;; The CalDAV URL with your full and primary email address at the end.
    org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/mail@yiufung.net"
-   ;; Default calendar ID
-   org-caldav-calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
-   ;; Local file that gets events from the server
-   org-caldav-inbox org-my-calendar-file
    ;; Only entries with "schedule" tags should be exported to CalDAV
    org-caldav-select-tags '("schedule")
    ;; Multiple calendar setup
    org-caldav-calendars `(
-                          (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
-                                        :files (,org-my-office-file ,org-default-notes-file) ;; default note is plan-office
-                                        :inbox (file+headline ,org-my-calendar-file "Office"))
-                          (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
-                                        :files (,org-my-plan-church-file)
-                                        :inbox (file+headline ,org-my-calendar-file "Church"))
                           (:calendar-id "1fe12417-fe19-41d2-a105-a94d1a562e21"
                                         :files (,org-my-plan-free-file ,org-my-life-file)
-                                        :inbox (file+headline ,org-my-calendar-file "Free"))
-                          (:calendar-id "4ce46e49-3f0c-45b9-abd4-556837488961"
-                                        :files (,org-my-calendar-file)
-                                        :inbox (file+headline ,org-my-calendar-file "Default"))
-                          ;; (:calendar-id "12d9cc19-2efb-4a81-ae78-3b0597f56551"
-                          ;;               :files (org-my-calendar-file)
-                          ;;               :inbox (expand-file-name "hk-public-holiday.org" my-private-calendar-directory))
+                                        :inbox ,(expand-file-name "CalHome.org" my-private-calendar-directory))
+                          (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
+                                        :files (,org-my-office-file ,org-default-notes-file) ;; default note is plan-office
+                                        :inbox ,(expand-file-name "CalOffice.org" my-private-calendar-directory))
+                          (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
+                                        :files (,org-my-plan-church-file)
+                                        :inbox ,(expand-file-name "CalChurch.org" my-private-calendar-directory))
                           )
    ;; If entries are deleted in Org, always delete at the CALDAV end without asking
    org-caldav-delete-calendar-entries 'always
@@ -2155,11 +2141,6 @@ Yiufung
    ;; Change org-caldav save directory
    org-caldav-save-directory my-private-calendar-directory
    )
-
-  ;; Hack warning: url.el won't read my password-store properly. After a little digging I find them using this variable.
-  (setq url-http-real-basic-auth-storage
-        `(("caldav.fastmail.com:443"
-           ("caldav.fastmail.com" . ,(auth-source-pass-get "hash" "Fastmail CalDAV")))))
 
   (defvar org-caldav-sync-timer nil
     "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
