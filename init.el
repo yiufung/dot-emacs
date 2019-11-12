@@ -397,7 +397,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                               (follow-mode))))
+                                                   (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -431,20 +431,19 @@
       (backward-kill-word 1)))
   ;; (global-set-key (kbd "M-h") 'kill-region-or-backward-word)
 
-  (defun remove-extra-blank-lines (beginning end)
+  (defun remove-extra-blank-lines (&optional beg end)
     "If called with region active, replace multiple blank lines
 with a single one.
 
 Otherwise, call `delete-blank-lines'."
-    (interactive "r")
-    (if (use-region-p)
+    (interactive)
+    (if (region-active-p)
         (save-excursion
-          (goto-char beginning)
-          (while (re-search-forward "^\\([[:blank:]]*\n\\)\\{2,\\}" end t)
+          (goto-char (region-beginning))
+          (while (re-search-forward "^\\([[:blank:]]*\n\\)\\{2,\\}" (region-end) t)
             (replace-match "\n")
             (forward-char 1)))
-      (delete-blank-lines))
-    )
+      (delete-blank-lines)))
 
   (defun alert-countdown ()
     "Show a message after timer expires. Based on run-at-time and can understand time like it can."
@@ -1765,6 +1764,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
     (org-journal-time-prefix "** ")
     (org-journal-encrypt-journal t)
+    (org-journal-enable-encryption nil)
     :config
     (defun org-journal-save-entry-and-exit()
       "Simple convenience function.
