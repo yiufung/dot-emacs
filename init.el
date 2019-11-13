@@ -455,7 +455,8 @@ Otherwise, call `delete-blank-lines'."
 
   ;; Activate `visual-fill-column-mode' in every buffer that uses `visual-line-mode'
   (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
-  (setq-default visual-fill-column-width 119)
+  (setq-default visual-fill-column-width 119
+                visual-fill-column-center-text nil)
   )
 
 ;;;; Misc defuns
@@ -3661,7 +3662,8 @@ In that case, insert the number."
               )
   :defer 3
   :config
-  (setq-default beancount-use-ido 'nil)
+  (setq-default beancount-use-ido 'nil
+                beancount-accounts-files '("beancounts/accounts.bean"))
   ;; TIP: Use yasnippet to quickly insert a transaction
   )
 
