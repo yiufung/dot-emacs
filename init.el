@@ -1827,9 +1827,10 @@ The screenshot tool is determined by `org-download-screenshot-method'."
                                  "pdfs/" ;; Must have / ending for working with org-noter
                                  my-bibliography-directory))
     ;; variables for org-noter
-    (setq org-noter-notes-search-path `(,(expand-file-name "notes" org-directory))
-          org-noter-default-notes-file-names '("paper-notes.org")
-          org-noter-auto-save-last-location t)
+    (setq-default org-noter-notes-search-path `(,(expand-file-name "notes" org-directory))
+                  org-noter-default-notes-file-names '("paper-notes.org")
+                  org-noter-auto-save-last-location t
+                  org-noter-always-create-frame t)
 
     ;; Integrate org-ref + org-noter
     ;; Add NOTER_DOCUMENT to org-ref template
