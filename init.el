@@ -1728,10 +1728,14 @@ horizontal mode."
     "Capture screenshot and insert the resulting file.
 The screenshot tool is determined by `org-download-screenshot-method'."
     (interactive)
-    (delete-file "/tmp/screenshot.png")
-    (call-process-shell-command "flameshot gui -p /tmp/"))
-  (global-set-key (kbd "C-c S") (lambda () (interactive) (org-download-image "/tmp/screenshot.png")))
-  (global-set-key (kbd "M-<print>") 'my-org-download-screenshot)
+    (let ((tmp-file "/tmp/screenshot.png"))
+      (delete-file tmp-file)
+      (call-process-shell-command "flameshot gui -p /tmp/")
+      ;; Because flameshot exit immediately, keep polling to check file existence
+      (while (not (file-exists-p tmp-file))
+        (sleep-for 2))
+      (org-download-image tmp-file)))
+  (global-set-key (kbd "C-c S") 'my-org-download-screenshot)
   ;; Use #+ATTR_ORG: :width 300px to customized image display width
   (setq org-image-actual-width nil)
 
