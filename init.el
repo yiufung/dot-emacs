@@ -3718,9 +3718,10 @@ In that case, insert the number."
   :defer 3
   :commands (erc erc-tls)
   :custom-face (erc-timestamp-face ((t (:foreground "DarkSlateGrey")))) ; Don't know why it's green everywhere
+  :hook (erc-mode . visual-line-mode)
   :config
   (setq erc-autojoin-channels-alist
-        '(("freenode.net" "#archlinux" "#bash" "#emacs" "#latex" "#org-mode" "#python" "#xmonad"))
+        '(("freenode.net" "#archlinux" "#bash" "#emacs" "#latex" "#org-mode" "#python" "#xmonad" "#r" "#anki"))
         erc-autojoin-timing 'ident
         erc-hide-list '("JOIN" "PART" "QUIT")
         erc-track-exclude-types '("JOIN" "MODE" "NICK" "PART" "QUIT"
@@ -3827,6 +3828,9 @@ In that case, insert the number."
     :tags '(home work)
     )
   )
+
+;; Code sharing service
+(require 'ixio)
 
 ;;; Start Emacs server
 
