@@ -1148,6 +1148,7 @@ horizontal mode."
               ;; Unbinding org-cycle-agenda-files
               ("C-'"          . nil)
               ("C-,"          . nil)
+              ("C-c C-v C-g"  . org-babel-goto-named-src-block)
               ;; Unbinding org-force-cycle-archived
               ("<C-tab>"      . nil)
               ;; default option respects content, I don't use it
@@ -3476,6 +3477,9 @@ In that case, insert the number."
 ;; Viewing Image in Emacs
 (use-package image-mode
   :straight nil
+  :bind (:map image-mode-map
+              ("H" . image-transform-fit-to-height)
+              ("P" . image-transform-fit-to-width))
   :init
   (add-hook 'image-mode-hook 'hide-mode-line-mode)
   )
