@@ -2194,9 +2194,10 @@ Yiufung
         (format "%s\\|%s"
                 vc-ignore-dir-regexp
                 tramp-file-name-regexp))
-  ;; Allow loading .dir-locals.el in remote.
-  ;; Might be slower but very useful when code base is in remote.
-  (setq enable-remote-dir-locals t)
+  (setq
+   ;; Allow loading .dir-locals.el in remote.
+   ;; Might be slower but very useful when code base is in remote.
+   enable-remote-dir-locals t)
   (setq tramp-verbose 1)
   )
 
