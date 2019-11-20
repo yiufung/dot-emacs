@@ -283,7 +283,9 @@
    global-auto-revert-non-file-buffers t
    auto-revert-verbose nil
    ;; Revert pdf without asking
-   revert-without-query '("\\.pdf"))
+   revert-without-query '("\\.pdf" "\\.png")
+   ;; Auto reverting files in remote machine. Useful for remote plotting.
+   auto-revert-remote-files t)
   (global-auto-revert-mode 1) ;; work with auto-save with Org files in Dropbox
   )
 
