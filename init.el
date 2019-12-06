@@ -3555,6 +3555,8 @@ In that case, insert the number."
   (add-hook 'image-mode-hook 'hide-mode-line-mode)
   )
 
+(use-package keycast)
+
 ;; Emacs Application Framework
 ;; https://github.com/manateelazycat/emacs-application-framework
 (use-package eaf
