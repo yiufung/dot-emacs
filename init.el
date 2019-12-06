@@ -1099,7 +1099,7 @@ horizontal mode."
   :defer 5
   :straight ripgrep ;; required by projectile-ripgrep
   :bind-keymap
-  ("C-c p" . projectile-command-map)
+  ("C-c P" . projectile-command-map)
   :bind (("C-c o" . 'projectile-find-file))
   :config
   ;; Where my projects and clones are normally placed.
@@ -1122,7 +1122,9 @@ horizontal mode."
    ("C-c w k"   . 'eyebrowse-close-window-config)
    ("C-c w w"   . 'eyebrowse-last-window-config)
    ("C-c w n"   . 'eyebrowse-next-window-config)
-   ("C-c w p"   . 'eyebrowse-prev-window-config))
+   ("C-c w p"   . 'eyebrowse-prev-window-config)
+   ("C-c n"     . 'eyebrowse-next-window-config)
+   ("C-c p"     . 'eyebrowse-prev-window-config))
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
@@ -2630,17 +2632,26 @@ Yiufung
 (use-package vterm
   :defer 3
   ;; Don't let whole-line-or-region shadows the C-y
+  :config
+  (defun create-or-switch-to-vterm ()
+    "Switch to default `vterm' buffer.
+      Start `vterm' if it's not already running."
+    (interactive)
+    (pop-to-buffer "vterm" nil t)
+    (if (not (equal major-mode 'vterm-mode))
+        (vterm-mode)))
   :hook (vterm-mode . (lambda () (whole-line-or-region-local-mode -1)))
-  :bind (:map vterm-mode-map
-              ("C-y"  . vterm-yank)
-              ("<f5>" . nil)
-              ("<f6>" . nil)
-              ("<f7>" . nil)
-              ("<f8>" . nil)
-              ("<f9>" . nil)
-              ("<f10>" . nil)
-              ("<f11>" . nil)
-              ("<f12>" . nil)))
+  :bind (("C-z C-z" . create-or-switch-to-vterm)
+         :map vterm-mode-map
+         ("C-y"  . vterm-yank)
+         ("<f5>" . nil)
+         ("<f6>" . nil)
+         ("<f7>" . nil)
+         ("<f8>" . nil)
+         ("<f9>" . nil)
+         ("<f10>" . nil)
+         ("<f11>" . nil)
+         ("<f12>" . nil)))
 
 ;;;; Auto-completion with Company
 
@@ -2987,6 +2998,18 @@ In that case, insert the number."
  ;; Don't enable native readline completion
  python-shell-completion-native-enable nil)
 
+(use-package python
+  :straight nil
+  :preface
+  (defun create-or-switch-to-python ()
+    "Switch to default `python' buffer.
+      Start `python' if it's not already running."
+    (interactive)
+    (pop-to-buffer "*Python*" nil t)
+    (if (not (equal major-mode 'inferior-python-mode))
+        (run-python)))
+  :bind ("C-z C-p" . create-or-switch-to-python))
+
 (use-package elpy
   :hook (python-mode . turn-off-auto-fill)
   :disabled
@@ -3011,7 +3034,10 @@ In that case, insert the number."
   ;; ~/.R/lintr_cache directory is created.
   :straight t
   :hook (ess-r-mode . turn-off-auto-fill)
-  ;;  :bind (:map ess-r-mode-map ("<C-return>" . nil))
+  :hook (inferior-ess-r-mode . visual-line-mode)
+  :bind (("C-z C-r" . R)
+         ;; :map ess-r-mode-map ("<C-return>" . nil)
+         )
   :config
   (setq  ess-default-style 'RStudio ;; Default code style: RStudio
          ess-tab-complete-in-script t ;; Tries to complete in script buffers
