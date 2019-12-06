@@ -924,25 +924,56 @@ horizontal mode."
   :config
   (winner-mode 1))
 
-(use-package shackle
-  :defer 5
-  :init
-  (setq shackle-default-alignment 'below
-        shackle-default-size 0.4
-        shackle-rules '((help-mode               :align right :select t)
-                        (compilation-mode        :select t    :size 0.25)
-                        ("*compilation*"         :select t    :size 0.25 :inhibit-window-quit t)
-                        ("*ag search*"           :select nil  :size 0.25)
-                        ("*Flycheck errors*"     :select nil  :size 0.25)
-                        ("*Warnings*"            :select nil  :size 0.25)
-                        ("*Error*"               :select nil  :size 0.25)
-                        ("*Org Links*"           :select nil  :size 0.2)
-                        ("^\\*git-gutter.+\\*$"  :regexp t    :size 15 :noselect t)
-                        ;; Do not show Async Shell Command output unless explicitly asked for.
-                        ("*Async Shell Command*" :ignore t)
-                        ))
-  :config
-  (shackle-mode 1))
+(setq
+ ;; Kill a frame when quitting its only window
+ frame-auto-hide-function 'delete-frame
+ ;; Maximum number of side-windows to create on (left top right bottom)
+ window-sides-slots '(0 1 2 2)
+ ;; Default rules
+ display-buffer-alist
+ `(;; Right side for most Help, Agenda, Trace, etc buffers
+   ("*\\(Help\\|help\\|trace-\\|Backtrace\\|RefTeX.*\\)"
+    (display-buffer-reuse-mode-window display-buffer-in-previous-window display-buffer-in-side-window)
+    (side . right)
+    (slot . 1)
+    (window-width . 80)
+    (window-height . 0.7)
+    (reusable-frames . visible))
+   ;; Same window
+   ("*\\(R.*\\|Python\\)"
+    (display-buffer-reuse-window display-buffer-same-window)
+    (reusable-frames . visible))
+   ;; Show on bottom
+   ("*\\(ielm\\)"
+    (display-buffer-reuse-window display-buffer-in-side-window)
+    (side . bottom)
+    (slot . 0)
+    (window-height . 10)
+    (reusable-frames . visible))
+   ("^\\vterm"
+    (display-buffer-reuse-window display-buffer-in-side-window)
+    (side . right)
+    (slot . 2)
+    (window-width . 80)
+    (reusable-frames . visible))
+   ;; Always show notmuch in new frame
+   ("^\\*info"
+    (display-buffer-reuse-window display-buffer-in-previous-window))
+   ;; Display *BBDB* buffer on the bottom frame
+   ("\\*BBDB"
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
+    (side . bottom)
+    (slot . 0)
+    (window-height . 10)
+    (reusable-frames . visible))
+   ;; Split shells at the bottom
+   ("^\\*e?shell"
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
+    (window-min-height . 20)
+    (reusable-frames . visible)
+    )
+   )
+ )
 
 (use-package nswbuff
   ;; Quickly switching buffers. Quite useful!
