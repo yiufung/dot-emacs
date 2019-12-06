@@ -4,8 +4,9 @@
 ;; My personal config. Use `outshine-cycle-buffer' (<S-Tab>) to navigate through sections, and `counsel-imenu' (C-c i)
 ;; to locate individual use-package definition.
 
-;;; Bootstrap
+;;; Code:
 
+;;; Bootstrap
 ;; Speed up bootstrapping
 (setq gc-cons-threshold 402653184
       gc-cons-percentage 0.6)
@@ -154,6 +155,8 @@
  truncate-lines t
  ;; More message logs
  message-log-max 16384
+ ;; Don't prompt up file dialog when click with mouse
+ use-file-dialog nil
  ;; No electric indent
  electric-indent-mode nil
  ;; Place all auto-save files in one directory.
@@ -793,10 +796,12 @@ output file. %i path(s) are relative, while %o is absolute.")
   :straight dired-git-info ;; Show last git commit message alongside with file
   :straight diredfl ;; Colorful columns
   :straight dired-hacks ;; some utilities function
+  :straight dired-rsync ;; Large file synchronization
   :hook ((dired-mode . dired-hide-details-mode))
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
          ("C-x M-h" . dired-du--toggle-human-readable)
+         ("C-c C-r" . dired-rsync)
          ("M-k" . dired-kill-subdir)
          (")" . dired-git-info-mode))
   :config
@@ -2202,6 +2207,11 @@ Yiufung
   (setq tramp-verbose 1)
   )
 
+(use-package ssh-config-mode
+  :bind (:map ssh-config-mode-map
+              ("C-c C-p" . ssh-config-host-prev)
+              ("C-c C-n" . ssh-config-host-next)))
+
 ;;; View Documents: DocView / PDF-Tools / Nov.el
 
 (use-package doc-view
@@ -2792,7 +2802,7 @@ In that case, insert the number."
   :config
   (add-to-list 'yas-snippet-dirs
                (expand-file-name "yasnippets" my-private-conf-directory))
-  (yas-global-mode)
+  (yas-global-mode 1)
   (yasnippet-snippets-initialize)
   )
 
@@ -2980,35 +2990,29 @@ In that case, insert the number."
          ess-smart-S-assign-key 'nil ;; Disabled auto replace of "_" to "<-"
          ess-directory 'nil ;; By default starts ESS at current buffer default directory
          ess-ask-for-ess-directory nil
-         ess-user-full-name "Cheong Yiu Fung")
+         ess-user-full-name "Cheong Yiu Fung"
+         )
 
+  ;; R-specific settings: Add a general summary function
+  ;; (add-to-list ess-r-describe-object-at-point-commands)
   (defun cyf/ess-style-current-file ()
     (interactive)
     (if (string= ess-dialect "R")
-        (ess-eval-linewise (concat "styler::style_file(\""
-                                   buffer-file-name "\")"))))
+        (ess-eval-linewise (concat "styler::style_file(\"" buffer-file-name "\")"))))
   (defun cyf/ess-style-current-dir ()
     (interactive)
     (if (string= ess-dialect "R")
-        (ess-eval-linewise (concat "styler::style_dir(\""
-                                   default-directory "\")"))))
+        (ess-eval-linewise (concat "styler::style_dir(\"" default-directory "\")"))))
   )
 
 ;;;; Lisp
 
 (use-package elisp-mode
   :straight nil
-  :init
-  (defun bozhidar-visit-ielm ()
-    "Switch to default `ielm' buffer.
-      Start `ielm' if it's not already running."
-    (interactive)
-    (crux-start-or-switch-to 'ielm "*ielm*"))
-  :bind (("C-z C-z" . bozhidar-visit-ielm)
+  :bind (("C-z C-l" . ielm) ;; Lisp
          :map emacs-lisp-mode-map
          ("C-c C-c" . eval-defun)
-         ("C-c C-b" . eval-buffer))
-  )
+         ("C-c C-b" . eval-buffer)))
 
 (use-package elisp-slime-nav
   ;; Convenient navigation to symbol at point
@@ -3035,6 +3039,7 @@ In that case, insert the number."
               ("C-M-e"         . sp-end-of-sexp))
   :config
   (require 'smartparens-config)
+  ;; Strict modes
   (--each '(css-mode-hook
             restclient-mode-hook
             js-mode-hook
@@ -3042,12 +3047,20 @@ In that case, insert the number."
             emacs-lisp-mode-hook
             ruby-mode
             ;; org-mode-hook
-            ;; ess-mode-hook
+            inferior-ess-r-mode-hook
             markdown-mode
             groovy-mode
             scala-mode)
     (add-hook it 'turn-on-smartparens-strict-mode))
+  ;; Non strict modes
+  (--each '(ess-mode-hook
+            inferior-ess-r-mode-hook)
+    (add-hook it 'smartparens-mode))
   )
+
+;;;; HTML
+
+(use-package impatient-mode)
 
 ;;;; Clojure
 
@@ -3159,6 +3172,7 @@ In that case, insert the number."
 (use-package wakatime-mode
   ;; Programming statistics
   :defer 3
+  :disabled
   :config
   (setq wakatime-api-key (auth-source-pass-get "api" "wakatime"))
   (global-wakatime-mode)
