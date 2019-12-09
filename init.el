@@ -3551,8 +3551,8 @@ In that case, insert the number."
   :bind (:map image-mode-map
               ("H" . image-transform-fit-to-height)
               ("P" . image-transform-fit-to-width))
-  :init
-  (add-hook 'image-mode-hook 'hide-mode-line-mode)
+  :hook (image-mode . hide-mode-line-mode)
+  :hook (image-mode . image-transform-fit-to-height)
   )
 
 (use-package keycast)
