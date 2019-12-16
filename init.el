@@ -3748,8 +3748,8 @@ In that case, insert the number."
               )
   :defer 3
   :config
-  (setq-default beancount-use-ido 'nil
-                beancount-accounts-files '("beancounts/accounts.bean"))
+  (setq beancount-use-ido 'nil
+        beancount-accounts-files '("beancounts/accounts.bean"))
   ;; TIP: Use yasnippet to quickly insert a transaction
   )
 
