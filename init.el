@@ -1206,9 +1206,13 @@ horizontal mode."
   ;; Default org-mode startup
   (setq org-startup-folded t
         org-startup-with-inline-images t
-        org-startup-with-latex-preview t)
+        org-startup-with-latex-preview t
+        org-latex-preview-ltxpng-directory (expand-file-name "ltximg/" org-directory))
   ;; Larger latex fragments
   (plist-put org-format-latex-options :scale 1.5)
+
+  ;; Where to archive files
+  (setq org-archive-location (concat (expand-file-name "archive.org" org-directory) "::* From %s"))
 
   ;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
   ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
@@ -1819,8 +1823,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
       (interactive)
       (save-buffer)
       (kill-buffer-and-window))
-    :bind (:map org-journal-mode-map
-                ("C-x C-s" . org-journal-save-entry-and-exit))
     )
 
   ;; org-contacts
@@ -2005,9 +2007,9 @@ The screenshot tool is determined by `org-download-screenshot-method'."
    ;; This makes sure to-do items as a category can show up on the calendar
    org-icalendar-include-todo t
    ;; ensures all org "deadlines" show up, and show up as due dates
-   org-icalendar-use-deadline '(event-if-todo todo-due)
+   org-icalendar-use-deadline '(event-if-todo todo-due event-if-todo-not-done)
    ;; ensures "scheduled" org items show up, and show up as start times
-   org-icalendar-use-scheduled '(event-if-todo todo-start)
+   org-icalendar-use-scheduled '(event-if-todo todo-start event-if-todo-not-done)
    )
 
   ;; helm-org-rifle
