@@ -797,7 +797,8 @@ output file. %i path(s) are relative, while %o is absolute.")
   :straight diredfl ;; Colorful columns
   :straight dired-hacks ;; some utilities function
   :straight dired-rsync ;; Large file synchronization
-  :hook ((dired-mode . dired-hide-details-mode))
+  :hook ((dired-mode . dired-hide-details-mode) ;; Hide change times etc
+         (dired-mode . dired-omit-mode)) ;; Hide dot files
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
          ("C-x M-h" . dired-du--toggle-human-readable)
@@ -815,6 +816,9 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Fix copy error over TRAMP in dired-async-mode. See async-manual.
   (setq async-quiet-switch "-q")
   (dired-async-mode 1)
+
+  ;; Omit dotfiles.
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
   )
 
 (use-package bookmark+
