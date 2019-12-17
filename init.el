@@ -821,7 +821,7 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Bookmark utilities
   :straight t
   :after bookmark
-  :defer 5
+  :defer 3
   :commands bmkp-jump-dired
   :init
   ;; Save bookmarks on every change
@@ -1139,6 +1139,7 @@ horizontal mode."
 (use-package org
   ;; Combining demand and org-plus-contrib to ensure the latest version of org is used
   :demand t
+  :straight org-plus-contrib
   :straight ob-ipython
   :straight ob-async
   :straight ob-http
@@ -2247,7 +2248,13 @@ Yiufung
               ("C-c C-p" . ssh-config-host-prev)
               ("C-c C-n" . ssh-config-host-next)))
 
-;;; View Documents: DocView / PDF-Tools / Nov.el
+;;; View Documents: Info / DocView / PDF-Tools / Nov.el
+
+(use-package info
+  :straight nil
+  :config
+  ;; Run make info to compile info documentation
+  (setq Info-additional-directory-list `(,(expand-file-name "straight/repos/org/doc/" user-emacs-directory))))
 
 (use-package doc-view
   ;; Requires unoconv, ghostscript, dvipdf
@@ -2841,7 +2848,7 @@ In that case, insert the number."
 
 (use-package yasnippet
   :straight yasnippet-snippets
-  :defer 5
+  :defer 3
   :bind (("C-c y" . 'yas-insert-snippet))
   :config
   (add-to-list 'yas-snippet-dirs
@@ -3466,8 +3473,7 @@ In that case, insert the number."
 (use-package one-themes)
 (use-package naysayer-theme)
 
-(load-theme 'kaolin-light t)
-;; (load-theme 'naysayer t)
+(load-theme 'kaolin-light)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
@@ -3661,6 +3667,7 @@ In that case, insert the number."
 
 (use-package excorporate
   ;; Sync office365 calendar
+  :disabled
   :defer 3
   :after (org calfw)
   :config
@@ -3748,8 +3755,7 @@ In that case, insert the number."
               )
   :defer 3
   :config
-  (setq beancount-use-ido 'nil
-        beancount-accounts-files '("beancounts/accounts.bean"))
+  (setq beancount-use-ido 'nil)
   ;; TIP: Use yasnippet to quickly insert a transaction
   )
 
