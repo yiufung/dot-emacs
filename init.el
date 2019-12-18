@@ -818,7 +818,8 @@ output file. %i path(s) are relative, while %o is absolute.")
   (dired-async-mode 1)
 
   ;; Omit dotfiles.
-  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$")
+        dired-omit-verbose nil)
   )
 
 (use-package bookmark+
@@ -1182,10 +1183,14 @@ horizontal mode."
          ("s-e" . ivy-insert-org-entity)
          ("H-p" . org-pomodoro)
          :map org-mode-map
+         ("C-x n s" . nil)
+         ("C-x n b" . nil)
+         ("C-x n e" . nil)
+         ("C-x n"   . nil)
          ("C-c C-j" . counsel-org-goto)
          ("C-c C-q" . counsel-org-tag)
-         ("s-P" . anki-editor-push-notes)
-         ("s-L"   . org-cliplink)
+         ("s-P"     . anki-editor-push-notes)
+         ("s-L"     . org-cliplink)
          )
   :bind (:map org-mode-map
               ;; Unbinding org-cycle-agenda-files
