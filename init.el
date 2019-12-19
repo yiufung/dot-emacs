@@ -2540,6 +2540,15 @@ Yiufung
   (global-prettify-symbols-mode +1) ;; This only applies to prog-mode derived modes.
   )
 
+(use-package so-long
+  ;; TODO: Going to be included in Emacs 27.1
+  ;; Avoid performance issues in files with very long lines.
+  :straight nil
+  :defer 3
+  :config
+  (global-so-long-mode 1)
+  )
+
 (use-package editorconfig
   ;; Detect editorconfig setups
   :defer 3
@@ -3121,8 +3130,6 @@ In that case, insert the number."
             java-mode
             emacs-lisp-mode-hook
             ruby-mode
-            ;; org-mode-hook
-            inferior-ess-r-mode-hook
             markdown-mode
             groovy-mode
             scala-mode)
