@@ -368,8 +368,8 @@
          ("C-x f"      . 'crux-recentf-find-file)
          ("C-x 4 t"    . 'crux-transpose-windows)
          ("C-x C-k"    . 'crux-delete-buffer-and-file)
-         ("C-c n"      . 'crux-cleanup-buffer-or-region)
-         ("s-<return>" . 'crux-cleanup-buffer-or-region)
+         ;; ("C-c n"      . 'crux-cleanup-buffer-or-region)
+         ;; ("s-<return>" . 'crux-cleanup-buffer-or-region)
          ("C-M-y"      . 'crux-duplicate-and-comment-current-line-or-region)
          )
   :init
@@ -3766,10 +3766,6 @@ In that case, insert the number."
   :hook (beancount-mode . turn-off-auto-fill)
   ;; We only want indentation in org-mode but not beancount-mode
   :hook (beancount-mode . (lambda () (org-indent-mode -1)))
-  :bind (:map beancount-mode-map
-              ;; Originally uses crux to cleanup buffer, but not quite useful for beancount so we rebind
-              ("C-c n" . (lambda () (interactive) (beancount-align-numbers (point-min) (point-max))))
-              )
   :defer 3
   :config
   (setq beancount-use-ido 'nil)
