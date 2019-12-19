@@ -362,14 +362,15 @@
   ;; A handful of useful functions
   :defer 1
   :bind (
-         ("C-x t"         . 'crux-swap-windows)
-         ("C-c b"         . 'crux-create-scratch-buffer)
-         ("C-x o"         . 'crux-open-with)
-         ("C-x f"         . 'crux-recentf-find-file)
-         ("C-x 4 t"       . 'crux-transpose-windows)
-         ("C-x C-k"       . 'crux-delete-buffer-and-file)
-         ("C-c n"         . 'crux-cleanup-buffer-or-region)
-         ("s-<return>"    . 'crux-cleanup-buffer-or-region)
+         ("C-x t"      . 'crux-swap-windows)
+         ("C-c b"      . 'crux-create-scratch-buffer)
+         ("C-x o"      . 'crux-open-with)
+         ("C-x f"      . 'crux-recentf-find-file)
+         ("C-x 4 t"    . 'crux-transpose-windows)
+         ("C-x C-k"    . 'crux-delete-buffer-and-file)
+         ("C-c n"      . 'crux-cleanup-buffer-or-region)
+         ("s-<return>" . 'crux-cleanup-buffer-or-region)
+         ("C-M-y"      . 'crux-duplicate-and-comment-current-line-or-region)
          )
   :init
   (global-set-key [remap move-beginning-of-line] #'crux-move-beginning-of-line)
