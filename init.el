@@ -1130,7 +1130,8 @@ horizontal mode."
    ("C-c w n"   . 'eyebrowse-next-window-config)
    ("C-c w p"   . 'eyebrowse-prev-window-config)
    ("C-c n"     . 'eyebrowse-next-window-config)
-   ("C-c p"     . 'eyebrowse-prev-window-config))
+   ("C-c p"     . 'eyebrowse-prev-window-config)
+   ("C-c '"     . 'eyebrowse-switch-to-window-config))
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
@@ -1791,7 +1792,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
       (while (not (file-exists-p tmp-file))
         (sleep-for 2))
       (org-download-image tmp-file)))
-  (global-set-key (kbd "C-c S") 'my-org-download-screenshot)
+  (global-set-key (kbd "<print>") 'my-org-download-screenshot)
   ;; Use #+ATTR_ORG: :width 300px to customized image display width
   (setq org-image-actual-width nil)
 
@@ -2547,6 +2548,7 @@ Yiufung
   :straight nil
   :defer 3
   :config
+  (setq so-long-threshold 1000)
   (global-so-long-mode 1)
   )
 
@@ -3899,7 +3901,7 @@ In that case, insert the number."
 (use-package prodigy
   ;; Manage services
   :defer 10
-  :bind (("C-c s" . prodigy))
+  :bind (("C-c S" . prodigy))
   :config
   (prodigy-define-service
     :name "personal ledger"
