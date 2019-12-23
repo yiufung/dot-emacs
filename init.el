@@ -1136,7 +1136,7 @@ horizontal mode."
         eyebrowse-close-window-config-prompt t
         eyebrowse-mode-line-style 'smart
         eyebrowse-tagged-slot-format "%t"
-        eyebrowse-new-workspace t)
+        eyebrowse-new-workspace nil)
   (eyebrowse-mode)
   )
 
