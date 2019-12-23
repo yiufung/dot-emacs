@@ -723,7 +723,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   (setq smex-save-file (expand-file-name "smex-items" my-private-conf-directory))
   (setq ivy-height 10
         ivy-fixed-height-minibuffer t
-        ivy-use-virtual-buffers t ;; show recent files as buffers in C-x b
+        ivy-use-virtual-buffers nil ;; don't show recent files/bookmarks as buffers in C-x b
         ivy-use-selectable-prompt t ;; C-M-j to rename similar filenames
         enable-recursive-minibuffers t
         ivy-re-builders-alist '((t . ivy--regex-plus))
@@ -823,13 +823,12 @@ output file. %i path(s) are relative, while %o is absolute.")
         dired-omit-verbose nil)
   )
 
-(use-package bookmark+
+(use-package bookmark-plus
   ;; Bookmark utilities
-  :straight t
-  :after bookmark
+  :straight (bookmark-plus :type git :host github :repo "emacsmirror/bookmark-plus")
   :defer 3
-  :commands bmkp-jump-dired
   :init
+  (require 'bookmark+)
   ;; Save bookmarks on every change
   (setq bookmark-save-flag 1)
   (setq bookmark-default-file (expand-file-name "bookmarks" my-private-conf-directory))
