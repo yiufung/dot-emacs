@@ -725,7 +725,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ivy-fixed-height-minibuffer t
         ivy-use-virtual-buffers nil ;; don't show recent files/bookmarks as buffers in C-x b
         ivy-use-selectable-prompt t ;; C-M-j to rename similar filenames
-        enable-recursive-minibuffers t
+        enable-recursive-minibuffers nil
         ivy-re-builders-alist '((t . ivy--regex-plus))
         ivy-count-format "(%d/%d) "
         ;; Useful settings for long action lists
@@ -1812,10 +1812,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (use-package org-journal
     :after org
     :defer 3
-    :bind (("C-c J" . org-journal-new-entry)
-           :map org-journal-mode-map
-           ("C-x C-s" . org-journal-save-entry-and-exit))
-
+    :bind (("C-c J" . org-journal-new-entry))
     :custom
     (org-journal-dir (expand-file-name "journal/" org-directory))
     (org-journal-date-format "%A, %d %B %Y")
@@ -1825,16 +1822,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
     (org-journal-time-prefix "** ")
     (org-journal-encrypt-journal t)
-    (org-journal-enable-encryption nil)
-    :config
-    (defun org-journal-save-entry-and-exit()
-      "Simple convenience function.
-    Saves the buffer of the current day's entry and kills the window
-    Similar to org-capture like behavior"
-      (interactive)
-      (save-buffer)
-      (kill-buffer-and-window))
-    )
+    (org-journal-enable-encryption nil))
 
   ;; org-contacts
   (use-package org-contacts
