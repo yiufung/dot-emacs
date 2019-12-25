@@ -571,6 +571,7 @@ is already narrowed."
      ("_" "_")
      ("~" "~")
      ("+" "+")
+     ("“" "”")
      ("/* " " */" "#" (java-mode javascript-mode css-mode))))
   (add-to-list 'wrap-region-except-modes 'ibuffer-mode)
   (add-to-list 'wrap-region-except-modes 'magit-mode)
@@ -666,6 +667,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   :straight counsel-projectile
   :straight ivy-posframe
   :straight smex
+  :straight (flx :repo "lewang/flx" :host github :files ("flx.el"))
   :bind (("M-s"     . swiper)
          ("C-c C-r" . ivy-resume)
          ("<f6>"    . ivy-resume)
