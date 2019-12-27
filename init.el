@@ -660,7 +660,6 @@ Useful when hard line wraps are unwanted (email/sharing article)."
 
 ;;; Completion Framework: Ivy / Swiper / Counsel
 (use-package counsel
-  ;; specifying counsel will bring ivy and swiper as dependencies
   :demand t
   :straight ivy-hydra
   :straight ivy-rich
@@ -734,8 +733,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
         max-mini-window-height 0.30
         ;; Don't parse remote files
-        ivy-rich-parse-remote-buffer 'nil
-        )
+        ivy-rich-parse-remote-buffer 'nil)
 
   ;; display at `ivy-posframe-style'
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
@@ -2192,7 +2190,7 @@ Yiufung
 (use-package tramp
   ;; Remote editing
   :defer 5
-  :straight t
+  :straight nil
   :straight counsel-tramp
   :bind ("C-c t" . counsel-tramp)
   :config
@@ -2203,10 +2201,8 @@ Yiufung
    tramp-verbose 1
    tramp-default-method "ssh"
    tramp-auto-save-directory "~/.cache/emacs/backups"
-   tramp-persistency-file-name (expand-file-name "tramp" my-private-conf-directory)
-   vc-ignore-dir-regexp (format "%s\\|%s"
-                                vc-ignore-dir-regexp
-                                tramp-file-name-regexp)))
+   vc-ignore-dir-regexp (format "%s\\|%s" vc-ignore-dir-regexp tramp-file-name-regexp))
+  )
 
 (use-package ssh-config-mode
   :bind (:map ssh-config-mode-map
