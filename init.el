@@ -1546,6 +1546,7 @@ horizontal mode."
      (shell      . t)
      (plantuml   . t)
      (ditaa      . t) ;; turn ascii art into bitmap graphics.
+     (asymptote .  t) ;; create vector graphics
      ))
 
   ;; Setup code block templates.
@@ -2195,9 +2196,6 @@ Yiufung
   :straight counsel-tramp
   :bind ("C-c t" . counsel-tramp)
   :config
-  ;; jww (2018-02-20): Without this change, tramp ends up sending hundreds of
-  ;; shell commands to the remote side to ask what the temporary directory is.
-  (put 'temporary-file-directory 'standard-value '("/tmp"))
   (setq
    ;; Allow loading .dir-locals.el in remote.
    ;; Might be slower but very useful when code base is in remote.
@@ -2206,11 +2204,9 @@ Yiufung
    tramp-default-method "ssh"
    tramp-auto-save-directory "~/.cache/emacs/backups"
    tramp-persistency-file-name (expand-file-name "tramp" my-private-conf-directory)
-   vc-ignore-dir-regexp
-   (format "%s\\|%s"
-           vc-ignore-dir-regexp
-           tramp-file-name-regexp))
-  )
+   vc-ignore-dir-regexp (format "%s\\|%s"
+                                vc-ignore-dir-regexp
+                                tramp-file-name-regexp)))
 
 (use-package ssh-config-mode
   :bind (:map ssh-config-mode-map
@@ -2227,8 +2223,7 @@ Yiufung
 
 (use-package doc-view
   ;; Requires unoconv, ghostscript, dvipdf
-  :custom (doc-view-odf->pdf-converter-program "soffice")
-  )
+  :custom (doc-view-odf->pdf-converter-program "soffice"))
 
 (use-package pdf-tools
   :defer t
