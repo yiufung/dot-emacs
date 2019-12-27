@@ -2195,21 +2195,21 @@ Yiufung
   :straight counsel-tramp
   :bind ("C-c t" . counsel-tramp)
   :config
-  (setq tramp-default-method "ssh")
   ;; jww (2018-02-20): Without this change, tramp ends up sending hundreds of
   ;; shell commands to the remote side to ask what the temporary directory is.
   (put 'temporary-file-directory 'standard-value '("/tmp"))
-  (setq tramp-auto-save-directory "~/.cache/emacs/backups"
-        tramp-persistency-file-name (expand-file-name "tramp" my-private-conf-directory))
-  (setq vc-ignore-dir-regexp
-        (format "%s\\|%s"
-                vc-ignore-dir-regexp
-                tramp-file-name-regexp))
   (setq
    ;; Allow loading .dir-locals.el in remote.
    ;; Might be slower but very useful when code base is in remote.
-   enable-remote-dir-locals t)
-  (setq tramp-verbose 1)
+   enable-remote-dir-locals t
+   tramp-verbose 1
+   tramp-default-method "ssh"
+   tramp-auto-save-directory "~/.cache/emacs/backups"
+   tramp-persistency-file-name (expand-file-name "tramp" my-private-conf-directory)
+   vc-ignore-dir-regexp
+   (format "%s\\|%s"
+           vc-ignore-dir-regexp
+           tramp-file-name-regexp))
   )
 
 (use-package ssh-config-mode
