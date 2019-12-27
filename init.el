@@ -736,50 +736,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ;; Don't parse remote files
         ivy-rich-parse-remote-buffer 'nil
         )
-  (defvar dired-compress-files-alist
-    '(("\\.tar\\.gz\\'" . "tar -c %i | gzip -c9 > %o")
-      ("\\.zip\\'" . "zip %o -r --filesync %i"))
-    "Control the compression shell command for `dired-do-compress-to'.
 
-Each element is (REGEXP . CMD), where REGEXP is the name of the
-archive to which you want to compress, and CMD the the
-corresponding command.
-
-Within CMD, %i denotes the input file(s), and %o denotes the
-output file. %i path(s) are relative, while %o is absolute.")
-
-  ;; Offer to create parent directories if they do not exist
-  ;; http://iqbalansari.github.io/blog/2014/12/07/automatically-create-parent-directories-on-visiting-a-new-file-in-emacs/
-  (defun my-create-non-existent-directory ()
-    (let ((parent-directory (file-name-directory buffer-file-name)))
-      (when (and (not (file-exists-p parent-directory))
-                 (y-or-n-p (format "Directory `%s' does not exist! Create it?" parent-directory)))
-        (make-directory parent-directory t))))
-  (add-to-list 'find-file-not-found-functions 'my-create-non-existent-directory)
-
-  ;; Kill virtual buffer too
-  ;; https://emacs.stackexchange.com/questions/36836/how-to-remove-files-from-recentf-ivy-virtual-buffers
-  (defun my-ivy-kill-buffer (buf)
-    (interactive)
-    (if (get-buffer buf)
-        (kill-buffer buf)
-      (setq recentf-list (delete (cdr (assoc buf ivy--virtual-buffers)) recentf-list))))
-
-  (ivy-set-actions 'ivy-switch-buffer
-                   '(("k" (lambda (x)
-                            (my-ivy-kill-buffer x)
-                            (ivy--reset-state ivy-last))  "kill")
-                     ("j" switch-to-buffer-other-window "other window")
-                     ("x" browse-file-directory "open externally")
-                     ))
-
-  (ivy-set-actions 'counsel-find-file
-                   '(("j" find-file-other-window "other window")
-                     ("b" counsel-find-file-cd-bookmark-action "cd bookmark")
-                     ("x" counsel-find-file-extern "open externally")
-                     ("k" delete-file "delete")
-                     ("g" magit-status-internal "magit status")
-                     ("r" counsel-find-file-as-root "open as root")))
   ;; display at `ivy-posframe-style'
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
   ;; (ivy-posframe-mode 1)
@@ -823,6 +780,18 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Omit dotfiles.
   (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$")
         dired-omit-verbose nil)
+
+  (defvar dired-compress-files-alist
+    '(("\\.tar\\.gz\\'" . "tar -c %i | gzip -c9 > %o")
+      ("\\.zip\\'" . "zip %o -r --filesync %i"))
+    "Control the compression shell command for `dired-do-compress-to'.
+
+Each element is (REGEXP . CMD), where REGEXP is the name of the
+archive to which you want to compress, and CMD the the
+corresponding command.
+
+Within CMD, %i denotes the input file(s), and %o denotes the
+output file. %i path(s) are relative, while %o is absolute.")
   )
 
 (use-package bookmark-plus
