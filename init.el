@@ -1393,6 +1393,9 @@ horizontal mode."
    org-list-indent-offset 1
    ;; Increase imenu index depth
    org-imenu-depth 5
+   ;; Interpret sub-superscripts only when they're quoted with braces
+   org-use-sub-superscripts '{}
+   org-export-with-sub-superscripts '{}
    ;; Logging settings: Better verbose than miss
    org-log-into-drawer t
    org-log-done 'note
