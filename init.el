@@ -294,19 +294,24 @@
 
 (use-package recentf
   :defer 5
+  :preface
+  (defun recentf-add-dired-directory ()
+    (if (and dired-directory
+             (file-directory-p dired-directory)
+             (not (string= "/" dired-directory)))
+        (let ((last-idx (1- (length dired-directory))))
+          (recentf-add-file
+           (if (= ?/ (aref dired-directory last-idx))
+               (substring dired-directory 0 last-idx)
+             dired-directory)))))
+  :hook (dired-mode . recentf-add-dired-directory)
   :config
-  (setq recentf-save-file (expand-file-name "recentf" my-private-conf-directory)
+  (setq recentf-save-file "~/.emacs.d/data/recentf"
         recentf-max-saved-items 'nil ;; Save the whole list
         recentf-max-menu-items 50
         ;; Cleanup list if idle for 10 secs
-        recentf-auto-cleanup 10)
-  ;; save it every 60 minutes
-  (run-at-time t (* 60 60) 'recentf-save-list)
-  ;; Suppress output "Wrote /home/yiufung/.emacs.d/recentf"
-  (advice-add 'recentf-save-list :around #'suppress-messages)
-  ;; Suppress output "Cleaning up the recentf list...done (0 removed)"
-  (advice-add 'recentf-cleanup :around #'suppress-messages)
-  (recentf-mode +1)
+        recentf-auto-cleanup 60)
+  (recentf-mode 1)
   )
 
 (use-package super-save
