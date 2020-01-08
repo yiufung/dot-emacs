@@ -636,7 +636,13 @@ is already narrowed."
   (defalias 'regexp-visualize 'vr/select-replace)
   )
 
+(use-package undo-tree
+  :defer 3
+  :config
+  (global-undo-tree-mode))
+
 (use-package undo-propose
+  :disabled
   :bind (("C-c u" . undo-propose))
   )
 
@@ -2704,6 +2710,7 @@ In that case, insert the number."
 
   ;; hippie expand is dabbrev expand on steroids
   (setq hippie-expand-try-functions-list '(try-expand-dabbrev
+                                           try-expand-dabbrev-visible
                                            try-expand-dabbrev-all-buffers
                                            try-expand-dabbrev-from-kill
                                            try-complete-file-name-partially
