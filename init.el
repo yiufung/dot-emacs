@@ -311,6 +311,9 @@
         recentf-max-menu-items 50
         ;; Cleanup list if idle for 10 secs
         recentf-auto-cleanup 60)
+
+  ;; Suppress "Cleaning up the recentf...done (0 removed)"
+  (advice-add 'recentf-cleanup :around #'suppress-messages)
   (recentf-mode 1)
   )
 
