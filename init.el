@@ -2236,6 +2236,13 @@ Yiufung
   ;; Run make info to compile info documentation
   (setq Info-additional-directory-list `(,(expand-file-name "straight/repos/org/doc/" user-emacs-directory))))
 
+(use-package browse-url
+  :straight nil
+  :defer 3
+  :config
+  ;; Open url in Firefox by default
+  (setq browse-url-browser-function 'browse-url-firefox))
+
 (use-package doc-view
   ;; Requires unoconv, ghostscript, dvipdf
   :custom (doc-view-odf->pdf-converter-program "soffice"))
@@ -2245,9 +2252,10 @@ Yiufung
   ;; :pin manual ;; manually update
   :straight tablist
   :straight hydra
+  :straight web-server
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -2257,6 +2265,10 @@ Yiufung
               ("C-r" . 'isearch-backward)
               ("C-z p" . hydra-pdftools/body)
               ("M-w" . 'pdf-view-kill-ring-save)
+              ("h" . 'pdf-annot-add-highlight-markup-annotation)
+              ("t" . 'pdf-annot-add-text-annotation)
+              ("D" . 'pdf-annot-delete)
+              ("S" . 'sync-pdf-in-pdfjs)
               )
   :magic ("%PDF" . pdf-view-mode)
   :config
@@ -2265,12 +2277,38 @@ Yiufung
   (setq pdf-annot-activate-created-annotation t)
   ;; more fine-grained zooming
   (setq pdf-view-resize-factor 1.1)
-  ;; keyboard shortcuts
-  (define-key pdf-view-mode-map (kbd "h") 'pdf-annot-add-highlight-markup-annotation)
-  (define-key pdf-view-mode-map (kbd "t") 'pdf-annot-add-text-annotation)
-  (define-key pdf-view-mode-map (kbd "D") 'pdf-annot-delete)
 
   (pdf-tools-install t) ;; Install pdf tools with no queries
+
+  ;; Start a CORS-enabled web-server from within Emacs, so that PDF.js can synchronize with pdf-tools
+  (lexical-let ((docroot (expand-file-name "portable-ebooks" my-sync-directory)))
+    (ws-start
+     (lambda (request)
+       (with-slots (process headers) request
+         (let ((path (substring (cdr (assoc :GET headers)) 1)))
+           (if (ws-in-directory-p docroot path)
+               (if (file-directory-p path)
+                   (ws-send-directory-list process
+                                           (expand-file-name path docroot) "^[^\.]")
+                 (ws-response-header process 200 '("Access-Control-Allow-Origin" . "*"))
+                 (ws-send-file process (expand-file-name path docroot)))
+             (ws-send-404 process)))))
+     9005 nil :name (format "pdfjs-%s" docroot)))
+
+  ;; In Arch Linux, need to install pdfjs package first.
+  (defun sync-pdf-in-pdfjs (&optional file)
+    "Open current PDF in the corresponding page in PDF.js."
+    (interactive)
+    (or file
+        (setq file (buffer-name))
+        (error "Current buffer has no file"))
+    (let ((browse-url-browser-function 'browse-url-firefox)
+          (port 9005)) ;; Should match to CORS-enabled server that points to PDF directory
+      (browse-url (format "%s?file=%s#page=%d"
+                          "file:///usr/share/pdf.js/web/viewer.html"
+                          (format "http://localhost:%d/%s" port (url-hexify-string file))
+                          (pdf-view-current-page)))
+      (run-hooks 'browse-url-of-file-hook)))
 
   (defhydra hydra-pdftools (:color blue :hint nil)
     "
@@ -3101,6 +3139,7 @@ In that case, insert the number."
             js-mode-hook
             java-mode
             emacs-lisp-mode-hook
+            ielm-mode-hook
             ruby-mode
             markdown-mode
             groovy-mode
