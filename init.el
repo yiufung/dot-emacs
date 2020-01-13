@@ -2530,6 +2530,7 @@ Yiufung
   :init
   ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
   ;; For syncing rime dictionary across laptops.
+  (setq pyim-title "ㄓ")
   (add-hook 'liberime-after-start-hook
             (lambda ()
               (liberime-select-schema "luna_pinyin_simp")))
@@ -2539,8 +2540,7 @@ Yiufung
   :config
   (require 'liberime-config)
   ;; 儘可能試用 posframe 彈出
-  (setq pyim-title "ㄓ"
-        default-input-method "pyim"
+  (setq default-input-method "pyim"
         pyim-default-scheme 'rime
         ;; 选词框显示9个候选词。
         pyim-page-length 9)
