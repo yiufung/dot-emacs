@@ -3565,8 +3565,11 @@ In that case, insert the number."
 (use-package gruvbox-theme)
 (use-package one-themes)
 (use-package naysayer-theme)
+(use-package modus-operandi-theme)
+(use-package modus-vivendi-theme)
 
-(load-theme 'kaolin-light)
+;; (load-theme 'modus-operandi t)
+(load-theme 'modus-vivendi t)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
@@ -3582,6 +3585,7 @@ In that case, insert the number."
 ;;;; Fonts
 
 (defun cyf/set-fonts ()
+  "Personal font settings."
   (interactive)
   ;; Default
   (set-face-attribute
