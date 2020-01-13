@@ -2531,11 +2531,6 @@ Yiufung
   ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
   ;; For syncing rime dictionary across laptops.
   (setq pyim-title "ㄓ")
-  (add-hook 'liberime-after-start-hook
-            (lambda ()
-              (liberime-select-schema "luna_pinyin_simp")))
-  ;; 自動備份 liberime 詞庫
-  ;; (add-hook 'after-init-hook #'liberime-sync)
   :bind (("M-j" . pyim-convert-string-at-point)) ;与 pyim-probe-dynamic-english 配合
   :config
   (require 'liberime-config)
