@@ -3564,7 +3564,9 @@ In that case, insert the number."
 (use-package modus-vivendi-theme)
 
 ;; (load-theme 'modus-operandi t)
-(load-theme 'modus-vivendi t)
+;; (load-theme 'modus-vivendi t)
+
+(load-theme 'kaolin-light)
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
