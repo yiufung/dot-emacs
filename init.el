@@ -2263,8 +2263,8 @@ Yiufung
   :straight hydra
   :straight web-server
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                        (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                          my-emacs-conf-directory)))
+                            (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                              my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -2408,7 +2408,7 @@ Yiufung
   ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
   )
 
-;;; Spell-checking / Dictionary Lookup
+;;; Spell-checking / Dictionary Lookup / Chinese input
 
 (use-package flyspell
   :if (equal system-type 'gnu/linux)
@@ -2517,6 +2517,63 @@ Yiufung
 (use-package mw-thesaurus
   :bind (("C-c T" . mw-thesaurus-lookup-at-point))
   )
+
+(use-package pyim
+  :demand t
+  :straight t
+  :straight pyim-basedict
+  ;; Need to run "make liberime" on build directory.
+  :straight (liberime-config
+             :host github
+             :repo "merrickluo/liberime"
+             :files ("CMakeLists.txt" "Makefile" "src" "liberime-config.el"))
+  :init
+  ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
+  ;; For syncing rime dictionary across laptops.
+  (add-hook 'liberime-after-start-hook
+            (lambda ()
+              (liberime-select-schema "luna_pinyin_simp")))
+  ;; 自動備份 liberime 詞庫
+  ;; (add-hook 'after-init-hook #'liberime-sync)
+  :bind (("M-j" . pyim-convert-string-at-point)) ;与 pyim-probe-dynamic-english 配合
+  :config
+  (require 'liberime-config)
+  ;; 儘可能試用 posframe 彈出
+  (setq pyim-title "ㄓ"
+        default-input-method "pyim"
+        pyim-default-scheme 'rime
+        ;; 选词框显示9个候选词。
+        pyim-page-length 9)
+  (if (display-graphic-p)
+      (setq pyim-page-tooltip 'posframe)
+    (setq pyim-page-tooltip 'popup))
+
+  ;; 设置 pyim 探针设置，这是 pyim 高级功能设置，可以实现 *无痛* 中英文切换 :-)
+  ;; 我自己使用的中英文动态切换规则是：
+  ;; 1. 光标前是汉字字符时，才能输入中文。
+  ;; 2. 使用 M-j 快捷键，强制将光标前的拼音字符串转换为中文。
+  (setq-default pyim-english-input-switch-functions
+                '(pyim-probe-dynamic-english
+                  pyim-probe-isearch-mode
+                  pyim-probe-org-structure-template))
+
+  (setq-default pyim-punctuation-half-width-functions
+                '(pyim-probe-punctuation-line-beginning
+                  pyim-probe-punctuation-after-punctuation))
+
+  ;; 开启拼音搜索功能
+  (pyim-isearch-mode 1)
+
+  (defun liberime-change-schema ()
+    "Change liberime input Schema"
+    (interactive)
+    (liberime-select-schema
+     (ivy-read "Input schema: "
+               (liberime-get-schema-list)
+               :require-match t)))
+  (liberime-select-schema "luna_pinyin") ;; 繁體
+  )
+
 
 ;;; Programming
 
