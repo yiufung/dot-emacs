@@ -1060,6 +1060,14 @@ horizontal mode."
   (add-to-list 'magit-process-find-password-functions
                'magit-process-password-auth-source)
 
+  ;; Solve a long-standing issue where magit complains about existence of index.lock.
+  ;; See https://emacs.stackexchange.com/questions/40917/how-can-i-get-a-prompt-for-deleting-index-lock-file-in-magit
+  (defun magit-remove-git-lock-file ()
+    "Remove git's index lock file, if it exists."
+    (interactive)
+    (let ((base (magit-toplevel)))
+      (delete-file (concat base "/.git/index.lock"))))
+
   ;; Useful functions copied from
   ;; https://stackoverflow.com/questions/9656311/conflict-resolution-with-emacs-ediff-how-can-i-take-the-changes-of-both-version/29757750#29757750
   ;; Combined with ~ to swap the order of the buffers you can get A then B or B then A
