@@ -3650,8 +3650,12 @@ In that case, insert the number."
 (use-package howdoyou
   :defer 10)
 
+;; Need to pip3 install --user my_cookies, and login leetcode
 (use-package leetcode
-  :defer 10)
+  :defer 10
+  :config
+  (setq leetcode-prefer-language "python3"
+        leetcode-prefer-sql "oraclesql"))
 
 (use-package dtk
   ;; Bible Study
