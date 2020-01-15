@@ -2524,7 +2524,10 @@ Yiufung
   ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
   ;; For syncing rime dictionary across laptops.
   (setq pyim-title "ㄓ")
-  :bind (("M-j" . pyim-convert-string-at-point)) ;与 pyim-probe-dynamic-english 配合
+  :bind (("M-j" . pyim-convert-string-at-point)  ;与 pyim-probe-dynamic-english 配合
+         :map pyim-mode-map
+         ("." . pyim-page-next-page)
+         ("," . pyim-page-previous-page))
   :config
   (require 'liberime-config)
   ;; 儘可能試用 posframe 彈出
@@ -2548,6 +2551,14 @@ Yiufung
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
                   pyim-probe-punctuation-after-punctuation))
+
+  ;; Reset some punctuation mappings.
+  (delete '("/" "、")  pyim-punctuation-dict)
+  (append '("\\" "、") pyim-punctuation-dict)
+  (delete '("}" "』")  pyim-punctuation-dict)
+  (delete '("{" "『")  pyim-punctuation-dict)
+  (append '("{" "「")  pyim-punctuation-dict)
+  (append '("}" "」")  pyim-punctuation-dict)
 
   ;; 开启拼音搜索功能
   (pyim-isearch-mode 1)
