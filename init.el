@@ -356,13 +356,6 @@
   ;; Right click to paste: I don't use the popup menu a lot.
   :bind ("<mouse-3>" . whole-line-or-region-yank)
   :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
-  :init
-  (defun kill-region-or-backward-word ()
-    "Kill selected region if region is active. Otherwise kill a backward word."
-    (interactive)
-    (if (region-active-p)
-        (kill-region (region-beginning) (region-end))
-      (backward-kill-word 1)))
   :config
   (whole-line-or-region-global-mode)
   )
@@ -412,7 +405,7 @@
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                                   (follow-mode))))
+                                               (follow-mode))))
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
@@ -444,7 +437,6 @@
     (if (region-active-p)
         (kill-region (region-beginning) (region-end))
       (backward-kill-word 1)))
-  ;; (global-set-key (kbd "M-h") 'kill-region-or-backward-word)
 
   (defun remove-extra-blank-lines (&optional beg end)
     "If called with region active, replace multiple blank lines
@@ -991,6 +983,7 @@ horizontal mode."
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
 
+;; A pacman hook is to used to update nodejieba whenever necessary
 (use-package jieba
   :straight (:host github :repo "cireu/jieba.el" :files (:defaults "*.js")) ;; Need to symlink js for server too
   :defer 3
@@ -4043,6 +4036,7 @@ In that case, insert the number."
 
 ;; Code sharing service
 (require 'ixio)
+(defalias 'share-code-snippet 'ixio-paste)
 
 ;;; Start Emacs server
 
