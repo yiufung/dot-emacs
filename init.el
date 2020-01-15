@@ -2554,11 +2554,11 @@ Yiufung
 
   ;; Reset some punctuation mappings.
   (delete '("/" "、")  pyim-punctuation-dict)
-  (append '("\\" "、") pyim-punctuation-dict)
+  (add-to-list 'pyim-punctuation-dict '("\\" "、"))
   (delete '("}" "』")  pyim-punctuation-dict)
   (delete '("{" "『")  pyim-punctuation-dict)
-  (append '("{" "「")  pyim-punctuation-dict)
-  (append '("}" "」")  pyim-punctuation-dict)
+  (add-to-list 'pyim-punctuation-dict '("{" "「"))
+  (add-to-list 'pyim-punctuation-dict '("}" "」"))
 
   ;; 开启拼音搜索功能
   (pyim-isearch-mode 1)
