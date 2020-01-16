@@ -1177,6 +1177,14 @@ horizontal mode."
          ("C-c C-q" . counsel-org-tag)
          ("s-P"     . anki-editor-push-notes)
          ("s-L"     . org-cliplink)
+         ("s-b"     . org-bold-region-or-point)
+         ("s-/"     . org-italics-region-or-point)
+         ("s-u"     . org-underline-region-or-point)
+         ("s-="     . org-verbatim-region-or-point)
+         ("s-+"     . org-strikethrough-region-or-point)
+         ("s-c"     . org-code-region-or-point)
+         ("s-s"     . org-subscript-region-or-point)
+         ("s-S"     . org-superscript-region-or-point)
          )
   :bind (:map org-mode-map
               ;; Unbinding org-cycle-agenda-files
@@ -1258,6 +1266,23 @@ horizontal mode."
    org-agenda-custom-commands
    '(("x" agenda)
      ("y" agenda*)
+     ("w" "Weekly Review"
+      ( ;; deadlines
+       (tags-todo "+DEADLINE<=\"<today>\""
+                  ((org-agenda-overriding-header "Late Deadlines")))
+       ;; scheduled  past due
+       (tags-todo "+SCHEDULED<=\"<today>\""
+                  ((org-agenda-overriding-header "Late Scheduled")))
+       ;; now the agenda
+       (agenda ""
+               ((org-agenda-overriding-header "weekly agenda")
+                (org-agenda-ndays 7)
+                (org-agenda-tags-todo-honor-ignore-options t)
+                (org-agenda-todo-ignore-scheduled nil)
+                (org-agenda-todo-ignore-deadlines nil)
+                (org-deadline-warning-days 0)))
+       ;; and last a global todo list
+       (todo "TODO")))
      ("o" "Agenda and Office-related Tasks"
       ((agenda "" ((org-agenda-tag-filter-preset '("+office"))
                    ;; Show agenda for this whole week, and first 2 days of next week
@@ -1285,8 +1310,15 @@ horizontal mode."
    ;; refresh instead. Note that it can still be killed by kill-buffer. To
    ;; avoid this, set the emacs-lock-mode
    org-agenda-sticky t
-   ;; Don’t show scheduled items in agenda when they are done
+   ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
    org-agenda-skip-scheduled-if-done t
+   org-agenda-skip-deadline-if-done t
+   org-agenda-skip-timestamp-if-done t
+   ;; Don't show scheduled/deadlines/timestamp items on todo list.
+   org-agenda-todo-ignore-scheduled t
+   org-agenda-todo-ignore-deadlines t
+   org-agenda-todo-ignore-timestamp t
+   org-agenda-todo-ignore-with-date t
    ;; Define when my day really ends (well, normally earlier than that)
    org-extend-today-until 4
    ;; Show meetings in org agenda
@@ -1407,6 +1439,8 @@ horizontal mode."
    org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+"))
    ;; List indent offsets, making it more apparent
    org-list-indent-offset 1
+   ;; allow lists with letters in them.
+   org-list-allow-alphabetical t
    ;; Increase imenu index depth
    org-imenu-depth 5
    ;; Interpret sub-superscripts only when they're quoted with braces
@@ -1416,7 +1450,7 @@ horizontal mode."
    org-export-use-babel 't
    ;; Logging settings: Better verbose than miss
    org-log-into-drawer t
-   org-log-done 'note
+   org-log-done 'time
    org-log-reschedule 'note
    org-log-redeadline 'note
    org-log-delschedule 'note
@@ -1622,6 +1656,27 @@ horizontal mode."
       (add-to-list 'org-tempo-keywords-alist ele))
     )
 
+  ;; Default code block settings
+  (setq org-babel-default-header-args:python
+        '((:results . "output replace")
+          (:session . "none")
+          (:exports . "both")
+          (:cache .   "no")
+          (:noweb . "no")
+          (:hlines . "no")
+          (:tangle . "no")
+          (:eval . "never-export")))
+
+  (setq org-babel-default-header-args:R
+        '((:results . "output replace")
+          (:session . "none")
+          (:exports . "both")
+          (:cache .   "no")
+          (:noweb . "no")
+          (:hlines . "no")
+          (:tangle . "no")
+          (:eval . "never-export")))
+
   ;; Plotting with ditaa and plantuml
   (setq org-ditaa-jar-path (expand-file-name "bin/ditaa.jar" my-emacs-conf-directory))
   (setq org-plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
@@ -1643,6 +1698,95 @@ horizontal mode."
   (setq ob-async-no-async-languages-alist '("ipython"))
   ;; display/update images in the buffer after I evaluate
   (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+
+  ;; This automatically aligns tables, which is nice if you use code to generate
+  ;; tables.
+  (defun scimax-align-result-table ()
+    "Align tables in the subtree."
+    (save-restriction
+      (save-excursion
+        (unless (org-before-first-heading-p) (org-narrow-to-subtree))
+        (org-element-map (org-element-parse-buffer) 'table
+          (lambda (tbl)
+            (goto-char (org-element-property :post-affiliated tbl))
+            (org-table-align))))))
+
+  (add-hook 'org-babel-after-execute-hook
+            'scimax-align-result-table)
+
+  ;; emphasize commands copied from scimax
+  (loop for (type beginning-marker end-marker)
+        in '((subscript "_{" "}")
+             (superscript "^{" "}")
+             (italics "/" "/")
+             (bold "*" "*")
+             (verbatim "=" "=")
+             (code "~" "~")
+             (underline "_" "_")
+             (strikethrough "+" "+"))
+        do
+        (eval `(defun ,(intern (format "org-%s-region-or-point" type)) ()
+                 ,(format "%s the region, word or character at point"
+                          (upcase (symbol-name type)))
+                 (interactive)
+                 (cond
+                  ;; We have an active region we want to apply
+                  ((region-active-p)
+                   (let* ((bounds (list (region-beginning) (region-end)))
+                          (start (apply 'min bounds))
+                          (end (apply 'max bounds))
+                          (lines))
+                     (unless (memq ',type '(subscript superscript))
+                       (save-excursion
+                         (goto-char start)
+                         (unless (looking-at " \\|\\<")
+                           (backward-word)
+                           (setq start (point)))
+                         (goto-char end)
+                         (unless (looking-at " \\|\>")
+                           (forward-word)
+                           (setq end (point)))))
+                     (setq lines
+                           (s-join "\n" (mapcar
+                                         (lambda (s)
+                                           (if (not (string= (s-trim s) ""))
+                                               (concat ,beginning-marker
+                                                       (s-trim s)
+                                                       ,end-marker)
+                                             s))
+                                         (split-string
+                                          (buffer-substring start end) "\n"))))
+                     (setf (buffer-substring start end) lines)
+                     (forward-char (length lines))))
+                  ;; We are on a word with no region selected
+                  ((thing-at-point 'word)
+                   (cond
+                    ;; beginning of a word
+                    ((looking-back " " 1)
+                     (insert ,beginning-marker)
+                     (re-search-forward "\\>")
+                     (insert ,end-marker))
+                    ;; end of a word
+                    ((looking-back "\\>" 1)
+                     (insert ,(concat beginning-marker end-marker))
+                     (backward-char ,(length end-marker)))
+                    ;; not at start or end, so we just sub/sup the character at point
+                    ((memq ',type '(subscript superscript))
+                     (insert ,beginning-marker)
+                     (forward-char ,(- (length beginning-marker) 1))
+                     (insert ,end-marker))
+                    ;; somewhere else in a word, and handled sub/sup. mark up the
+                    ;; whole word.
+                    (t
+                     (re-search-backward "\\<")
+                     (insert ,beginning-marker)
+                     (re-search-forward "\\>")
+                     (insert ,end-marker))))
+                  ;; not at a word or region, insert markers and put point between
+                  ;; them.
+                  (t
+                   (insert ,(concat beginning-marker end-marker))
+                   (backward-char ,(length end-marker)))))))
 
   ;; Org export to doc
   (setq org-odt-preferred-output-format "docx"
