@@ -1177,12 +1177,12 @@ horizontal mode."
          ("C-c C-q" . counsel-org-tag)
          ("s-P"     . anki-editor-push-notes)
          ("s-L"     . org-cliplink)
-         ("s-b"     . org-bold-region-or-point)
-         ("s-/"     . org-italics-region-or-point)
-         ("s-u"     . org-underline-region-or-point)
-         ("s-="     . org-verbatim-region-or-point)
-         ("s-+"     . org-strikethrough-region-or-point)
-         ("s-c"     . org-code-region-or-point)
+         ("s-b"     . (lambda () (interactive) (org-emphasize ?*)))
+         ("s-/"     . (lambda () (interactive) (org-emphasize ?/)))
+         ("s-u"     . (lambda () (interactive) (org-emphasize ?_)))
+         ("s-="     . (lambda () (interactive) (org-emphasize ?=)))
+         ("s-+"     . (lambda () (interactive) (org-emphasize ?+)))
+         ("s-c"     . (lambda () (interactive) (org-emphasize ?~)))
          ("s-s"     . org-subscript-region-or-point)
          ("s-S"     . org-superscript-region-or-point)
          )
@@ -1779,67 +1779,6 @@ subscripts and superscripts."
       (insert (concat beginning-marker end-marker))
       (backward-char (length end-marker)))))
 
-
-  (defun org-italics-region-or-point ()
-    "Italicize the region, word or character at point.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'italics "/" "/"))
-
-
-  (defun org-bold-region-or-point ()
-    "Bold the region, word or character at point.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'bold "*" "*"))
-
-
-  (defun org-underline-region-or-point ()
-    "Underline the region, word or character at point.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'underline "_" "_"))
-
-
-  (defun org-code-region-or-point ()
-    "Mark the region, word or character at point as code.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'underline "~" "~"))
-
-
-  (defun org-verbatim-region-or-point ()
-    "Mark the region, word or character at point as verbatim.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'underline "=" "="))
-
-
-  (defun org-strikethrough-region-or-point ()
-    "Mark the region, word or character at point as strikethrough.
-This function tries to do what you mean:
-1. If you select a region, markup the region.
-2. If in a word, markup the word.
-3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'strikethrough "+" "+"))
-
-
   (defun org-subscript-region-or-point ()
     "Mark the region, word or character at point as a subscript.
 This function tries to do what you mean:
@@ -1848,7 +1787,6 @@ This function tries to do what you mean:
 3. Otherwise wrap the character at point in the markup."
     (interactive)
     (org-markup-region-or-point 'subscript "_{" "}"))
-
 
   (defun org-superscript-region-or-point ()
     "Mark the region, word or character at point as superscript.
