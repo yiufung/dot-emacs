@@ -2223,6 +2223,8 @@ Yiufung
   ;; Another mail client. It's better at email searching
   :defer 3
   :straight nil
+  :straight counsel-notmuch
+  :straight nm
   :bind (("C-c m" . 'notmuch)
          :map notmuch-hello-mode-map
          ("m" . nil)
@@ -2298,6 +2300,9 @@ Yiufung
         (add-to-list 'minor-mode-overriding-map-alist new-ro-bind))
       (goto-char (point-min))))
   (define-key 'notmuch-show-part-map "d" 'my-notmuch-show-view-as-patch)
+
+  ;; Experimental front end Nevermore
+  (require 'nm-company)
   )
 
 (use-package org-caldav
