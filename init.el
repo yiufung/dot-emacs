@@ -1106,10 +1106,6 @@ horizontal mode."
   (setq eyebrowse-keymap-prefix (kbd "C-c w")) ;; w for workspace
   :bind
   (
-   ("<f9>"      . 'eyebrowse-last-window-config)
-   ("<f10>"     . 'eyebrowse-prev-window-config)
-   ("<f11>"     . 'eyebrowse-switch-to-window-config)
-   ("<f12>"     . 'eyebrowse-next-window-config)
    ("C-c w s"   . 'eyebrowse-switch-to-window-config)
    ("C-c w k"   . 'eyebrowse-close-window-config)
    ("C-c w w"   . 'eyebrowse-last-window-config)
@@ -3857,10 +3853,11 @@ In that case, insert the number."
   :defer 10
   :after org
   :bind (:map org-mode-map
-              ("<f12>" . anki-editor-cloze-region-auto-incr)
-              ("<f11>" . anki-editor-cloze-region-dont-incr)
+              ("<f12>" . anki-editor-cloze-region-dont-incr)
+              ("<f11>" . anki-editor-cloze-region-auto-incr)
               ("<f10>" . anki-editor-reset-cloze-number)
               ("<f9>"  . anki-editor-push-tree))
+  :hook (org-capture-after-finalize . anki-editor-reset-cloze-number) ; Reset cloze-number after each capture.
   :config
   (setq anki-editor-create-decks t
         anki-editor-org-tags-as-anki-tags t)
