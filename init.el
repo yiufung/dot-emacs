@@ -2717,7 +2717,8 @@ Yiufung
                 '(pyim-probe-dynamic-english
                   pyim-probe-isearch-mode
                   pyim-probe-org-speed-commands
-                  pyim-probe-org-structure-template))
+                  pyim-probe-org-structure-template
+                  pyim-probe-org-latex-mode))
 
   (setq-default pyim-punctuation-half-width-functions
                 '(pyim-probe-punctuation-line-beginning
