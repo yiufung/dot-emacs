@@ -2716,6 +2716,7 @@ Yiufung
   (setq-default pyim-english-input-switch-functions
                 '(pyim-probe-dynamic-english
                   pyim-probe-isearch-mode
+                  pyim-probe-org-speed-commands
                   pyim-probe-org-structure-template))
 
   (setq-default pyim-punctuation-half-width-functions
