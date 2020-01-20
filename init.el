@@ -124,6 +124,8 @@
  user-full-name "Cheong Yiu Fung"
  ;; Enable all disabled commands
  disabled-command-function nil
+ ;; Enable recursive minibuffer edit
+ enable-recursive-minibuffers t
  ;; Don't show scratch message, and use fundamental-mode for *scratch*
  ;; Remove splash screen and the echo area message
  inhibit-startup-message t
@@ -1206,6 +1208,16 @@ horizontal mode."
   (setq diary-file (expand-file-name "diary" org-directory))
   ;; See also org-caldav
   (setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
+  ;; Personal files
+  (setq org-default-notes-file (expand-file-name "plan-office.org" org-directory))
+  (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
+  (setq org-my-plan-church-file (expand-file-name "church/plan-church.org" org-directory))
+  (setq org-my-office-file (expand-file-name "office.org" org-directory))
+  (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
+  (setq org-my-life-file (expand-file-name "life.org" org-directory))
+  (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
+  (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
+  (setq org-my-archive-file (expand-file-name "archive.org" org-directory))
 
   ;; Default org-mode startup
   (setq org-startup-folded t
@@ -1216,7 +1228,7 @@ horizontal mode."
   (plist-put org-format-latex-options :scale 1.5)
 
   ;; Where to archive files
-  (setq org-archive-location (concat (expand-file-name "archive.org" org-directory) "::* From %s"))
+  (setq org-archive-location (concat org-my-archive-file "::* From %s"))
 
   ;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
   ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
@@ -1236,14 +1248,22 @@ horizontal mode."
           ("SOMEDAY" ("ARCHIVE" . nil))
           ("DONE" ("ARCHIVE" . nil)))
         )
+
   ;; Org-agenda
   (setq
    ;; All files for agenda
-   org-agenda-files (list org-directory my-private-calendar-directory
-                          (expand-file-name "notes" org-directory)
-                          (expand-file-name "projects" org-directory)
-                          (expand-file-name "church" org-directory)
-                          (expand-file-name "finance" my-sync-directory))
+   org-agenda-files (list
+                     org-directory my-private-calendar-directory
+                     (expand-file-name "notes" org-directory)
+                     (expand-file-name "projects" org-directory)
+                     (expand-file-name "church" org-directory)
+                     (expand-file-name "finance" my-sync-directory)))
+  ;; Don't include archive files.
+  (org-remove-file org-my-web-archive-file)
+  (org-remove-file org-my-archive-file)
+
+
+  (setq
    ;; Refile candidates
    org-refile-targets '((org-agenda-files :maxlevel . 2))
    ;; Show candidates in one go
@@ -1338,14 +1358,6 @@ horizontal mode."
   (advice-add 'org-save-all-org-buffers :around #'suppress-messages)
 
   ;; Capturing thoughts and Level 1 Headings.
-  (setq org-default-notes-file (expand-file-name "plan-office.org" org-directory))
-  (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
-  (setq org-my-plan-church-file (expand-file-name "church/plan-church.org" org-directory))
-  (setq org-my-office-file (expand-file-name "office.org" org-directory))
-  (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
-  (setq org-my-life-file (expand-file-name "life.org" org-directory))
-  (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
-  (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
   (setq org-capture-templates
         '(
           ("a" "Anki basic"
