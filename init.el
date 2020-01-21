@@ -966,7 +966,7 @@ horizontal mode."
   (setq nswbuff-display-intermediate-buffers t)
   )
 
-;;; Cursor navigation: avy
+;;; Cursor Navigation: avy
 
 (global-set-key (kbd "M-p") 'backward-paragraph)
 (global-set-key (kbd "M-n") 'forward-paragraph)
@@ -4233,7 +4233,7 @@ In that case, insert the number."
 (require 'ixio)
 (defalias 'share-code-snippet 'ixio-paste)
 
-;;; Start Emacs server
+;;; Start Emacs Server
 
 (require 'server)
 (unless (server-running-p)
