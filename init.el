@@ -741,7 +741,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
         max-mini-window-height 0.30
-        ;; Don't parse remote files
+        ;; Don't parse remote files, it's slow
         ivy-rich-parse-remote-buffer 'nil)
 
   ;; display at `ivy-posframe-style'
@@ -1161,6 +1161,7 @@ horizontal mode."
          ("C-c c" . counsel-org-capture)
          ("C-c l" . org-store-link)
          ("C-c 0" . org-set-created-property)
+         ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
          ;; Rifle through all my org files to identify an item.
          ;; Use C-s to display results in occur-like style.
          ("C-S-s" . helm-org-rifle)
@@ -2422,8 +2423,8 @@ Yiufung
   :straight hydra
   :straight web-server
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -2477,6 +2478,20 @@ Yiufung
                           (format "http://localhost:%d/%s" port (url-hexify-string file))
                           (pdf-view-current-page)))
       (run-hooks 'browse-url-of-file-hook)))
+
+  (defun open-text-in-firefox (beg end)
+    "Export selected region as HTML, and open it in Firefox.
+
+Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
+    (interactive "r")
+    (copy-region-as-kill beg end)
+    (let ((tmpfile (make-temp-file "cyf-text" nil ".html")))
+      (with-temp-file tmpfile
+        (yank)
+        (mark-whole-buffer)
+        (org-html-convert-region-to-html)
+        (browse-url-firefox (concat "file://" tmpfile))))
+    )
 
   (defhydra hydra-pdftools (:color blue :hint nil)
     "
