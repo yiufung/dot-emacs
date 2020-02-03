@@ -17,7 +17,9 @@
 
 ;; Always follow symlinks. init files are normally stowed/symlinked.
 (setq vc-follow-symlinks t
-      find-file-visit-truename t)
+      find-file-visit-truename t
+      ;; Avoid stale compiled code shadow newer source code
+      load-prefer-newer t)
 
 ;; Turn off mouse interface early in startup to avoid momentary display
 (if (fboundp 'menu-bar-mode) (menu-bar-mode -1))
@@ -1360,12 +1362,12 @@ horizontal mode."
           ("a" "Anki basic"
            entry
            (file+headline org-my-anki-file "Dispatch Shelf")
-           "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n%x\n")
+           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n")
 
           ("A" "Anki cloze"
            entry
            (file+headline org-my-anki-file "Dispatch Shelf")
-           "* %<%H:%M>   %^g\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%x\n** Extra\n")
+           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n** Extra\n")
 
           ("c" "all todos" ;; Capture first, refile later
            entry
