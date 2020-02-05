@@ -1409,6 +1409,15 @@ horizontal mode."
            "%?\n")
           ))
 
+  (defun make-orgcapture-frame ()
+    "Create a new frame and run org-capture."
+    (interactive)
+    (make-frame '((name . "org-capture") (window-system . x)))
+    (select-frame-by-name "org-capture")
+    (counsel-org-capture)
+    (delete-other-windows)
+    )
+
   ;; Automatically add "CREATED" timestamp to org-capture entries
   ;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
   ;; Change: Don't add property when filing at beancount/anki files.
