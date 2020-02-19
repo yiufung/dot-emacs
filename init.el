@@ -2717,6 +2717,9 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
   ;; For syncing rime dictionary across laptops.
   (setq pyim-title "ㄓ")
+  (add-hook 'liberime-after-start-hook
+            (lambda ()
+              (liberime-select-schema "luna_pinyin")))
   :bind (("M-j" . pyim-convert-string-at-point)  ;与 pyim-probe-dynamic-english 配合
          :map pyim-mode-map
          ("." . pyim-page-next-page)
@@ -3759,12 +3762,15 @@ In that case, insert the number."
 (use-package naysayer-theme)
 (use-package modus-operandi-theme)
 (use-package modus-vivendi-theme)
+(use-package doom-themes)
 
 ;; (load-theme 'modus-operandi t)
 ;; (load-theme 'modus-vivendi t)
 
-(load-theme 'kaolin-light)
+;; (load-theme 'kaolin-light)
+;; (load-theme 'doom-opera-light t)
 
+(message "my-solaire-themes")
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
   ;; slightly different -- often brighter -- background
