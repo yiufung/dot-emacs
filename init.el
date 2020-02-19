@@ -406,6 +406,7 @@
 (use-package simple
   ;; Improvements over simple editing commands
   :straight nil
+  :straight visual-fill-column
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
@@ -1160,7 +1161,7 @@ horizontal mode."
   (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
   :bind (
          ("C-c a" . org-agenda)
-         ("C-c c" . counsel-org-capture)
+         ("C-c c" . org-capture)
          ("C-c l" . org-store-link)
          ("C-c 0" . org-set-created-property)
          ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
@@ -1175,7 +1176,6 @@ horizontal mode."
          ("C-x n e" . nil)
          ("C-x n"   . nil)
          ("C-c C-j" . counsel-org-goto)
-         ("C-c C-q" . counsel-org-tag)
          ("s-P"     . anki-editor-push-notes)
          ("s-L"     . org-cliplink)
          ("s-b"     . (lambda () (interactive) (org-emphasize ?*)))
@@ -1361,12 +1361,12 @@ horizontal mode."
         '(
           ("a" "Anki basic"
            entry
-           (file+headline org-my-anki-file "Dispatch Shelf")
+           (file+headline org-my-anki-file "Dispatch")
            "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n")
 
           ("A" "Anki cloze"
            entry
-           (file+headline org-my-anki-file "Dispatch Shelf")
+           (file+headline org-my-anki-file "Dispatch")
            "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n** Extra\n")
 
           ("c" "all todos" ;; Capture first, refile later
@@ -1412,6 +1412,7 @@ horizontal mode."
   (defun make-orgcapture-frame ()
     "Create a new frame and run org-capture."
     (interactive)
+    (switch-to-buffer "*scratch*")
     (make-frame '((name . "org-capture") (window-system . x)))
     (select-frame-by-name "org-capture")
     (counsel-org-capture)
@@ -1931,7 +1932,7 @@ This function tries to do what you mean:
   (require 'org-download)
   ;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
   ;; folder.
-  (setq-default org-download-image-dir (expand-file-name "images/misc" org-directory)
+  (setq-default org-download-method 'attach ;; Screenshots are stored in data/ directory by ID. Easier to manage
                 org-download-heading-lvl nil
                 org-download-delete-image-after-download t
                 org-download-screenshot-method "echo"
@@ -2437,7 +2438,7 @@ Yiufung
                         (expand-file-name "elisp/pdf-tools-20180428.827/"
                                           my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
-  :init (load "pdf-tools-autoloads" nil t)
+  ;; :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
   ;; If there's error for pdf-occur mode, delete pdf-occur.elc manually.
   :bind (:map pdf-view-mode-map
@@ -2764,9 +2765,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
      (ivy-read "Input schema: "
                (liberime-get-schema-list)
                :require-match t)))
-  (liberime-select-schema "luna_pinyin") ;; 繁體
   )
-
 
 ;;; Programming
 
@@ -3598,7 +3597,7 @@ In that case, insert the number."
   )
 
 (use-package rg
-  :bind ("C-s s" . rg-dwim))
+  :bind (("C-s s" . rg-dwim)))
 
 (use-package deadgrep
   :bind(("C-s g" . deadgrep)))
@@ -3778,50 +3777,55 @@ In that case, insert the number."
   (solaire-global-mode 1))
 
 ;;;; Fonts
-
-(defun cyf/set-fonts ()
-  "Personal font settings."
-  (interactive)
-  ;; Default
-  (set-face-attribute
-   'default nil
-   :font (font-spec :name "Sarasa Mono TC"
-                    :weight 'normal
-                    :slant 'normal
-                    :size 11.5))
-  ;; Fixed-width for programming
-  (set-face-attribute
-   'fixed-pitch nil
-   :font (font-spec :name "Sarasa Mono TC"
-                    :weight 'normal
-                    :slant 'normal
-                    :size 11.5))
-  ;; Variable-width for reading
-  (set-face-attribute
-   'variable-pitch nil
-   :font (font-spec :name "Bookerly"
-                    :weight 'normal
-                    :slant 'normal
-                    :size 12.0))
-  ;; For all CJK fonts
-  (dolist (charset '(kana han symbol cjk-misc bopomofo))
-    (set-fontset-font
-     (frame-parameter nil 'font)
-     charset
-     (font-spec :name "Sarasa Mono TC"
-                :weight 'normal
-                :slant 'normal
-                :size 11.5)))
+(use-package my-fonts
+  :no-require t
+  :straight nil
+  :demand t
+  :config
+  (defun cyf/set-fonts ()
+    "Personal font settings."
+    (interactive)
+    ;; Default
+    (set-face-attribute
+     'default nil
+     :font (font-spec :name "Sarasa Mono TC"
+                      :weight 'normal
+                      :slant 'normal
+                      :size 11.5))
+    ;; Fixed-width for programming
+    (set-face-attribute
+     'fixed-pitch nil
+     :font (font-spec :name "Sarasa Mono TC"
+                      :weight 'normal
+                      :slant 'normal
+                      :size 11.5))
+    ;; Variable-width for reading
+    (set-face-attribute
+     'variable-pitch nil
+     :font (font-spec :name "Bookerly"
+                      :weight 'normal
+                      :slant 'normal
+                      :size 12.0))
+    ;; For all CJK fonts
+    (dolist (charset '(kana han symbol cjk-misc bopomofo))
+      (set-fontset-font
+       (frame-parameter nil 'font)
+       charset
+       (font-spec :name "Sarasa Mono TC"
+                  :weight 'normal
+                  :slant 'normal
+                  :size 11.5)))
+    )
+  ;; Set fonts every time a new Window frame is created.
+  (add-to-list 'after-make-frame-functions
+               (lambda (new-frame)
+                 (select-frame new-frame)
+                 (if window-system
+                     (cyf/set-fonts))))
+  ;; Immediately run if we start emacs directly without daemon
+  (if window-system
+      (cyf/set-fonts))
   )
-;; Set fonts every time a new Window frame is created.
-(add-to-list 'after-make-frame-functions
-             (lambda (new-frame)
-               (select-frame new-frame)
-               (if window-system
-                   (cyf/set-fonts))))
-;; Immediately run if we start emacs directly without daemon
-(if window-system
-    (cyf/set-fonts))
 
 (use-package mixed-pitch
   :disabled
@@ -4245,6 +4249,7 @@ In that case, insert the number."
 (defalias 'share-code-snippet 'ixio-paste)
 
 ;;; Start Emacs Server
+(load-theme 'doom-opera-light t)
 
 (require 'server)
 (unless (server-running-p)
