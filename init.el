@@ -3040,8 +3040,15 @@ In that case, insert the number."
 ;;;; Code folding
 
 (use-package hideshow
+  :hook (prog-mode . hs-minor-mode)
+  :init
+  (defun toggle-fold ()
+    (interactive)
+    (save-excursion
+      (end-of-line)
+      (hs-toggle-hiding)))
   :bind (:map prog-mode-map
-              ("C-c h" . hs-toggle-hiding)))
+              ("C-c h" . toggle-fold)))
 
 (use-package origami
   ;; Code folding
