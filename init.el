@@ -4095,6 +4095,8 @@ In that case, insert the number."
   :hook (beancount-mode . turn-off-auto-fill)
   ;; We only want indentation in org-mode but not beancount-mode
   :hook (beancount-mode . (lambda () (org-indent-mode -1)))
+  :bind (:map beancount-mode-map
+              ("C-c p") . nil)
   :defer 3
   :config
   (setq beancount-use-ido 'nil)
