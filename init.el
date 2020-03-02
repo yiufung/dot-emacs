@@ -3341,7 +3341,9 @@ In that case, insert the number."
   :hook (ess-r-mode . turn-off-auto-fill)
   :hook (inferior-ess-r-mode . visual-line-mode)
   :bind (("C-z C-r" . R)
-         ;; :map ess-r-mode-map ("<C-return>" . nil)
+         :map ess-r-mode-map
+         ("<C-return>" . nil)
+         ("C-c <C-return>" . ess-eval-region-or-line-visibly-and-step)
          )
   :config
   (setq  ess-default-style 'RStudio ;; Default code style: RStudio
