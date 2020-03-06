@@ -918,7 +918,7 @@ horizontal mode."
  ;; Default rules
  display-buffer-alist
  `(;; Right side for most Help, Agenda, Trace, etc buffers
-   ("*\\(Help\\|help\\|trace-\\|Backtrace\\|RefTeX.*\\|ess-describe\\)"
+   ("*\\(Help\\|help\\|trace-\\|Backtrace\\|RefTeX.*\\|ess-describe\\|SDCV.*\\| Merriam.*\\)"
     (display-buffer-reuse-mode-window display-buffer-in-previous-window display-buffer-in-side-window)
     (side . right)
     (slot . 1)
@@ -2687,6 +2687,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; set dictionary path
   (setq sdcv-dictionary-simple-list '("懒虫简明英汉词典")
         sdcv-dictionary-complete-list '(
+                                        "Roget's II The New Thesaurus 3th Ed. (En-En)"
                                         "Webster's Revised Unabridged Dictionary (1913)"
                                         "牛津高阶英汉双解"
                                         "Oxford Advanced Learner's Dictionary"
