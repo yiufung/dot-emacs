@@ -802,6 +802,9 @@ corresponding command.
 
 Within CMD, %i denotes the input file(s), and %o denotes the
 output file. %i path(s) are relative, while %o is absolute.")
+
+  ;; Enable directory collapsing behavior just like GitHub
+  (dired-collapse-mode)
   )
 
 (use-package bookmark-plus
