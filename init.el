@@ -3334,18 +3334,17 @@ In that case, insert the number."
 
 ;;;; R
 
-(use-package ess
+(use-package ess-r-mode
   :defer 5
+  :straight ess
   ;; NOTE: When using with flycheck-lintr-caching = t (default), make sure
   ;; ~/.R/lintr_cache directory is created.
-  :straight t
   :hook (ess-r-mode . turn-off-auto-fill)
   :hook (inferior-ess-r-mode . visual-line-mode)
   :bind (("C-z C-r" . R)
          :map ess-r-mode-map
          ("<C-return>" . nil)
-         ("C-c <C-return>" . ess-eval-region-or-line-visibly-and-step)
-         )
+         ("C-c <C-return>" . ess-eval-region-or-line-visibly-and-step))
   :config
   (setq  ess-default-style 'RStudio ;; Default code style: RStudio
          ess-tab-complete-in-script t ;; Tries to complete in script buffers
