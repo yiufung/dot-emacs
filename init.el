@@ -3154,6 +3154,12 @@ In that case, insert the number."
   (add-to-list 'yas-snippet-dirs
                (expand-file-name "yasnippets" my-private-conf-directory))
   (yas-global-mode 1)
+
+  ;; Enable yasnippet expansion in minibuffer
+  ;; https://emacs.stackexchange.com/questions/36677/how-to-use-yasnippets-tab-expansion-in-minibuffer
+  (add-hook 'minibuffer-setup-hook 'yas-minor-mode)
+  (define-key minibuffer-local-map [tab] yas-maybe-expand)
+
   (yasnippet-snippets-initialize)
   )
 
