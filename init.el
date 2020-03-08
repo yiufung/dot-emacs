@@ -122,7 +122,7 @@
 ;;;; General settings
 (setq-default ;; Use setq-default to define global default
  ;; Who I am
- user-mail-address "cheongyiufung@gmail.com"
+ user-mail-address "mail@yiufung.net"
  user-full-name "Cheong Yiu Fung"
  ;; Enable all disabled commands
  disabled-command-function nil
@@ -2197,7 +2197,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (use-package org-bookmark-heading
     :defer 3)
 
-  ;; Org-msg mode. Send email the Outlook style
+  ;; Org-Msg mode. Send email the Outlook style
   (require 'org-msg)
   (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil"
         org-msg-startup "hidestars indent inlineimages"
@@ -2210,7 +2210,7 @@ Yiufung
 #+end_signature")
   ;; org-msg doesn't support notmuch for now.
   (setq mail-user-agent 'message-user-agent)
-  (org-msg-mode)
+  (defalias 'html-mail-mode 'org-msg-mode) ;; An easy-to-remember name
   )
 
 (use-package outshine
@@ -2236,15 +2236,118 @@ Yiufung
 ;; General mail settings
 (setq-default
  ;; Sendmail is an alias to msmtp after installing msmtp and msmtp-mta
+ send-mail-function 'sendmail-send-it
  message-send-mail-function 'message-send-mail-with-sendmail
  ;; Three variables to work with msmtp to enable multiple accounts
  mail-specify-envelope-from 't
  message-sendmail-envelope-from 'header
- mail-envelope-from 'header
- )
+ mail-envelope-from 'header)
+
+(use-package gnus
+  :bind (("C-c m" . 'gnus))
+  :bind (:map gnus-article-mode-map
+              ("o" . gnus-mime-copy-part)
+              :map gnus-topic-mode-map
+              ("<tab>" . gnus-topic-select-group))
+  :hook
+  (gnus-select-group-hook . gnus-group-set-timestamp)
+  (gnus-summary-exit-hook . gnus-topic-sort-groups-by-alphabet)
+  (gnus-summary-exit-hook . gnus-group-sort-groups-by-rank)
+  (gnus-group-mode . gnus-topic-mode)
+  ((gnus-browse-mode gnus-server-mode gnus-group-mode gnus-summary-mode) . hl-line-mode)
+  (dired-mode . gnus-dired-mode)
+  :config
+  (require 'gnus-dired)
+
+  (setq gnus-select-method '(nnnil))
+  (setq gnus-secondary-select-methods
+        '((nntp "gmane" (nntp-address "news.gmane.io"))
+          (nntp "news.gwene.org")
+          ;; Still use mbsync to sync Mail directory
+          (nnmaildir "church"
+                     (directory "~/Maildir/church/"))
+          (nnmaildir "fastmail"
+                     (directory "~/Maildir/fastmail/"))))
+
+  ;; Render HTML content using gnus-w3m
+  (setq mm-text-html-renderer 'gnus-w3m)
+
+  (setq gnus-inhibit-images nil ;; Keep images displayed
+        )
+
+  (setq nnmail-expiry-wait 30)
+  (setq mm-encrypt-option 'guided)
+  (setq mml-secure-openpgp-encrypt-to-self t)
+  (setq mml-secure-openpgp-sign-with-sender t)
+  (setq mml-secure-smime-encrypt-to-self t)
+  (setq mml-secure-smime-sign-with-sender t)
+
+  ;; gnus article
+  (setq gnus-article-browse-delete-temp 'ask)
+  (setq gnus-article-over-scroll nil)
+  (setq gnus-article-show-cursor t)
+  (setq gnus-article-sort-functions
+        '((not gnus-article-sort-by-number)
+          (not gnus-article-sort-by-date)))
+  (setq gnus-article-truncate-lines nil)
+  (setq gnus-html-frame-width 80)
+  (setq gnus-html-image-automatic-caching t)
+  (setq gnus-inhibit-images t)
+  (setq gnus-max-image-proportion 0.3)
+  (setq gnus-treat-display-smileys nil)
+  (setq gnus-article-mode-line-format "%G %S %m")
+  (setq gnus-visible-headers
+        '("^From:" "^To:" "^Cc:" "^Newsgroups:" "^Subject:" "^Date:"
+          "Followup-To:" "Reply-To:" "^Organization:" "^X-Newsreader:"
+          "^X-Mailer:"))
+  (setq gnus-sorted-header-list gnus-visible-headers)
+
+  ;; Gnus group
+  (setq gnus-level-subscribed 6)
+  (setq gnus-level-unsubscribed 7)
+  (setq gnus-level-zombie 8)
+  (setq gnus-list-groups-with-ticked-articles nil)
+  (setq gnus-group-sort-function
+        '((gnus-group-sort-by-unread)
+          (gnus-group-sort-by-alphabet)
+          (gnus-group-sort-by-rank)))
+  (setq gnus-group-mode-line-format "%%b")
+
+  ;; Gnus topic
+  (setq gnus-topic-display-empty-topics nil)
+
+  ;; gnus summary
+  (setq gnus-auto-select-first nil)
+  (setq gnus-summary-ignore-duplicates t)
+  (setq gnus-suppress-duplicates t)
+  (setq gnus-summary-goto-unread nil)
+  (setq gnus-summary-make-false-root 'adopt)
+  (setq gnus-summary-thread-gathering-function
+        'gnus-gather-threads-by-subject)
+  (setq gnus-thread-sort-functions
+        '((not gnus-thread-sort-by-date)
+          (not gnus-thread-sort-by-number)))
+  (setq gnus-subthread-sort-functions
+        'gnus-thread-sort-by-date)
+  (setq gnus-thread-hide-subtree nil)
+  (setq gnus-thread-ignore-subject nil)
+  (setq gnus-user-date-format-alist
+        '(((gnus-seconds-today) . "Today at %R")
+          ((+ 86400 (gnus-seconds-today)) . "Yesterday, %R")
+          (t . "%Y-%m-%d %R")))
+  (setq gnus-summary-line-format "%U%R%z %-16,16&user-date;  %4L:%-30,30f  %B%S\n")
+  (setq gnus-summary-mode-line-format "%p")
+  (setq gnus-sum-thread-tree-false-root "─┬➤ ")
+  (setq gnus-sum-thread-tree-indent " ")
+  (setq gnus-sum-thread-tree-leaf-with-other "├─➤ ")
+  (setq gnus-sum-thread-tree-root "")
+  (setq gnus-sum-thread-tree-single-leaf "└─➤ ")
+  (setq gnus-sum-thread-tree-vertical "│")
+  )
 
 (use-package notmuch
   ;; Another mail client. It's better at email searching
+  :disabled
   :defer 3
   :straight nil
   :straight counsel-notmuch
