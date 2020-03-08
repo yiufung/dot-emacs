@@ -4378,7 +4378,7 @@ In that case, insert the number."
 (defalias 'share-code-snippet 'ixio-paste)
 
 ;;; Start Emacs Server
-(load-theme 'doom-opera-light t)
+(load-theme 'kaolin-light t)
 
 (require 'server)
 (unless (server-running-p)
