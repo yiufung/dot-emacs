@@ -2258,6 +2258,7 @@ Yiufung
   (dired-mode . gnus-dired-mode)
   :config
   (require 'gnus-dired)
+  (require 'gnus-topic)
 
   (setq gnus-select-method '(nnnil))
   (setq gnus-secondary-select-methods

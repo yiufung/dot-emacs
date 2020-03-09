@@ -146,7 +146,7 @@
  ("lsp-python-ms" . "95f7d0d7b72afb1c898e206ba662812d21bcec71")
  ("lsp-ui" . "ffb104b6e16b6c6ef17b906aec9ffb0f9e372a94")
  ("magic-latex-buffer" . "c03277d5619d9adcd871f3e6480a1a27985810cb")
- ("magit" . "6809e6960508df0c7fe27b43596e8a7db313f80f")
+ ("magit" . "1916e83aa463fee86ac1c6bcfd80d780d0544901")
  ("magit-diff-flycheck" . "28acf74f59e385865746cccf4b1e4c4025ae9433")
  ("magit-popup" . "4250c3a606011e3ff2477e3b5bbde2b493f3c85c")
  ("magit-todos" . "3c59aa03b217b55b1baa0e88470e10996aaeea9b")
