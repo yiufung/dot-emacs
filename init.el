@@ -671,6 +671,24 @@ is already narrowed."
   (defalias 'regexp-visualize 'vr/select-replace)
   )
 
+(use-package ediff
+  :hook (ediff-prepare-buffer . outline-show-all) ;; Expand file contents, especially for Org files.
+  :config
+  ;; Useful functions copied from
+  ;; https://stackoverflow.com/questions/9656311/conflict-resolution-with-emacs-ediff-how-can-i-take-the-changes-of-both-version/29757750#29757750
+  ;; Combined with ~ to swap the order of the buffers you can get A then B or B then A
+  (defun ediff-copy-both-to-C ()
+    (interactive)
+    (ediff-copy-diff ediff-current-difference nil 'C nil
+                     (concat
+                      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
+                      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
+  (defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
+  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
+
+  ;; Do everything in one frame
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain))
+
 (use-package undo-tree
   :defer 3
   :config
@@ -1041,7 +1059,6 @@ horizontal mode."
   :straight git-timemachine
   ;;display flycheck errors only on added/modified lines
   :straight magit-todos
-  :straight ediff
   :straight magit-diff-flycheck
   :bind (:map vc-prefix-map
               ("s" . 'git-gutter:stage-hunk)
@@ -1102,23 +1119,6 @@ horizontal mode."
     (interactive)
     (let ((base (magit-toplevel)))
       (delete-file (concat base "/.git/index.lock"))))
-
-  ;; Useful functions copied from
-  ;; https://stackoverflow.com/questions/9656311/conflict-resolution-with-emacs-ediff-how-can-i-take-the-changes-of-both-version/29757750#29757750
-  ;; Combined with ~ to swap the order of the buffers you can get A then B or B then A
-  (defun ediff-copy-both-to-C ()
-    (interactive)
-    (ediff-copy-diff ediff-current-difference nil 'C nil
-                     (concat
-                      (ediff-get-region-contents ediff-current-difference 'A ediff-control-buffer)
-                      (ediff-get-region-contents ediff-current-difference 'B ediff-control-buffer))))
-  (defun add-d-to-ediff-mode-map () (define-key ediff-mode-map "d" 'ediff-copy-both-to-C))
-  (add-hook 'ediff-keymap-setup-hook 'add-d-to-ediff-mode-map)
-
-  ;; Always expand file in ediff
-  (add-hook 'ediff-prepare-buffer-hook #'show-all)
-  ;; Do everything in one frame
-  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   )
 
 (use-package monky
