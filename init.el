@@ -1171,6 +1171,7 @@ horizontal mode."
   :straight org-plus-contrib
   :straight ob-ipython
   :straight ob-async
+  :straight ob-mermaid
   :straight ob-http
   :straight org-bullets
   :straight org-super-agenda
@@ -2221,6 +2222,10 @@ The screenshot tool is determined by `org-download-screenshot-method'."
 
   ;; Enable KOMA-script support
   (require 'ox-koma-letter)
+
+  ;; Export to mermaid
+  ;; npm install mermaid.cli
+  (setq ob-mermaid-cli-path "/home/yiufung/node_modules/.bin/mmdc")
 
   ;; org-pdftools
   (use-package org-pdftools
