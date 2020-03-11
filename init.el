@@ -3120,6 +3120,18 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
          ("<f11>" . nil)
          ("<f12>" . nil)))
 
+(use-package shell
+  :straight nil
+  :straight dirtrack
+  :straight ssh
+  :defer 3
+  :bind ("C-z C-j" . shell) ;; Bind to j to mimic "jump to"
+  :hook (shell-mode-hook . visual-line-mode)
+  :config
+  (set-variable 'dirtrack-list '("^.*[^ ]+:\\(.*\\)]" 1 nil))
+  (dirtrack-mode +1)
+  )
+
 ;;;; Auto-completion with Company
 
 (use-package company
