@@ -2226,6 +2226,9 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   ;; Export to mermaid
   ;; npm install mermaid.cli
   (setq ob-mermaid-cli-path "/home/yiufung/node_modules/.bin/mmdc")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((mermaid . t)))
 
   ;; org-pdftools
   (use-package org-pdftools
