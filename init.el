@@ -2881,11 +2881,11 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :demand t
   :straight t
   :straight pyim-basedict
-  ;; Need to run "make liberime" on build directory.
-  :straight (liberime-config
+  ;; Need to run "make liberime-core" on build directory.
+  :straight (liberime
              :host github
              :repo "merrickluo/liberime"
-             :files ("CMakeLists.txt" "Makefile" "src" "liberime-config.el"))
+             :files ("CMakeLists.txt" "Makefile" "src" "liberime.el" "liberime-config.el"))
   :init
   ;; See https://github.com/rime/home/wiki/UserGuide#%E5%90%8C%E6%AD%A5%E7%94%A8%E6%88%B6%E8%B3%87%E6%96%99
   ;; For syncing rime dictionary across laptops.
@@ -2898,7 +2898,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
          ("." . pyim-page-next-page)
          ("," . pyim-page-previous-page))
   :config
-  (require 'liberime-config)
+  (require 'liberime)
   ;; 儘可能試用 posframe 彈出
   (setq default-input-method "pyim"
         pyim-default-scheme 'rime
