@@ -1506,6 +1506,8 @@ horizontal mode."
    org-export-with-sub-superscripts '{}
    ;; Do not use babel to evaluate code when exporting.
    org-export-use-babel 't
+   ;; Don't include the validation link & creation tag
+   org-html-postamble 'nil ;; Don't include validation link and created tags
    ;; Logging settings: Better verbose than miss
    org-log-into-drawer t
    org-log-done 'time
@@ -2267,12 +2269,12 @@ Yiufung
   (setq outshine-cycle-emulate-tab t)
   )
 
-;;; Mail: notmuch
+;;; Mail
 ;; My email chain
 ;; Mailbox synchronizer: mbsync/isync
 ;; Mailbox indexer: notmuch
 ;; Initial tagging for mails: afew
-;; Reading email: notmuch-emacs
+;; Reading email: notmuch-emacs / gnus
 ;; Sending email: msmtp/msmtp-mta
 
 ;; General mail settings
