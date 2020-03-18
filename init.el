@@ -3462,6 +3462,13 @@ In that case, insert the number."
   :defer 3
   :hook (python-mode . lsp)) ; or lsp-deferred
 
+;;;; Debugging
+
+(use-package dap-mode
+  :defer 3
+  :config
+  (require 'dap-python))
+
 ;;;; C/C++
 ;; [[https://www.reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/][Reddit post on creating C++ IDE in Emacs]].
 (use-package ccls
