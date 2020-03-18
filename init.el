@@ -2475,6 +2475,41 @@ Yiufung
   (require 'nm-company)
   )
 
+(use-package outlook
+  :straight nil
+  :bind ("C-x M-e" . export-org-email)
+  :defer 3
+  :config
+  ;; Writing Outlook-style email in Org-mode
+  ;; See https://coredumped.dev/2019/02/08/using-org-mode-to-write-email-for-outlook/
+  (defun org-email-html-head ()
+    "Create the header with CSS for use with email"
+    (concat
+     "<style type=\"text/css\">\n"
+     "<!--/*--><![CDATA[/*><!--*/\n"
+     (with-temp-buffer
+       (insert-file-contents
+        (concat my-emacs-conf-directory "static/outlook.css"))
+       (buffer-string))
+     "/*]]>*/-->\n"
+     "</style>\n"))
+
+  (defun export-org-email ()
+    "Export the current email org buffer and copy it to the clipboard"
+    (interactive)
+    (let ((org-export-show-temporary-export-buffer nil)
+          (org-html-head (org-email-html-head))
+          (org-export-with-author nil) ;; Remove user and TOC
+          (org-export-with-toc nil)
+          (org-export-headline-levels 2) ;; Export up to 2 headlines
+          (org-export-with-section-numbers t)
+          (org-html-postamble nil)) ;; Don't include validation link and created tags
+      (org-html-export-as-html nil t nil nil nil) ;; Only export the current subtree
+      (with-current-buffer "*Org HTML Export*"
+        (kill-new (buffer-string)))
+      (message "HTML copied to clipboard")))
+  )
+
 (use-package org-caldav
   ;; Fastmail Calendar integration
   :defer 3
