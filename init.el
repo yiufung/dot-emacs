@@ -3186,7 +3186,9 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         ;; invert the navigation direction if the the completion
         ;; popup-isearch-match is displayed on top (happens near the bottom of
         ;; windows)
-        company-tooltip-flip-when-above t)
+        company-tooltip-flip-when-above t
+        company-minimum-prefix-length 1
+        company-idle-delay 0.5)
 
   ;; Directly press [1..9] to insert candidates
   ;; See http://oremacs.com/2017/12/27/company-numbers/
@@ -3217,6 +3219,7 @@ In that case, insert the number."
     (define-key map (kbd "<return>") nil))
 
   (global-company-mode t)
+  (company-quickhelp-mode +1)
   )
 
 ;;;; Heuristic text completion: hippie expand + dabbrev
@@ -3446,21 +3449,21 @@ In that case, insert the number."
     ("v" flycheck-verify-setup))
   )
 ;;;; Language Server Protocol
+
 (use-package lsp-mode
   :straight t
   :straight lsp-ui
   :straight company-lsp
+  :straight lsp-ivy
+  :straight lsp-treemacs
+  :defer 3
   :after company
-  :commands lsp-ui-mode
-  :hook (prog-mode . lsp-mode) ; Start LSP server in prog-mode
+  :hook (python-mode . lsp) ;; Start LSP server in python-mode
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  ;; (push 'company-lsp company-backends)
+  (setq lsp-enable-snippet nil
+        company-lsp-enable-snippet t)
   )
-
-(use-package lsp-python-ms
-  :defer 3
-  :hook (python-mode . lsp)) ; or lsp-deferred
 
 ;;;; Debugging
 
