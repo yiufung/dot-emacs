@@ -3461,8 +3461,10 @@ In that case, insert the number."
   :hook (python-mode . lsp) ;; Start LSP server in python-mode
   :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-enable-snippet nil
-        company-lsp-enable-snippet t)
+  (setq lsp-enable-snippet t
+        company-lsp-enable-snippet t
+        ;; Ignore duplicates when there is a same symbol with the same contents.
+        lsp-ui-sideline-ignore-duplicate t)
   )
 
 ;;;; Debugging
@@ -3654,7 +3656,8 @@ In that case, insert the number."
     (add-hook it 'turn-on-smartparens-strict-mode))
   ;; Non strict modes
   (--each '(ess-mode-hook
-            inferior-ess-r-mode-hook)
+            inferior-ess-r-mode-hook
+            python-mode-hook)
     (add-hook it 'smartparens-mode))
   )
 
