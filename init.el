@@ -722,6 +722,16 @@ Useful when hard line wraps are unwanted (email/sharing article)."
       (kill-region (point-min) (point-max))))
   )
 
+(defun reddit-code-indent (reg-beg reg-end)
+  "Indent region as reddit code style, and copy it."
+  (interactive "r")
+  (copy-region-as-kill reg-beg reg-end)
+  (with-temp-buffer
+    (yank)
+    (indent-rigidly (point-min) (point-max) 4)
+    (copy-region-as-kill (point-min) (point-max)))
+  )
+
 ;;; Completion Framework: Ivy / Swiper / Counsel
 (use-package counsel
   :demand t
