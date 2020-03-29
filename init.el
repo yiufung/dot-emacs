@@ -762,7 +762,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
          ("C-s j"   . counsel-dired-jump);; Jump to directory under current directory
          )
   :init
-  (setq ivy-rich--display-transformers-list
+  (setq ivy-rich-display-transformers-list
         '(ivy-switch-buffer
           (:columns
            ((ivy-rich-candidate (:width 50))  ; return the candidate itself
@@ -800,8 +800,8 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ivy-fixed-height-minibuffer t
         ivy-use-virtual-buffers nil ;; don't show recent files/bookmarks as buffers in C-x b
         ivy-use-selectable-prompt t ;; C-M-j to rename similar filenames
-        enable-recursive-minibuffers nil
-        ivy-re-builders-alist '((t . ivy--regex-plus))
+        ivy-initial-inputs-alist nil
+        ivy-re-builders-alist '((swiper . ivy--regex-plus) (t . ivy--regex-fuzzy))
         ivy-count-format "(%d/%d) "
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
@@ -3555,6 +3555,7 @@ In that case, insert the number."
 
 (use-package python
   :straight nil
+  :straight pydoc ;; view documentation
   :preface
   (defun create-or-switch-to-python ()
     "Switch to default `python' buffer.
@@ -3718,6 +3719,7 @@ In that case, insert the number."
   ;; :straight vmd-mode ; For GFM preview
   :straight edit-indirect
   :straight grip-mode
+  :hook (markdown-mode . visual-line-mode)
   :defer t
   :commands (markdown-mode gfm-mode)
   :mode (("README\\.md" . gfm-mode)
@@ -4291,6 +4293,7 @@ In that case, insert the number."
 
 (use-package elfeed
   ;; RSS Reader
+  :disabled ;; Replaced by gnus
   :defer 3
   :straight t
   :straight elfeed-org
