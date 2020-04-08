@@ -2568,6 +2568,29 @@ Yiufung
   (add-hook 'after-save-hook (lambda () (org-caldav-sync-with-delay 30)))
   )
 
+;;; Music
+
+(use-package emms
+  :defer 3
+  ;; So that we can use native C-w C-y for editing track
+  :hook (emms-playlist-mode . (lambda () (whole-line-or-region-local-mode -1)))
+  :config
+  (require 'emms-setup)
+  (emms-all)
+  (emms-history-load)
+
+  (setq emms-player-list '(emms-player-mpv)
+        emms-source-file-default-directory "/media/nas_documents/Music/"
+        emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find
+        emms-browser-covers 'emms-browser-cache-thumbnail
+        emms-info-asynchronously nil
+        emms-show-format "♪ %s"
+        ;; Change volume through pulse audio
+        emms-volume-change-function 'emms-volume-pulse-change
+        ;; Use `pactl list short sinks' to get proper sink
+        emms-volume-pulse-sink 2)
+  )
+
 ;;; Contacts: bbdb
 
 (use-package bbdb
