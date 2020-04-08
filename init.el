@@ -801,7 +801,9 @@ Useful when hard line wraps are unwanted (email/sharing article)."
         ivy-use-virtual-buffers nil ;; don't show recent files/bookmarks as buffers in C-x b
         ivy-use-selectable-prompt t ;; C-M-j to rename similar filenames
         ivy-initial-inputs-alist nil
-        ivy-re-builders-alist '((swiper . ivy--regex-plus) (t . ivy--regex-fuzzy))
+        ivy-re-builders-alist '((swiper . ivy--regex-plus)
+                                (counsel-ag . ivy--regex-plus)
+                                (t . ivy--regex-fuzzy))
         ivy-count-format "(%d/%d) "
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
@@ -2309,6 +2311,7 @@ Yiufung
   (gnus-summary-exit-hook . gnus-group-sort-groups-by-rank)
   (gnus-group-mode . gnus-topic-mode)
   ((gnus-browse-mode gnus-server-mode gnus-group-mode gnus-summary-mode) . hl-line-mode)
+  (gnus-started-hook . gnus-group-list-all-groups)
   (dired-mode . gnus-dired-mode)
   :config
   (require 'gnus-dired)
@@ -2491,7 +2494,7 @@ Yiufung
   :straight nil
   :bind ("C-x M-e" . export-org-email)
   :defer 3
-  :config
+  :init
   ;; Writing Outlook-style email in Org-mode
   ;; See https://coredumped.dev/2019/02/08/using-org-mode-to-write-email-for-outlook/
   (defun org-email-html-head ()
@@ -2568,12 +2571,13 @@ Yiufung
   (add-hook 'after-save-hook (lambda () (org-caldav-sync-with-delay 30)))
   )
 
-;;; Music
+;;; Multimedia Mgmt
 
 (use-package emms
   :defer 3
   ;; So that we can use native C-w C-y for editing track
   :hook (emms-playlist-mode . (lambda () (whole-line-or-region-local-mode -1)))
+  :bind (("<f12>" . emms))
   :config
   (require 'emms-setup)
   (emms-all)
