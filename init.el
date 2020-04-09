@@ -722,6 +722,12 @@ Useful when hard line wraps are unwanted (email/sharing article)."
       (kill-region (point-min) (point-max))))
   )
 
+(use-package page-break-lines
+  :defer 3
+  :config
+  (global-page-break-lines-mode)
+  )
+
 (defun reddit-code-indent (reg-beg reg-end)
   "Indent region as reddit code style, and copy it."
   (interactive "r")
@@ -2300,6 +2306,9 @@ Yiufung
  mail-envelope-from 'header)
 
 (use-package gnus
+  :straight nil
+  :straight nnhackernews
+  :straight nnreddit
   :bind (("C-c m" . 'gnus))
   :bind (:map gnus-article-mode-map
               ("o" . gnus-mime-copy-part)
@@ -2325,7 +2334,8 @@ Yiufung
           (nnmaildir "church"
                      (directory "~/Maildir/church/"))
           (nnmaildir "fastmail"
-                     (directory "~/Maildir/fastmail/"))))
+                     (directory "~/Maildir/fastmail/"))
+          (nnhackernews "")))
 
   ;; Render HTML content using gnus-w3m
   (setq mm-text-html-renderer 'gnus-w3m)
@@ -2577,7 +2587,7 @@ Yiufung
   :defer 3
   ;; So that we can use native C-w C-y for editing track
   :hook (emms-playlist-mode . (lambda () (whole-line-or-region-local-mode -1)))
-  :bind (("<f12>" . emms))
+  :bind (("s-<f12>" . emms))
   :config
   (require 'emms-setup)
   (emms-all)
