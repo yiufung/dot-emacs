@@ -689,6 +689,10 @@ is already narrowed."
   ;; Do everything in one frame
   (setq ediff-window-setup-function 'ediff-setup-windows-plain))
 
+(use-package ztree
+  ;; Compare directories in diff style
+  :defer 3)
+
 (use-package undo-tree
   :defer 3
   :config
