@@ -2587,7 +2587,9 @@ Yiufung
   :defer 3
   ;; So that we can use native C-w C-y for editing track
   :hook (emms-playlist-mode . (lambda () (whole-line-or-region-local-mode -1)))
-  :bind (("s-<f12>" . emms))
+  :bind (("s-<f12>" . emms)
+         :map emms-playlist-mode-map
+         ("SPC" . emms-pause))
   :config
   (require 'emms-setup)
   (emms-all)
