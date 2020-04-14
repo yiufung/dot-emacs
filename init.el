@@ -693,6 +693,12 @@ is already narrowed."
   ;; Compare directories in diff style
   :defer 3)
 
+(defun generate-password ()
+  "Generate a 16-digit password."
+  (interactive)
+  (kill-new (s-trim (shell-command-to-string " openssl rand -base64 32 | tr -d /=+ | cut -c -16")))
+  )
+
 (use-package undo-tree
   :defer 3
   :config
