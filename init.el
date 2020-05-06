@@ -853,8 +853,8 @@ Useful when hard line wraps are unwanted (email/sharing article)."
          :map dired-mode-map
          ("C-x M-h" . dired-du--toggle-human-readable)
          ("C-c C-r" . dired-rsync)
-         ("M-k" . dired-kill-subdir)
-         (")" . dired-git-info-mode))
+         ("M-k"     . dired-kill-subdir)
+         (")"       . dired-git-info-mode))
   :config
   (require 'dired-x) ;; extra functionality for dired
   (setq dired-listing-switches "-aBhl --group-directories-first"
@@ -1333,6 +1333,9 @@ horizontal mode."
    org-refile-targets '((org-agenda-files :maxlevel . 2))
    ;; Show candidates in one go
    org-outline-path-complete-in-steps nil
+   ;; Cache refile targets
+   ;; Use ‘C-u C-u C-u C-c C-w’ to clear cache
+   org-refile-use-cache t
    ;; Show full paths for refiling
    org-refile-use-outline-path t
    ;; Use current window
@@ -4020,12 +4023,10 @@ In that case, insert the number."
 (defun cyf/set-light-theme-background ()
   "White background for some themes hurts. Change it to yellow."
   (interactive)
-  (if (equal my-cur-theme 'leuven)
+  (if (equal (cyf/theme-type) 'light)
       (progn
-        (message "[cyf] Setting leuven backgrounds to floral white")
-        (custom-theme-set-faces
-         'leuven '(default ((t (:background "floral white")))))
-        ;; (set-background-color "floral white")
+        (message "[cyf] Light theme detected: Setting backgrounds to floral white")
+        (set-background-color "floral white")
         )
     ))
 
