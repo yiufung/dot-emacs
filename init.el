@@ -696,7 +696,7 @@ is already narrowed."
 (defun generate-password ()
   "Generate a 16-digit password."
   (interactive)
-  (kill-new (s-trim (shell-command-to-string " openssl rand -base64 32 | tr -d /=+ | cut -c -16")))
+  (kill-new (s-trim (shell-command-to-string "openssl rand -base64 32 | tr -d /=+ | cut -c -16")))
   )
 
 (use-package undo-tree
