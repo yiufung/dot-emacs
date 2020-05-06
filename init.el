@@ -2883,7 +2883,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
          :map flyspell-mode-map
          ("C-;" . nil)                  ; unbind the key, reserved for iedit
          ("C-," . nil)                  ; unbind the key, reserved for avy-jump
-         ("C-." . flyspell-auto-correct-previous-word) ; Call with C-u to enable rapid mode.
+         ("C-." . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
          )
   :config
   ;; Requires aspell support.
