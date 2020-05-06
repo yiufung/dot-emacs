@@ -1181,7 +1181,7 @@ horizontal mode."
    ("C-c w p"   . 'eyebrowse-prev-window-config)
    ("C-c n"     . 'eyebrowse-next-window-config)
    ("C-c p"     . 'eyebrowse-prev-window-config)
-   ("C-c '"     . 'eyebrowse-switch-to-window-config))
+   ("C-x '"     . 'eyebrowse-switch-to-window-config))
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
