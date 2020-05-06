@@ -2894,19 +2894,11 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; Suppress ispell output
   (advice-add 'ispell-change-dictionary :around #'suppress-messages)
   ;; only correct mistakes in a programming mode buffer that fall within a comment
-  (add-hook 'prog-mode-hook
-            (lambda ()
-              (setq auto-correct-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
+  (add-hook 'prog-mode-hook (lambda () (setq auto-correct-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
   ;; For text mode all the time
-  (add-hook 'text-mode-hook
-            (lambda ()
-              (setq auto-correct-predicate (lambda () t))))
+  (add-hook 'text-mode-hook (lambda () (setq auto-correct-predicate (lambda () t))))
   ;; don't work in source blocks in Org mode
-  (add-hook
-   'org-mode-hook
-   (lambda ()
-     (setq auto-correct-predicate
-           (lambda () (not (org-in-src-block-p))))))
+  (add-hook 'org-mode-hook (lambda () (setq auto-correct-predicate (lambda () (not (org-in-src-block-p))))))
   )
 
 (use-package sdcv
