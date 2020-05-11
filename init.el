@@ -829,7 +829,6 @@ Useful when hard line wraps are unwanted (email/sharing article)."
 
   ;; display at `ivy-posframe-style'
   (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
-  ;; (ivy-posframe-mode 1)
   )
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
@@ -912,12 +911,10 @@ output file. %i path(s) are relative, while %o is absolute.")
 
 (use-package windmove
   :straight nil
-  :bind (
-         ("s-j" . windmove-down)
+  :bind (("s-j" . windmove-down)
          ("s-k" . windmove-up)
          ("s-h" . windmove-left)
-         ("s-l" . windmove-right)
-         )
+         ("s-l" . windmove-right))
   )
 
 (use-package window
@@ -1176,12 +1173,13 @@ horizontal mode."
   (
    ("C-c w s"   . 'eyebrowse-switch-to-window-config)
    ("C-c w k"   . 'eyebrowse-close-window-config)
-   ("C-c w w"   . 'eyebrowse-last-window-config)
+   ("C-c w w"   . 'eyebrowse-switch-to-window-config)
    ("C-c w n"   . 'eyebrowse-next-window-config)
    ("C-c w p"   . 'eyebrowse-prev-window-config)
    ("C-c n"     . 'eyebrowse-next-window-config)
    ("C-c p"     . 'eyebrowse-prev-window-config)
-   ("C-x '"     . 'eyebrowse-switch-to-window-config))
+   ("C-x '"   . 'eyebrowse-last-window-config)
+   )
   :config
   (setq eyebrowse-wrap-around t
         eyebrowse-close-window-config-prompt t
