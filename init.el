@@ -976,7 +976,7 @@ horizontal mode."
 (use-package ace-window
   :defer 3
   :bind (("<C-return>" . ace-window))
-  :custom-face (aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 3.0))))
+  :custom-face (aw-leading-char-face ((t (:inherit ace-jump-face-foreground :height 1.0))))
   :config
   (setq
    ;; Home row is more convenient. Use home row keys that prioritize fingers that don't move.
@@ -2678,7 +2678,7 @@ Yiufung
               ("C-c C-p" . ssh-config-host-prev)
               ("C-c C-n" . ssh-config-host-next)))
 
-;;; View Documents: Info / DocView / PDF-Tools / Nov.el
+;;; View Documents: Info / DocView / PDF-Tools / Nov.el / Calibre
 
 (use-package info
   :straight nil
@@ -2862,6 +2862,14 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
 
   ;; (add-hook 'nov-post-html-render-hook 'my-nov-post-html-render-hook)
   )
+
+(use-package calibredb
+  :straight (calibredb :repo "chenyanming/calibredb.el" :host github)
+  :defer 5
+  :config
+  (setq calibredb-root-dir (expand-file-name "~/Dropbox/calibre-library")
+        calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
+        calibredb-program "/usr/bin/calibredb"))
 
 ;;; Spell-checking / Dictionary Lookup / Chinese input
 
