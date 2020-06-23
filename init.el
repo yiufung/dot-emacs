@@ -4252,6 +4252,13 @@ In that case, insert the number."
 (use-package treemacs
   :commands treemacs)
 
+(use-package explain-pause
+  :straight (:host github :repo "lastquestion/explain-pause-mode")
+  :defer 3
+  :config
+  (explain-pause-mode t)
+  )
+
 (use-package anki-editor
   :defer 10
   :after org
