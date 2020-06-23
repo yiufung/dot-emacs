@@ -1511,6 +1511,8 @@ horizontal mode."
            (fmt (if active "<%s>" "[%s]"))
            (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
       (unless (or (org-entry-get (point) created nil)
+                  ;; Don't match file-level capture. (e.g: org-roam)
+                  (string-match "\\#\\+TITLE\\:" (buffer-string))
                   ;; Beancount format does not accept :PROPERTY: syntax
                   (string-match "\\.beancount$" (buffer-name))
                   (string-match "\\.bean$" (buffer-name))
@@ -2066,6 +2068,22 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     (org-journal-time-prefix "** ")
     (org-journal-encrypt-journal t)
     (org-journal-enable-encryption nil))
+
+  (use-package org-roam
+    :defer 5
+    :straight (:host github :repo "org-roam/org-roam")
+    :custom
+    (org-roam-directory "~/Dropbox/journals/roam/")
+    :bind (:map org-roam-mode-map
+                (("C-c g SPC" . org-roam)
+                 ("C-c g g" . org-roam-find-file)
+                 ("C-c g G" . org-roam-graph-show))
+                :map org-mode-map
+                (("C-c g i" . org-roam-insert)))
+    :config
+    (org-roam-mode +1)
+    (require 'org-roam-protocol)
+    )
 
   ;; org-contacts
   (use-package org-contacts
