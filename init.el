@@ -2926,6 +2926,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                                                      my-private-conf-directory))
   ;; Suppress ispell output
   (advice-add 'ispell-change-dictionary :around #'suppress-messages)
+  (advice-add 'ispell-init-process :around #'suppress-messages)
+  (advice-add 'ispell-kill-ispell :around #'suppress-messages)
   ;; only correct mistakes in a programming mode buffer that fall within a comment
   (add-hook 'prog-mode-hook (lambda () (setq auto-correct-predicate (lambda () (nth 8 (syntax-ppss (point)))))))
   ;; For text mode all the time
