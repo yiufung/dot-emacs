@@ -3001,8 +3001,39 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :bind (("C-c T" . mw-thesaurus-lookup-at-point))
   )
 
+(use-package rime
+  :defer 3
+  :straight (rime :type git
+                  :host github
+                  :repo "DogLooksGood/emacs-rime"
+                  :files ("*.el" "Makefile" "lib.c"))
+  :bind (:map rime-mode-map
+              ("C-`" . 'rime-send-keybinding)
+              ("M-j" . 'rime-force-enable)
+              :map rime-active-mode-map
+              ("M-j" . 'rime-inline-ascii))
+  :custom
+  (default-input-method "rime")
+  (rime-show-candidate 'posframe)
+  (rime-posframe-style 'horizontal)
+  :config
+  (setq rime-disable-predicates
+        '(
+          rime-predicate-after-alphabet-char-p
+          rime-predicate-prog-in-code-p
+          rime-predicate-space-after-cc-p
+          rime-predicate-punctuation-after-space-cc-p
+          ;; rime-predicate-space-after-ascii-p
+          rime-predicate-current-uppercase-letter-p
+          ))
+  (setq rime-posframe-properties
+        (list :font "sarasa ui sc"
+              :internal-border-width 3))
+  )
+
 (use-package pyim
   :demand t
+  :disabled t
   :straight t
   :straight pyim-basedict
   ;; Need to run "make liberime-core" on build directory.
