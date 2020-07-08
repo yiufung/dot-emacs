@@ -4251,6 +4251,11 @@ In that case, insert the number."
   (setq-default olivetti-body-width 0.9)
   )
 
+(use-package literate-calc-mode
+  :straight (:host github :repo "sulami/literate-calc-mode.el")
+  :hook (org-mode . literate-calc-minor-mode)
+  :defer 3)
+
 (use-package treemacs
   :commands treemacs)
 
