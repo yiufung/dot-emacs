@@ -4224,6 +4224,13 @@ In that case, insert the number."
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
 
+(use-package eww
+  :straight nil
+  :config
+  (setq eww-search-prefix "https://www.google.com/search?client=firefox&q="
+        shr-width 120) ;; Too wide is difficult to read
+  )
+
 ;; Viewing Image in Emacs
 (use-package image-mode
   :straight nil
