@@ -4228,7 +4228,7 @@ In that case, insert the number."
   :straight nil
   :config
   (setq eww-search-prefix "https://www.google.com/search?client=firefox&q="
-        shr-width 120) ;; Too wide is difficult to read
+        shr-width 80) ;; Too wide is difficult to read
   )
 
 ;; Viewing Image in Emacs
