@@ -2105,6 +2105,12 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     :config
     (org-roam-mode +1)
     (require 'org-roam-protocol)
+    (setq org-roam-capture-templates
+          '(("d" "default" plain
+             #'org-roam-capture--get-point "%?"
+             :file-name "%<%Y%m%d-%H%M>-${slug}"
+             :head "#+TITLE: ${title}"
+             :unnarrowed t)))
     )
 
   ;; org-contacts
