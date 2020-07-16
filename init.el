@@ -620,10 +620,27 @@ is already narrowed."
   )
 
 (use-package change-inner
+  :defer 3
   :bind (("M-I" . copy-inner)
          ("M-O" . copy-outer)
          ("s-i" . change-inner)
          ("s-o" . change-outer))
+  )
+
+(use-package selected
+  ;; Run commands on selected region. Very smooth!
+  :defer 5
+  :bind (:map selected-keymap
+              ("q" . selected-off)
+              ("u" . upcase-region)
+              ("d" . downcase-region)
+              ("w" . count-words-region)
+              ;; ("m" . apply-macro-to-region-lines)
+              ("t" . org-table-convert-region)
+              ("o" . open-text-in-firefox)
+              )
+  :config
+  (selected-global-mode +1)
   )
 
 ;;; Text Editing / Substitution / Copy-Pasting
