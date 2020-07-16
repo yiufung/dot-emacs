@@ -1105,6 +1105,11 @@ horizontal mode."
   :bind (:map vc-prefix-map
               ("s" . 'git-gutter:stage-hunk)
               ("c" . 'magit-clone))
+  ;; :bind (:map magit-status-mode-map
+  ;;             ("M-1" . 'nil)
+  ;;             ("M-2" . 'nil)
+  ;;             ("M-3" . 'nil)
+  ;;             ("M-4" . 'nil))
   :bind (("C-x v r" . 'diff-hl-revert-hunk)
          ("C-x v n" . 'diff-hl-next-hunk)
          ("C-x v p" . 'diff-hl-previous-hunk))
@@ -4243,6 +4248,9 @@ In that case, insert the number."
 
 (use-package eww
   :straight nil
+  :bind (:map eww-mode-map
+              ("M-n" . nil)
+              ("M-p" . nil))
   :config
   (setq eww-search-prefix "https://www.google.com/search?client=firefox&q="
         shr-width 80) ;; Too wide is difficult to read
