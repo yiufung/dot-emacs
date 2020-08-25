@@ -3021,6 +3021,13 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   (rime-show-candidate 'posframe)
   (rime-posframe-style 'horizontal)
   :config
+  (defun rime-predicate-org-speed-commands ()
+    "If the current point is at org heading."
+    (and (string= major-mode "org-mode")
+         (bolp)
+         (looking-at org-heading-regexp)
+         org-use-speed-commands))
+
   (setq rime-disable-predicates
         '(
           rime-predicate-after-alphabet-char-p
@@ -3029,6 +3036,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
           rime-predicate-punctuation-after-space-cc-p
           ;; rime-predicate-space-after-ascii-p
           rime-predicate-current-uppercase-letter-p
+          rime-predicate-org-speed-commands
           ))
   (setq rime-posframe-properties
         (list :font "sarasa ui sc"
