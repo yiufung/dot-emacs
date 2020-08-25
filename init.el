@@ -997,7 +997,7 @@ horizontal mode."
   :config
   (setq
    ;; Home row is more convenient. Use home row keys that prioritize fingers that don't move.
-   aw-keys '(?j ?k ?l ?f ?d ?s ?g ?h ?\; ?a)
+   aw-keys '(?j ?k ?l ?m ?n ?o ?g)
    aw-scope 'visible)
   )
 
@@ -2654,6 +2654,9 @@ Yiufung
   ;; So that we can use native C-w C-y for editing track
   :hook (emms-playlist-mode . (lambda () (whole-line-or-region-local-mode -1)))
   :bind (("s-<f12>" . emms)
+         ("s-." . emms-seek-forward)
+         ("s-," . emms-seek-backward)
+         ("s-<return>" . emms-pause)
          :map emms-playlist-mode-map
          ("SPC" . emms-pause))
   :config
