@@ -2050,6 +2050,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
 
   ;; org-journal
   (use-package org-journal
+    :disabled
     :after org
     :defer 3
     :bind (("C-c J" . org-journal-new-entry))
@@ -2067,6 +2068,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (use-package org-roam
     :defer 5
     :straight (:host github :repo "org-roam/org-roam")
+    :bind (("C-c J" . org-roam-dailies-today))
     :custom
     (org-roam-directory "~/Dropbox/journals/roam/")
     :bind (:map org-roam-mode-map
@@ -2083,7 +2085,13 @@ The screenshot tool is determined by `org-download-screenshot-method'."
              #'org-roam-capture--get-point "%?"
              :file-name "%<%Y%m%d-%H%M>-${slug}"
              :head "#+TITLE: ${title}"
-             :unnarrowed t)))
+             :unnarrowed t))
+          org-roam-dailies-capture-templates
+          '(("d" "daily" plain #'org-roam-capture--get-point ""
+             :immediate-finish t
+             :file-name "dailies-%<%Y%m%d>"
+             :head "#+title: %<%Y-%m-%d-%a>"))
+          )
     )
 
   ;; org-contacts
