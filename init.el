@@ -1221,7 +1221,7 @@ horizontal mode."
   :straight gnuplot
   :straight helm-org-rifle
   :hook (org-mode . org-bullets-mode)
-  :hook (org-mode . org-indent-mode)
+  ;; :hook (org-mode . org-indent-mode)
   :hook (org-mode . turn-off-auto-fill)
   :hook (org-mode . visual-line-mode)
   :init
@@ -1521,7 +1521,7 @@ horizontal mode."
    ;; Always indent to the left
    org-indent-indentation-per-level 2
    ;; Start up indented
-   org-startup-indented 't
+   org-startup-indented 'nil
    ;; Narrowing behavior
    org-indirect-buffer-display 'current-window
    ;; Insert Org-mode mode-line automatically on an empty line when `org-mode' is called
