@@ -298,7 +298,9 @@ behavior added."
    ;; Revert pdf without asking
    revert-without-query '("\\.pdf" "\\.png")
    ;; Auto reverting files in remote machine. Useful for remote plotting.
-   auto-revert-remote-files t)
+   auto-revert-remote-files t
+   ;; Check revert status every 60s
+   auto-revert-interval 60)
   (global-auto-revert-mode 1) ;; work with auto-save with Org files in Dropbox
   )
 
