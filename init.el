@@ -747,6 +747,8 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   :straight ivy-posframe
   :straight smex
   :straight (flx :repo "lewang/flx" :host github :files ("flx.el"))
+  :straight (pinyinlib :repo "yiufung/pinyinlib.el" :host github) ;; Support for Pinyin searching with Simplified/Traditional Chinese
+  :straight opencc
   :bind (("M-s"     . swiper)
          ("C-c C-r" . ivy-resume)
          ("<f6>"    . ivy-resume)
@@ -802,14 +804,53 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   (minibuffer-depth-indicate-mode 1)
   (counsel-projectile-mode 1)
   (setq smex-save-file (expand-file-name "smex-items" my-private-conf-directory))
+
+  (require 'pinyinlib)
+  (require 'opencc)
+  (defun re-builder-extended-pattern (str)
+    "Build regex compatible with pinyin from STR.
+
+If first character is :, search Chinese (regardless of traditional or simplified).
+If first character is /, search camelCase."
+    (let* ((len (length str)))
+      (cond
+       ;; do nothing
+       ((<= (length str) 0))
+
+       ;; If the first charater of input in ivy is ":"
+       ;; remaining input is converted into Chinese pinyin regex.
+       ((string= (substring str 0 1) ":")
+        (setq str (pinyinlib-build-regexp-string (substring str 1 len) t t t t)))
+
+       ;; If the first charater of input in ivy is "/",
+       ;; remaining input is converted to pattern to search camel case word
+       ;; For example, input "/ic" match "isController" or "isCollapsed"
+       ((string= (substring str 0 1) "/")
+        (let* ((rlt "")
+               (i 0)
+               (subs (substring str 1 len))
+               c)
+          (when (> len 2)
+            (setq subs (upcase subs))
+            (while (< i (length subs))
+              (setq c (elt subs i))
+              (setq rlt (concat rlt (cond
+                                     ((and (< c ?a) (> c ?z) (< c ?A) (> c ?Z))
+                                      (format "%c" c))
+                                     (t
+                                      (concat (if (= i 0) (format "[%c%c]" (+ c 32) c)
+                                                (format "%c" c))
+                                              "[a-z]+")))))
+              (setq i (1+ i))))
+          (setq str rlt))))
+      (ivy--regex-plus str)))
+
   (setq ivy-height 10
         ivy-fixed-height-minibuffer t
         ivy-use-virtual-buffers nil ;; don't show recent files/bookmarks as buffers in C-x b
         ivy-use-selectable-prompt t ;; C-M-j to rename similar filenames
         ivy-initial-inputs-alist nil
-        ivy-re-builders-alist '((swiper . ivy--regex-plus)
-                                (counsel-ag . ivy--regex-plus)
-                                (t . ivy--regex-fuzzy))
+        ivy-re-builders-alist '((t . re-builder-extended-pattern))
         ivy-count-format "(%d/%d) "
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
