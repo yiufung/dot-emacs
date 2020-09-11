@@ -2089,51 +2089,79 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (setq org-tags-exclude-from-inheritance '("crypt")
         org-crypt-key "")
 
-  ;; org-journal
-  (use-package org-journal
-    :disabled
+  ;; (use-package org-roam
+  ;;   :demand t
+  ;;   :straight (:host github :repo "org-roam/org-roam")
+  ;;   )
+
+  ;; org-roam
+  (use-package org-roam
+    :defer 5
     :after org
-    :defer 3
-    :bind (("C-c J" . org-journal-new-entry))
+    :straight (:host github :repo "org-roam/org-roam")
+    :straight org-journal
     :custom
-    (org-journal-dir (expand-file-name "journal/" org-directory))
-    (org-journal-date-format "%A, %d %B %Y")
+    (org-roam-directory (expand-file-name "roam/" org-directory))
+    (org-journal-dir (expand-file-name "roam/journal/" org-directory))
+    (org-journal-date-format "%Y-%m-%d-%a")
     (org-journal-time-format "%H:%M")
     (org-journal-enable-agenda-integration t)
     (org-journal-file-type 'daily)
     (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
     (org-journal-time-prefix "** ")
     (org-journal-encrypt-journal t)
-    (org-journal-enable-encryption nil))
+    (org-roam-encrypt-files nil)
+    (org-journal-enable-encryption nil)
+    (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
 
-  (use-package org-roam
-    :defer 5
-    :straight (:host github :repo "org-roam/org-roam")
-    :bind (("C-c J" . org-roam-dailies-today))
-    :custom
-    (org-roam-directory "~/Dropbox/journals/roam/")
-    :bind (:map org-roam-mode-map
-                (("C-c g SPC" . org-roam)
-                 ("C-c g g" . org-roam-find-file)
-                 ("C-c g G" . org-roam-graph-show))
-                :map org-mode-map
-                (("C-c g i" . org-roam-insert)))
+    :bind (("C-c g SPC" . org-roam)
+           ("C-c g g" . org-roam-find-file)
+           ("C-c g j" . org-roam-dailies-today)
+           ("C-c g G" . org-roam-graph-show)
+           ("C-c g i" . org-roam-insert-immediate)
+           ("C-c J"   . org-journal-new-entry))
     :config
     (org-roam-mode +1)
     (require 'org-roam-protocol)
+    (push 'company-org-roam company-backends)
     (setq org-roam-capture-templates
           '(("d" "default" plain
              #'org-roam-capture--get-point "%?"
-             :file-name "%<%Y%m%d-%H%M>-${slug}"
-             :head "#+TITLE: ${title}"
+             :file-name "${slug}"
+             :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
              :unnarrowed t))
-          org-roam-dailies-capture-templates
-          '(("d" "daily" plain #'org-roam-capture--get-point ""
-             :immediate-finish t
-             :file-name "dailies-%<%Y%m%d>"
-             :head "#+title: %<%Y-%m-%d-%a>"))
+          org-roam-capture-immediate-template
+          '("d" "default" plain #'org-roam-capture--get-point "%?"
+            :file-name "${slug}"
+            :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+            :unnarrowed t
+            :immediate-finish t)
           )
     )
+  (use-package org-roam-server
+    :after org-roam
+    :defer 15
+    :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
+    :custom
+    (org-roam-server-host "127.0.0.1")
+    (org-roam-server-port 8080)
+    (org-roam-server-authenticate nil)
+    (org-roam-server-export-inline-images t)
+    (org-roam-server-serve-files nil)
+    (org-roam-server-served-file-extensions '("pdf" "mp4" "ogv"))
+    (org-roam-server-network-poll t)
+    (org-roam-server-network-arrows nil)
+    (org-roam-server-network-label-truncate t)
+    (org-roam-server-network-label-truncate-length 60)
+    (org-roam-server-network-label-wrap-length 20)
+    :config
+    (org-roam-server-mode +1)
+    )
+  (use-package company-org-roam
+    :defer 10
+    :straight (:host github :repo "org-roam/company-org-roam")
+    :config
+    (push 'company-org-roam company-backends))
 
   ;; org-contacts
   (use-package org-contacts
