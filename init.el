@@ -915,6 +915,32 @@ output file. %i path(s) are relative, while %o is absolute.")
 
   ;; Enable directory collapsing behavior just like GitHub
   (dired-collapse-mode)
+
+  ;;;;;;; Useful conversion functions
+  (defun dired/m4a-to-mp3 ()
+    "Used in dired to convert m4a files to mp3. ffmpeg required."
+    (interactive)
+    (let* ((files (dired-get-marked-files)))
+      (dolist (file files)
+        (let* ((basename (file-name-nondirectory file))
+               (file-base (file-name-base file))
+               (dirname (file-name-directory file))
+               (output-file (concat dirname file-base ".mp3"))
+               (command (format "ffmpeg -i \"%s\" -acodec libmp3lame -aq 2 \"%s\"" file output-file)))
+          (message command)
+          (async-shell-command command)))))
+  (defun dired/docx-to-html ()
+    "Used in dired to convert docx files to html. pandoc required."
+    (interactive)
+    (let* ((files (dired-get-marked-files)))
+      (dolist (file files)
+        (let* ((basename (file-name-nondirectory file))
+               (file-base (file-name-base file))
+               (dirname (file-name-directory file))
+               (output-file (concat dirname file-base ".html"))
+               (command (format "pandoc -i \"%s\" -o \"%s\"" file output-file)))
+          (message command)
+          (async-shell-command command)))))
   )
 
 (use-package bookmark-plus
