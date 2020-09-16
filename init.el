@@ -4328,6 +4328,11 @@ In that case, insert the number."
   :hook (image-mode . image-transform-fit-to-height)
   )
 
+;; Use pandoc to convert files
+(use-package pandoc-mode
+  :defer 10
+  :hook (text-mode . pandoc-mode))
+
 (use-package keycast)
 
 ;; Emacs Application Framework
