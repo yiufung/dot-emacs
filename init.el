@@ -4347,7 +4347,7 @@ In that case, insert the number."
 
 (use-package literate-calc-mode
   :straight (:host github :repo "sulami/literate-calc-mode.el")
-  :hook (org-mode . literate-calc-minor-mode)
+  ;; :hook (org-mode . literate-calc-minor-mode) ;; Performance degrade quickly on large Org files. Disabled.
   :defer 3)
 
 (use-package treemacs
