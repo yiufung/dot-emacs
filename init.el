@@ -2089,11 +2089,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (setq org-tags-exclude-from-inheritance '("crypt")
         org-crypt-key "")
 
-  ;; (use-package org-roam
-  ;;   :demand t
-  ;;   :straight (:host github :repo "org-roam/org-roam")
-  ;;   )
-
   ;; org-roam
   (use-package org-roam
     :defer 5
@@ -2113,13 +2108,13 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     (org-roam-encrypt-files nil)
     (org-journal-enable-encryption nil)
     (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
-
     :bind (("C-c g SPC" . org-roam)
-           ("C-c g g" . org-roam-find-file)
-           ("C-c g j" . org-roam-dailies-today)
-           ("C-c g G" . org-roam-graph-show)
-           ("C-c g i" . org-roam-insert-immediate)
-           ("C-c J"   . org-journal-new-entry))
+           ("C-c g g"   . org-roam-find-file)
+           ("C-c g j"   . org-roam-dailies-today)
+           ("C-c g G"   . org-roam-graph-show)
+           ("C-c g i"   . org-roam-insert-immediate)
+           ("C-c J"     . org-journal-new-entry)
+           ("<f12>"     . org-roam-capture))
     :config
     (org-roam-mode +1)
     (require 'org-roam-protocol)
