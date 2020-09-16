@@ -4413,9 +4413,11 @@ In that case, insert the number."
   :init
   (straight-use-package '(sword-to-org :host github :repo "alphapapa/sword-to-org"))
   :bind (("C-c B" . dtk-bible))
-  :custom (dtk-word-wrap t)
-  (dtk-default-module "ChiUn")
-  (dtk-default-module-category "Biblical Texts")
+  :custom
+  (dtk-word-wrap t) ;; Per-verse output
+  (dtk-module "ChiNCVt") ;; 新譯本繁體版
+  (dtk-module-category "Biblical Texts")
+  (dtk-compact-view nil)
   ;; Bible reading.
   ;; Install sword and xiphos. Use xiphos to download modules.
   ;; :hook (dtk-mode . auto-fill-mode) ;; Not implemented yet
