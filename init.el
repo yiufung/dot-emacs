@@ -1639,6 +1639,10 @@ horizontal mode."
    org-return-follows-link t
    )
 
+  ;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
+  ;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
+  (setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
+
   ;; Enable org-id for globally unique IDs
   (add-to-list 'org-modules 'org-id)
   (setq org-id-locations-file (expand-file-name ".org-id-locations" my-private-conf-directory)
