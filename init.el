@@ -3823,6 +3823,7 @@ In that case, insert the number."
   (setq  ess-default-style 'RStudio ;; Default code style: RStudio
          ess-tab-complete-in-script t ;; Tries to complete in script buffers
          ess-eldoc-show-on-symbol 'nil
+         ess-auto-width 'window ;; fit width to window
          ess-eval-visibly 'nowait ;; whether ess-eval-* commands display commands in process buffer
          ess-indent-with-fancy-comments 'nil  ;; Don't distinguish between #, ## and ###
          ess-smart-S-assign-key 'nil ;; Disabled auto replace of "_" to "<-"
