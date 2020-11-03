@@ -4353,8 +4353,9 @@ In that case, insert the number."
                                 (url-retrieve-synchronously devotional-url)
                               (libxml-parse-html-region (point-min) (point-max))))
        (content (dom-by-class devotional-page-dom "content full-resource")))
-    (switch-to-buffer "*Today's Valley of Vision Devotional*")
-    (delete-region (point-min) (point-max))
+    (switch-to-buffer (get-buffer-create "*Today's Valley of Vision Devotional*"))
+    (setq buffer-read-only nil)
+    (erase-buffer)
     (insert (car (dom-strings (dom-by-class content "title"))))
     (insert "\n\n\n")
     (insert (dom-text (nth 0 (dom-by-tag content 'p))))
@@ -4364,7 +4365,10 @@ In that case, insert the number."
     (goto-char (point-min))
     (while (re-search-forward " " nil t)
       (replace-match " "))
-    (goto-char (point-min))))
+    (goto-char (point-min))
+    (use-local-map (make-sparse-keymap))
+    (local-set-key "q" 'quit-window)
+    (setq buffer-read-only t)))
 
 (use-package eww
   :straight nil
