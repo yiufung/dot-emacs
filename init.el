@@ -4339,6 +4339,33 @@ In that case, insert the number."
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
 
+(require 'dom)
+(defun valley-of-vision ()
+  (interactive)
+  (let*
+      ((redirect-site-dom (with-current-buffer
+                              (url-retrieve-synchronously
+                               "https://banneroftruth.org/uk/valley/")
+                            (libxml-parse-html-region (point-min) (point-max))))
+       (devotional-url (string-trim
+                        (nth 4 (dom-strings (dom-by-class redirect-site-dom "list recently-added")))))
+       (devotional-page-dom (with-current-buffer
+                                (url-retrieve-synchronously devotional-url)
+                              (libxml-parse-html-region (point-min) (point-max))))
+       (content (dom-by-class devotional-page-dom "content full-resource")))
+    (switch-to-buffer "*Today's Valley of Vision Devotional*")
+    (delete-region (point-min) (point-max))
+    (insert (car (dom-strings (dom-by-class content "title"))))
+    (insert "\n\n\n")
+    (insert (dom-text (nth 0 (dom-by-tag content 'p))))
+    (insert "\n\n")
+    (insert (dom-text (nth 1 (dom-by-tag content 'p))))
+    ;; Replace all nbsp with space to avoid underscore visuals.
+    (goto-char (point-min))
+    (while (re-search-forward " " nil t)
+      (replace-match " "))
+    (goto-char (point-min))))
+
 (use-package eww
   :straight nil
   :bind (:map eww-mode-map
