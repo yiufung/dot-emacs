@@ -4341,11 +4341,11 @@ In that case, insert the number."
 
 (require 'dom)
 (defun valley-of-vision ()
+  "Read today's Valley of Vision devotional from Banner of the Truth website."
   (interactive)
   (let*
       ((redirect-site-dom (with-current-buffer
-                              (url-retrieve-synchronously
-                               "https://banneroftruth.org/uk/valley/")
+                              (url-retrieve-synchronously "https://banneroftruth.org/uk/valley/")
                             (libxml-parse-html-region (point-min) (point-max))))
        (devotional-url (string-trim
                         (nth 4 (dom-strings (dom-by-class redirect-site-dom "list recently-added")))))
