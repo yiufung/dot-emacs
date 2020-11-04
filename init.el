@@ -4357,10 +4357,10 @@ In that case, insert the number."
     (setq buffer-read-only nil)
     (erase-buffer)
     (insert (car (dom-strings (dom-by-class content "title"))))
-    (insert "\n\n\n")
-    (insert (dom-text (nth 0 (dom-by-tag content 'p))))
-    (insert "\n\n")
-    (insert (dom-text (nth 1 (dom-by-tag content 'p))))
+    (insert "\n")
+    (dotimes (i (1- (length (dom-by-tag content 'p)))) ;; Print everything except the last copyright issue
+      (insert "\n\n")
+      (insert (dom-text (nth i (dom-by-tag content 'p)))))
     ;; Replace all nbsp with space to avoid underscore visuals.
     (goto-char (point-min))
     (while (re-search-forward " " nil t)
