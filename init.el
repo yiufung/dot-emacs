@@ -2149,19 +2149,32 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     (org-roam-mode +1)
     (require 'org-roam-protocol)
     (push 'company-org-roam company-backends)
-    (setq org-roam-capture-templates
-          '(("d" "default" plain
-             #'org-roam-capture--get-point "%?"
-             :file-name "${slug}"
-             :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
-             :unnarrowed t))
-          org-roam-capture-immediate-template
-          '("d" "default" plain #'org-roam-capture--get-point "%?"
-            :file-name "${slug}"
-            :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
-            :unnarrowed t
-            :immediate-finish t)
-          )
+    (setq-default org-roam-capture-templates
+                  '(("d" "default" plain
+                     #'org-roam-capture--get-point "%?"
+                     :file-name "${slug}"
+                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                     :unnarrowed t)
+                    ("b" "bible" plain
+                     #'org-roam-capture--get-point "%?"
+                     :file-name "${slug}"
+                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:\n  %(concat \"hello\"
+           \"world\" \"${title}\")"
+                     :unnarrowed t))
+                  org-roam-capture-immediate-template
+                  '("d" "default" plain #'org-roam-capture--get-point "%?"
+                    :file-name "${slug}"
+                    :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                    :unnarrowed t
+                    :immediate-finish t)
+                  org-roam-capture-ref-templates
+                  '(("r" "ref" plain
+                     #'org-roam-capture--get-point "%?"
+                     :file-name "${slug}"
+                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:" :unnarrowed t))
+                  )
+    ;; Rebuild every 10 minutes when idle
+    (run-with-idle-timer 600 t 'org-roam-db-build-cache)
     )
   (use-package org-roam-server
     :after org-roam
