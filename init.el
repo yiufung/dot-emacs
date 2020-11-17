@@ -1967,6 +1967,14 @@ This function tries to do what you mean:
   ;; Org export to doc
   (setq org-odt-preferred-output-format "docx"
         org-odt-fontify-srcblocks t)
+  ;; Export Org table to xlsx
+  (defun org-table-export-to-xlsx ()
+    (interactive)
+    (let* ((source-file  (file-name-sans-extension (buffer-file-name
+                                                    (current-buffer))))
+           (csv-file (concat source-file ".csv")))
+      (org-table-export csv-file "orgtbl-to-csv")
+      (org-odt-convert csv-file "xlsx")))
 
   ;; Org Speed commands
   (setq org-use-speed-commands t)
