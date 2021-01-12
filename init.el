@@ -1988,9 +1988,11 @@ This function tries to do what you mean:
   ;; Export Org table to xlsx
   (defun org-table-export-to-xlsx ()
     (interactive)
-    (let* ((source-file  (file-name-sans-extension (buffer-file-name
-                                                    (current-buffer))))
-           (csv-file (concat source-file ".csv")))
+    (let* ((file-name (nth 4 (org-heading-components))
+                      ;; (file-name-sans-extension (buffer-file-name
+                      ;;                            (current-buffer)))
+                      )
+           (csv-file (concat file-name ".csv")))
       (org-table-export csv-file "orgtbl-to-csv")
       (org-odt-convert csv-file "xlsx")))
 
