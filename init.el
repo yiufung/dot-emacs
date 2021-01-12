@@ -1375,6 +1375,13 @@ horizontal mode."
   ;; Larger latex fragments
   (plist-put org-format-latex-options :scale 1.5)
 
+  ;; Don't let visual-line-mode shadow org-mode's key binding
+  (add-hook 'visual-line-mode-hook
+            (lambda () (when (derived-mode-p 'org-mode)
+                     (local-set-key (kbd "C-a") #'org-beginning-of-line)
+                     (local-set-key (kbd "C-e") #'org-end-of-line)
+                     (local-set-key (kbd "C-k") #'org-kill-line))))
+
   ;; Where to archive files
   (setq org-archive-location (concat org-my-archive-file "::* From %s"))
 
