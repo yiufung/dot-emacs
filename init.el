@@ -160,6 +160,7 @@
  mouse-wheel-progressive-speed nil ;; don't accelerate scrolling
  mouse-wheel-follow-mouse 't ;; scroll window under mouse
  scroll-step 1 ;; keyboard scroll one line at a time
+ view-read-only t ;; make read-only buffers in view mode
  )
 
 ;; Misc
@@ -362,11 +363,12 @@ behavior added."
   )
 
 (use-package whole-line-or-region
+  :disabled
   ;; If no region is active, C-w M-w will act on current line
   :defer 5
   ;; Right click to paste: I don't use the popup menu a lot.
   :bind ("<mouse-3>" . whole-line-or-region-yank)
-  :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
+  ;; :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
   :config
   (whole-line-or-region-global-mode)
   )
@@ -416,12 +418,17 @@ behavior added."
   :straight visual-fill-column
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
-  :bind (("<f8>" . (lambda () (interactive) (progn (visual-line-mode)
-                                               (follow-mode))))
+  :bind (("<f8>"            . (lambda () (interactive) (progn (visual-line-mode) (follow-mode))))
+         ("M-u"             . upcase-dwim)
+         ("M-l"             . downcase-dwim)
+         ("M-SPC"           . cycle-spacing)
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
+         ("C-w"             . backward-kill-word)
          ("C-x C-o"         . remove-extra-blank-lines)
+         ("<up>"            . scroll-down-line)
+         ("<down>"          . scroll-up-line)
          )
   :init
   ;; Move more quickly
@@ -1216,7 +1223,9 @@ horizontal mode."
 
 (use-package projectile
   :defer 5
+  :straight t
   :straight ripgrep ;; required by projectile-ripgrep
+  :straight (find-file-in-project :host github :repo "technomancy/find-file-in-project")
   :bind-keymap
   ("C-c P" . projectile-command-map)
   :bind (("C-c o" . 'projectile-find-file))
@@ -1224,7 +1233,14 @@ horizontal mode."
   ;; Where my projects and clones are normally placed.
   (setq projectile-project-search-path '("~/projects")
         projectile-completion-system 'ivy)
+
+  ;; Don't run projectile on remote buffers
+  (defadvice projectile-project-root (around ignore-remote first activate)
+    (unless (file-remote-p default-directory 'no-identification) ad-do-it))
   (projectile-mode +1)
+
+  ;; Find file in project
+  (setq ffip-use-rust-fd t)
   )
 
 (use-package eyebrowse
