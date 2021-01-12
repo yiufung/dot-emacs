@@ -363,12 +363,11 @@ behavior added."
   )
 
 (use-package whole-line-or-region
-  :disabled
   ;; If no region is active, C-w M-w will act on current line
   :defer 5
   ;; Right click to paste: I don't use the popup menu a lot.
   :bind ("<mouse-3>" . whole-line-or-region-yank)
-  ;; :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
+  :bind (:map whole-line-or-region-local-mode-map ("C-w" . kill-region-or-backward-word)) ;; Reserve for backward-kill-word
   :config
   (whole-line-or-region-global-mode)
   )
@@ -425,7 +424,6 @@ behavior added."
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
-         ("C-w"             . backward-kill-word)
          ("C-x C-o"         . remove-extra-blank-lines)
          ("<up>"            . scroll-down-line)
          ("<down>"          . scroll-up-line)
