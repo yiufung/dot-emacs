@@ -1651,6 +1651,8 @@ horizontal mode."
    org-insert-heading-respect-content nil
    ;; Warn when editing invisible area
    org-catch-invisible-edits 'show-and-error
+   ;; Protect subtree
+   org-ctrl-k-protect-subtree t
    ;; Use C-c C-o to open links, but this should be handier.
    org-return-follows-link t
    )
