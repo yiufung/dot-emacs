@@ -1526,7 +1526,7 @@ horizontal mode."
           ("A" "Anki cloze"
            entry
            (file+headline org-my-anki-file "Dispatch")
-           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n** Extra\n")
+           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%?\n** Extra\n")
 
           ("c" "all todos" ;; Capture first, refile later
            entry
