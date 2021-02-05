@@ -42,10 +42,12 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; Bootstrap `use-package'
-(setq-default use-package-always-defer t ; Always defer load package to speed up startup time
-              use-package-verbose nil ; Don't report loading details
-              use-package-expand-minimally t  ; make the expanded code as minimal as possible
-              use-package-enable-imenu-support t) ; Let imenu finds use-package definitions
+(setq-default
+ ;; use-package-always-demand t ; Always defer loading package to speed up startup time
+ use-package-always-defer t
+ use-package-verbose t ; Don't report loading details
+ use-package-expand-minimally t  ; make the expanded code as minimal as possible
+ use-package-enable-imenu-support t) ; Let imenu finds use-package definitions
 ;; Integration with use-package
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
