@@ -1377,8 +1377,9 @@ horizontal mode."
 
   ;; Default org-mode startup
   (setq org-startup-folded t
-        org-startup-with-inline-images t
-        org-startup-with-latex-preview t
+        org-startup-indented t
+        org-startup-with-inline-images nil
+        org-startup-with-latex-preview nil
         org-latex-preview-ltxpng-directory (expand-file-name "ltximg/" org-directory))
   ;; Larger latex fragments
   (plist-put org-format-latex-options :scale 1.5)
@@ -1425,6 +1426,8 @@ horizontal mode."
   (org-remove-file org-my-web-archive-file)
   (org-remove-file org-my-archive-file)
 
+  ;; Keep using narrow-or-widen-dwim. See above.
+  (unbind-key (kbd "C-x n") org-mode-map)
 
   (setq
    ;; Refile candidates
@@ -1506,6 +1509,7 @@ horizontal mode."
    org-agenda-todo-ignore-with-date t
    ;; Define when my day really ends (well, normally earlier than that)
    org-extend-today-until 4
+   org-use-effective-time t
    ;; Show meetings in org agenda
    org-agenda-include-diary t)
 
@@ -1660,6 +1664,8 @@ horizontal mode."
    org-hierarchical-todo-statistics 'nil
    ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
    org-hide-emphasis-markers t
+   ;; Hide leading stars
+   org-hide-leading-stars t
    ;; resepect heading.
    org-insert-heading-respect-content nil
    ;; Warn when editing invisible area
@@ -1840,18 +1846,22 @@ horizontal mode."
 
   ;; In org-version >= 9.2, structure template is changed.
   ;; Below line allows me to keep using previous patterns.
-  (when (not (version< (org-version) "9.2"))
-    (require 'org-tempo))
-
-  ;; Now set structures for both new and old.
-  (if (version<  (org-version) "9.2")
-      (dolist (ele old-structure-template-alist)
-        (add-to-list 'org-structure-template-alist ele))
-    (dolist (ele new-structure-template-alist)
-      (add-to-list 'org-structure-template-alist ele))
-    (dolist (ele my-tempo-keywords-alist)
-      (add-to-list 'org-tempo-keywords-alist ele))
-    )
+  (require 'org-tempo)
+  (dolist (ele new-structure-template-alist)
+    (add-to-list 'org-structure-template-alist ele))
+  (dolist (ele my-tempo-keywords-alist)
+    (add-to-list 'org-tempo-keywords-alist ele))
+  ;; (when (not (version< (org-version) "9.2"))
+  ;;   (require 'org-tempo))
+  ;; ;; Now set structures for both new and old.
+  ;; (if (version<  (org-version) "9.2")
+  ;;     (dolist (ele old-structure-template-alist)
+  ;;       (add-to-list 'org-structure-template-alist ele))
+  ;;   (dolist (ele new-structure-template-alist)
+  ;;     (add-to-list 'org-structure-template-alist ele))
+  ;;   (dolist (ele my-tempo-keywords-alist)
+  ;;     (add-to-list 'org-tempo-keywords-alist ele))
+  ;;   )
 
   ;; Default code block settings
   (setq org-babel-default-header-args:python
