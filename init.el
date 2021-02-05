@@ -265,7 +265,7 @@ behavior added."
 
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
-                                                                                    my-emacs-conf-directory))))
+                                                                                my-emacs-conf-directory))))
 (global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 
@@ -327,7 +327,7 @@ behavior added."
              dired-directory)))))
   :hook (dired-mode . recentf-add-dired-directory)
   :config
-  (setq recentf-save-file "~/.emacs.d/data/recentf"
+  (setq recentf-save-file "~/.emacs.default/data/recentf"
         recentf-max-saved-items 'nil ;; Save the whole list
         recentf-max-menu-items 50
         ;; Cleanup list if idle for 10 secs
@@ -384,7 +384,6 @@ behavior added."
   ;; A handful of useful functions
   :defer 1
   :bind (
-         ("C-x t"      . 'crux-swap-windows)
          ("C-c b"      . 'crux-create-scratch-buffer)
          ("C-x o"      . 'crux-open-with)
          ("C-x f"      . 'crux-recentf-find-file)
@@ -885,6 +884,7 @@ If first character is /, search camelCase."
 (use-package dired
   :defer 3
   :straight async
+  :straight f
   :straight dired-du ;; Only enable when needed
   :straight dired-git-info ;; Show last git commit message alongside with file
   :straight diredfl ;; Colorful columns
@@ -927,7 +927,7 @@ Within CMD, %i denotes the input file(s), and %o denotes the
 output file. %i path(s) are relative, while %o is absolute.")
 
   ;; Enable directory collapsing behavior just like GitHub
-  (dired-collapse-mode)
+  ;; (dired-collapse-mode)
 
   ;;;;;;; Useful conversion functions
   (defun dired/m4a-to-mp3 ()
@@ -1290,7 +1290,7 @@ horizontal mode."
   :straight org-plus-contrib
   :straight ob-ipython
   :straight ob-async
-  :straight ob-mermaid
+  :straight (ob-mermaid :host github :repo "yiufung/ob-mermaid")
   :straight ob-http
   :straight org-bullets
   :straight org-super-agenda
@@ -2164,7 +2164,8 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (use-package org-roam
     :defer 5
     :after org
-    :straight (:host github :repo "org-roam/org-roam")
+    :after company
+    :straight t
     :straight org-journal
     :custom
     (org-roam-directory (expand-file-name "roam/" org-directory))
@@ -2238,9 +2239,15 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     )
   (use-package company-org-roam
     :defer 10
-    :straight (:host github :repo "org-roam/company-org-roam")
+    :after org-roam
+    :after company
     :config
     (push 'company-org-roam company-backends))
+  (use-package org-roam-bibtex
+    :defer 10
+    :after org-roam
+    :hook (org-roam-mode . org-roam-bibtex-mode)
+    :bind ((("C-c g b" . orb-note-actions))))
 
   ;; org-contacts
   (use-package org-contacts
@@ -2268,6 +2275,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     :defer 10
     :straight t
     :straight ivy-bibtex
+    :straight helm-bibtex
     :straight org-noter
     :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
     :bind ("H-b" . ivy-bibtex) ;; open bibliography
@@ -2430,6 +2438,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
    )
 
   ;; helm-org-rifle
+  (require 'helm-source)
   (setq helm-org-rifle-show-path t)
 
   ;; Export to Confluence Wiki
@@ -2887,9 +2896,10 @@ Yiufung
 (use-package pdf-tools
   :defer t
   ;; :pin manual ;; manually update
+  :straight t
   :straight tablist
   :straight hydra
-  :straight web-server
+  :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server")
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
                         (expand-file-name "elisp/pdf-tools-20180428.827/"
                                           my-emacs-conf-directory)))
@@ -3802,10 +3812,13 @@ In that case, insert the number."
    '((jupyter . t)))
   )
 
+(use-package simple-httpd
+  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd"))
+
 (use-package ein
+  :disabled t
   ;; Jupyter Notebook in Emacs
   :straight t
-  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd")
   :bind (("H-j" . 'ein:notebooklist-login)
          ("H-h" . 'ein:jupyterhub-connect)
          ("H-J" . 'ein:jupyter-server-start)
@@ -4013,10 +4026,12 @@ In that case, insert the number."
   :config
   (setq-default markdown-enable-math t
                 markdown-asymmetric-header t
-                markdown-hide-urls t)
+                markdown-hide-urls t
+                markdown-max-image-size '(50 . 40))
   )
 
 (use-package polymode
+  :disabled
   :straight poly-markdown ; RMarkdown support
   :straight poly-R
   :after markdown-mode
