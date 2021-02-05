@@ -14,6 +14,7 @@
                               (setq gc-cons-threshold 800000
                                     gc-cons-percentage 0.1)
                               (garbage-collect)) t)
+;; (setq comp-deferred-compilation-deny-list '("\\(?:[^z-a]*-autoloads\\.el$\\)"))
 
 ;; Always follow symlinks. init files are normally stowed/symlinked.
 (setq vc-follow-symlinks t
@@ -161,6 +162,11 @@
  mouse-wheel-follow-mouse 't ;; scroll window under mouse
  scroll-step 1 ;; keyboard scroll one line at a time
  view-read-only t ;; make read-only buffers in view mode
+ ;; Native comp
+ package-native-compile t
+ comp-async-report-warnings-errors nil
+ ;; Ignore 'ad-handle-definition' redefined warnings
+ ad-redefinition-action 'accept
  )
 
 ;; Misc
