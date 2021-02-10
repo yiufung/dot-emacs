@@ -3139,8 +3139,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :commands (sdcv-search-pointer sdcv-search-pointer+ sdcv-search-input sdcv-search-input+)
   :custom-face (sdcv-tooltip-face ((t (:foreground "black" :background "gainsboro"))))
   :custom-face (internal-border ((t (:background "LightGrey"))))
-  :bind (("C-c D" . sdcv-search-pointer)
-         ("C-c d" . sdcv-search-pointer+))
+  :bind (("C-c d" . sdcv-search-input)
+         ("s-d" . sdcv-search-input+))
   :bind (:map sdcv-mode-map
               ("s" . outline-show-entry)
               ("h" . outline-hide-entry)
@@ -3187,7 +3187,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                                         "WordNet"
                                         )
         sdcv-tooltip-border-width 5
-        sdcv-tooltip-timeout 5
+        sdcv-tooltip-timeout 3
         sdcv-dictionary-data-dir (expand-file-name "stardict" my-private-conf-directory))
   )
 
