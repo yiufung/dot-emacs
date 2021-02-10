@@ -340,8 +340,11 @@ behavior added."
 
 (use-package super-save
   :defer 3
+  :after eyebrowse
   :config
   (setq auto-save-default nil)
+  (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
+  (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
   (super-save-mode +1))
 
 (use-package aggressive-indent
@@ -3507,8 +3510,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         ;; popup-isearch-match is displayed on top (happens near the bottom of
         ;; windows)
         company-tooltip-flip-when-above t
-        company-minimum-prefix-length 1
-        company-idle-delay 0.5)
+        company-minimum-prefix-length 3
+        company-idle-delay 3)
 
   ;; Directly press [1..9] to insert candidates
   ;; See http://oremacs.com/2017/12/27/company-numbers/
@@ -4500,7 +4503,7 @@ In that case, insert the number."
   ;; :hook (org-mode . olivetti-mode)
   ;; :hook (org-agenda-mode . olivetti-mode)
   :config
-  (setq-default olivetti-body-width 0.9)
+  (setq-default olivetti-body-width 70)
   )
 
 (use-package literate-calc-mode
