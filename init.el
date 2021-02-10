@@ -754,6 +754,10 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   )
 
 ;;; Completion Framework: Ivy / Swiper / Counsel
+(use-package orderless
+  :ensure t
+  :custom (completion-styles '(orderless)))
+
 (use-package counsel
   :demand t
   :straight ivy-hydra
@@ -858,7 +862,9 @@ If first character is /, search camelCase."
                                               "[a-z]+")))))
               (setq i (1+ i))))
           (setq str rlt))))
-      (ivy--regex-plus str)))
+      ;; (ivy--regex-plus str)
+      (orderless-ivy-re-builder str) ;; Use orderless regex engine
+      ))
 
   (setq ivy-height 10
         ivy-fixed-height-minibuffer t
