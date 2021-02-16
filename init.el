@@ -488,7 +488,8 @@ Otherwise, call `delete-blank-lines'."
       (run-at-time time-duration nil #'alert msg-to-show)))
 
   ;; Activate `visual-fill-column-mode' in every buffer that uses `visual-line-mode'
-  (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
+  ;; Disable for now: conflict with olivetti.el
+  ;; (add-hook 'visual-line-mode-hook #'visual-fill-column-mode)
   (setq-default visual-fill-column-width 119
                 visual-fill-column-center-text nil)
   )
