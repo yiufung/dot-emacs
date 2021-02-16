@@ -1208,6 +1208,8 @@ horizontal mode."
     :commands (git-gutter:stage-hunk)
     :bind (:map vc-prefix-map
                 ("s" . 'git-gutter:stage-hunk))
+    :config
+    (setq git-gutter+-disabled-modes '(org-mode image-mode))
     )
 
   ;; Someone says this will make magit on Windows faster.
@@ -2845,6 +2847,37 @@ Yiufung
         emms-volume-pulse-sink 2)
   )
 
+(use-package mpv
+  :defer t
+  :after org
+  :config
+  (org-link-set-parameters "mpv" :follow #'mpv-play)
+  (defun org-mpv-complete-link (&optional arg)
+    (replace-regexp-in-string
+     "file:" "mpv:"
+     (org-link-complete-file arg)
+     t t))
+  (defun my:mpv/org-metareturn-insert-playback-position ()
+    (when-let ((item-beg (org-in-item-p)))
+      (when (and (not org-timer-start-time)
+                 (mpv-live-p)
+                 (save-excursion
+                   (goto-char item-beg)
+                   (and (not (org-invisible-p)) (org-at-item-timer-p))))
+        (mpv-insert-playback-position t))))
+  (add-hook 'org-metareturn-hook #'my:mpv/org-metareturn-insert-playback-position)
+  )
+
+(use-package openwith
+  :defer 3
+  :disabled
+  :config
+  (setq openwith-associations
+        '(
+          '(openwith-make-extension-regexp )
+          ))
+  (openwith-mode t))
+
 ;;; Contacts: bbdb
 
 (use-package bbdb
@@ -3155,6 +3188,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
               ("h" . outline-hide-entry)
               ("n" . sdcv-next-dictionary)
               ("p" . sdcv-previous-dictionary)
+              ("g" . sdcv-search-input)
               ("l" . recenter-top-bottom)
               ("<tab>" . cyf-toggle-sdcv-entry)
               ("<S-iso-lefttab>" . cyf-toggle-sdcv-all) ;; <S-tab>
