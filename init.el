@@ -294,6 +294,7 @@ behavior added."
 (use-package hungry-delete
   :defer 3
   :config
+  (setq-default hungry-delete-join-reluctantly t)
   (global-hungry-delete-mode))
 
 (use-package autorevert
@@ -1162,8 +1163,9 @@ horizontal mode."
 
 ;; A pacman hook is to used to update nodejieba whenever necessary
 (use-package jieba
+  :disabled t
   :straight (:host github :repo "cireu/jieba.el" :files (:defaults "*.js")) ;; Need to symlink js for server too
-  :defer 3
+  :defer 10
   :config
   (jieba-mode))
 
