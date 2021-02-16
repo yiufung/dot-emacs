@@ -271,11 +271,11 @@ behavior added."
 
 (use-package beacon
   ;; Highlight the cursor whenever it scrolls
+  :disabled t
   :defer 5
   :bind (("C-<f12>" . beacon-blink)) ;; useful when multiple windows
   :config
-  (setq beacon-size 10)
-  (beacon-mode 1))
+  (setq beacon-size 10))
 
 (use-package uniquify
   ;; unique buffer names dependent on file name
