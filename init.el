@@ -1089,7 +1089,7 @@ horizontal mode."
  ;; Default rules
  display-buffer-alist
  `(;; Right side for most Help, Agenda, Trace, etc buffers
-   ("*\\(Help\\|help\\|Man.*\\|trace-\\|Backtrace\\|RefTeX.*\\|ess-describe\\|SDCV.*\\| Merriam.*\\)"
+   ("*\\(Help\\|help\\|Man.*\\|trace-\\|Backtrace\\|RefTeX.*\\|ess-describe\\|Merriam.*\\)"
     (display-buffer-reuse-mode-window display-buffer-in-previous-window display-buffer-in-side-window)
     (side . right)
     (slot . 1)
