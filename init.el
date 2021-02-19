@@ -1401,10 +1401,10 @@ horizontal mode."
   ;; See also org-caldav
   (setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
   ;; Personal files
-  (setq org-default-notes-file (expand-file-name "plan-office.org" org-directory))
+  (setq org-my-plan-office-file (expand-file-name "plan-office.org" org-directory))
+  (setq org-my-office-file (expand-file-name "office.org" org-directory))
   (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
   (setq org-my-plan-church-file (expand-file-name "church/plan-church.org" org-directory))
-  (setq org-my-office-file (expand-file-name "office.org" org-directory))
   (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
   (setq org-my-life-file (expand-file-name "life.org" org-directory))
   (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
@@ -1434,7 +1434,7 @@ horizontal mode."
   ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
   ;; list of tags for font settings
   (setq org-todo-keywords
-        '((sequence "TODO(t!)" "NEXT(n)" "IN-PROGRESS(i!)" "WAIT(w@)" "BLOCKED(b@/!)" "SOMEDAY(s)" "CANCELLED(c@/!)" "DONE(d!)")))
+        '((sequence "TODO(t!)" "NEXT(n)" "WAIT(w@)" "CANCELLED(c@/!)" "DONE(d!)")))
   ;; Setup for ordered tasks. Initiate with C-c C-x o
   (setq org-enforce-todo-dependencies nil)
   ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
@@ -1442,10 +1442,7 @@ horizontal mode."
         '(("CANCELLED" ("ARCHIVE" . t))
           ("TODO" ("ARCHIVE" . nil))
           ("NEXT" ("ARCHIVE" . nil))
-          ("IN-PROGRESS" ("ARCHIVE" . nil))
           ("WAIT" ("ARCHIVE" . nil))
-          ("BLOCKED" ("ARCHIVE" . nil))
-          ("SOMEDAY" ("ARCHIVE" . nil))
           ("DONE" ("ARCHIVE" . nil)))
         )
 
@@ -1494,7 +1491,7 @@ horizontal mode."
       ( ;; deadlines
        (tags-todo "+DEADLINE<=\"<today>\""
                   ((org-agenda-overriding-header "Late Deadlines")))
-       ;; scheduled  past due
+       ;; scheduled past due
        (tags-todo "+SCHEDULED<=\"<today>\""
                   ((org-agenda-overriding-header "Late Scheduled")))
        ;; now the agenda
@@ -1508,11 +1505,23 @@ horizontal mode."
        ;; and last a global todo list
        (todo "TODO")))
      ("o" "Agenda and Office-related Tasks"
-      ((agenda "" ((org-agenda-tag-filter-preset '("+office"))
-                   ;; Show agenda for this whole week, and first 2 days of next week
-                   (org-agenda-start-on-weekday 1) ;; Always start on Monday
-                   (org-agenda-span 9))))
-      nil ("/tmp/office.html" "/tmp/office.txt" "/tmp/office.pdf" "/tmp/office.ps"))
+      (
+       ;; Task todo
+       (todo "TODO")
+       ;; Task planned next
+       (todo "NEXT")
+       ;; recent agenda
+       (agenda "" ((org-agenda-start-on-weekday 1) ;; Always start on Monday
+                   (org-agenda-span 3)))
+       ;; Waiting someone
+       (todo "WAIT")
+       ;; Recently done
+       (tags "schedule/DONE")
+       )
+      ;; Common setting for above commands
+      ((org-agenda-files `(,org-my-plan-office-file)))
+      ;; Export with org-store-agenda-views
+      ("/tmp/office.html" "/tmp/office.txt" "/tmp/office.pdf" "/tmp/office.ps"))
      ("h" "Home"
       ((agenda "" ((org-agenda-tag-filter-preset '("+home"))
                    ;; Show upcoming 3 days
@@ -1520,15 +1529,6 @@ horizontal mode."
       nil ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
      ("c" "Church"
       ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
-     ("to" "things TODO in Office"
-      ((tags-todo "office/TODO"))
-      nil ("/tmp/todo-office.pdf"))
-     ("th" "things TODO at Home"
-      ((tags-todo "home/TODO"))
-      nil ("/tmp/todo-home.pdf"))
-     ("tc" "things TODO in Church"
-      ((tags-todo "church/TODO"))
-      nil ("/tmp/todo-church.pdf"))
      )
    ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
    ;; refresh instead. Note that it can still be killed by kill-buffer. To
@@ -1557,6 +1557,12 @@ horizontal mode."
           (org-agenda-with-colors t)
           (org-agenda-remove-tags t)
           (htmlize-output-type 'css)))
+  ;; Regenerate task-view periodically. Prefer light theme when export
+  (run-with-idle-timer 600 t '(lambda ()
+                                (progn
+                                  (load-theme 'modus-operandi t)
+                                  (org-store-agenda-views)
+                                  (load-theme 'modus-vivendi t))))
 
   ;; Auto save org-files, so that we prevent the locking problem between computers
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -1588,7 +1594,7 @@ horizontal mode."
 
           ("o" "office tasks"
            entry
-           (file+headline org-default-notes-file "Schedule")
+           (file+headline org-my-plan-office-file "Schedule")
            "* TODO %?\n")
 
           ("m" "meeting"
@@ -1773,7 +1779,8 @@ horizontal mode."
     :config
     ;; let Org/Htmlize assign classes only, and to use a style file to
     ;; define the look of these classes. See docs for more info.
-    (setq-default org-html-htmlize-output-type 'css)
+    (setq-default org-html-htmlize-output-type 'css
+                  org-html-head-include-default-style nil)
 
     ;; put your css files here
     ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
@@ -1794,7 +1801,6 @@ horizontal mode."
     (toggle-org-custom-inline-style)
 
     (defun org-theme ()
-      (interactive)
       (let* ((cssdir org-theme-css-dir)
              (css-choices (directory-files cssdir nil ".css$"))
              (css (completing-read "theme: " css-choices nil t)))
@@ -2346,7 +2352,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
                                  "pdfs/" ;; Must have / ending for working with org-noter
                                  my-bibliography-directory))
     ;; variables for org-noter
-    (setq-default org-noter-notes-search-path `(,(expand-file-name "notes" org-directory))
+    (setq-default org-noter-notes-search-path `(,(expand-file-name "notes" org-directory) ,org-roam-directory)
                   org-noter-default-notes-file-names '("paper-notes.org")
                   org-noter-auto-save-last-location t
                   org-noter-always-create-frame t)
@@ -2801,7 +2807,7 @@ Yiufung
                                         :files (,org-my-plan-free-file ,org-my-life-file)
                                         :inbox ,(expand-file-name "CalHome.org" my-private-calendar-directory))
                           (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
-                                        :files (,org-my-office-file ,org-default-notes-file) ;; default note is plan-office
+                                        :files (,org-my-office-file ,org-my-plan-office-file) ;; default note is plan-office
                                         :inbox ,(expand-file-name "CalOffice.org" my-private-calendar-directory))
                           (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
                                         :files (,org-my-plan-church-file)
@@ -4325,26 +4331,20 @@ In that case, insert the number."
   (cond ((equal 'dark (cyf/theme-type))
          (progn
            (setq org-todo-keyword-faces
-                 '(("TODO" . "dark khaki")
-                   ("NEXT" . "dark salmon")
-                   ("IN-PROGRESS" . "dark cyan")
-                   ("WAIT" . "dark goldenrod")
-                   ("BLOCKED" . "dark red")
-                   ("SOMEDAY" . "DarkSlateGray4")
-                   ("CANCELLED" . "dark grey")
-                   ("DONE" . "dark sea green")))
+                 '(("TODO" . "darkkhaki")
+                   ("NEXT" . "darksalmon")
+                   ("WAIT" . "darkgoldenrod")
+                   ("CANCELLED" . "darkgrey")
+                   ("DONE" . "darkseagreen")))
            (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE")))
         ((equal 'light (cyf/theme-type))
          (progn
            (setq org-todo-keyword-faces
                  '(("TODO" . "black")
-                   ("NEXT" . "rosy brown")
-                   ("IN-PROGRESS" . "royal blue")
+                   ("NEXT" . "rosybrown")
                    ("WAIT" . "sienna")
-                   ("BLOCKED" . "red")
-                   ("SOMEDAY" . "coral")
-                   ("CANCELLED" . "dim grey")
-                   ("DONE" . "medium sea green")))
+                   ("CANCELLED" . "dimgrey")
+                   ("DONE" . "mediumseagreen")))
            (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE")))))
 
 (defun cyf/set-light-theme-background ()
