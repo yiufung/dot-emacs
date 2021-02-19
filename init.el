@@ -3560,6 +3560,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :bind (
          :map company-active-map
          ("C-c ?" . company-quickhelp-manual-begin)
+         ("C-n" . company-select-next)
+         ("C-p" . company-select-previous)
          )
   :config
   (setq company-show-numbers t
@@ -3567,8 +3569,9 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         ;; popup-isearch-match is displayed on top (happens near the bottom of
         ;; windows)
         company-tooltip-flip-when-above t
-        company-minimum-prefix-length 3
-        company-idle-delay 3)
+        company-minimum-prefix-length 1
+        company-idle-delay 0.5
+        company-tooltip-idle-delay 0)
 
   ;; Directly press [1..9] to insert candidates
   ;; See http://oremacs.com/2017/12/27/company-numbers/
