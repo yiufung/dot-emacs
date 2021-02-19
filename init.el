@@ -341,11 +341,13 @@ behavior added."
 
 (use-package super-save
   :defer 3
-  :after eyebrowse
+  :after (eyebrowse ace-window)
   :config
-  (setq auto-save-default nil)
+  (setq auto-save-default t
+        super-save-auto-save-when-idle t)
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
+  (add-to-list 'super-save-triggers 'ace-window)
   (super-save-mode +1))
 
 (use-package aggressive-indent
