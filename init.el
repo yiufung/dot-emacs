@@ -265,7 +265,7 @@ behavior added."
 
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
-                                                                                my-emacs-conf-directory))))
+                                                                                    my-emacs-conf-directory))))
 (global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 
@@ -1088,6 +1088,8 @@ horizontal mode."
  frame-auto-hide-function 'delete-frame
  ;; Maximum number of side-windows to create on (left top right bottom)
  window-sides-slots '(0 1 2 2)
+ ;; Focus on help-window
+ help-window-select 'other
  ;; Default rules
  display-buffer-alist
  `(;; Right side for most Help, Agenda, Trace, etc buffers
@@ -1129,6 +1131,10 @@ horizontal mode."
    ("^\\*e?shell"
     (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
     (window-min-height . 20)
+    (reusable-frames . visible)
+    )
+   ("^\\*SDCV" ;; Open dictionary in a new frame
+    (display-buffer-pop-up-frame display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
     (reusable-frames . visible)
     )
    )
@@ -3184,7 +3190,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :commands (sdcv-search-pointer sdcv-search-pointer+ sdcv-search-input sdcv-search-input+)
   :custom-face (sdcv-tooltip-face ((t (:foreground "black" :background "gainsboro"))))
   :custom-face (internal-border ((t (:background "LightGrey"))))
-  :bind (("C-c d" . sdcv-search-input)
+  :bind (("C-c d" . my-sdcv-search-input)
          ("s-d" . sdcv-search-input+))
   :bind (:map sdcv-mode-map
               ("s" . outline-show-entry)
@@ -3192,6 +3198,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
               ("n" . sdcv-next-dictionary)
               ("p" . sdcv-previous-dictionary)
               ("g" . sdcv-search-input)
+              ("q" . delete-frame)
               ("l" . recenter-top-bottom)
               ("<tab>" . cyf-toggle-sdcv-entry)
               ("<S-iso-lefttab>" . cyf-toggle-sdcv-all) ;; <S-tab>
@@ -3220,6 +3227,9 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
       (progn
         (outline-show-all)
         (put 'cyf-toggle-sdcv-all 'state t))))
+  (defun my-sdcv-search-input ()
+    (interactive)
+    (sdcv-search-input (thing-at-point 'word)))
   ;; set dictionary path
   (setq sdcv-dictionary-simple-list '("懒虫简明英汉词典")
         sdcv-dictionary-complete-list '(
