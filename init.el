@@ -1349,6 +1349,8 @@ horizontal mode."
   ;; :hook (org-mode . org-indent-mode)
   :hook (org-mode . turn-off-auto-fill)
   :hook (org-mode . visual-line-mode)
+  :hook (org-mode . auto-fill-mode)
+  ;; :hook (org-mode . hide-mode-line-mode)
   :init
   ;; customized export formats
   (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
@@ -2242,7 +2244,10 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     :config
     (org-roam-mode +1)
     (require 'org-roam-protocol)
-    (push 'company-org-roam company-backends)
+    (push 'company-capf company-backends)
+    (setq org-roam-completion-everywhere t
+          org-roam-completion-ignore-case t
+          org-roam-db-update-method 'immediate)
     (setq-default org-roam-capture-templates
                   '(("d" "default" plain
                      #'org-roam-capture--get-point "%?"
@@ -2289,12 +2294,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     :config
     (org-roam-server-mode +1)
     )
-  (use-package company-org-roam
-    :defer 10
-    :after org-roam
-    :after company
-    :config
-    (push 'company-org-roam company-backends))
   (use-package org-roam-bibtex
     :defer 10
     :after org-roam
