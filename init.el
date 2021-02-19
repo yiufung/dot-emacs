@@ -4236,6 +4236,10 @@ In that case, insert the number."
          ("C-s R" . rgrep) ; Recursively grep files in directory tree
          ))
 
+(use-package isearch-light
+  :straight (isearch-light :host github :repo "thierryvolpiatto/isearch-light")
+  :bind (("C-s i" . isl)))
+
 (use-package wgrep
   ;; Writable grep results
   :straight wgrep-helm
@@ -4398,7 +4402,15 @@ In that case, insert the number."
 (use-package one-themes)
 (use-package naysayer-theme)
 (use-package modus-operandi-theme)
-(use-package modus-vivendi-theme)
+(use-package modus-vivendi-theme
+  :config
+  (setq modus-vivendi-theme-variable-pitch-headings nil
+        modus-vivendi-theme-section-headings t
+        modus-vivendi-theme-rainbow-headings t
+        modus-vivendi-theme-3d-modeline t
+        modus-vivendi-theme-org-blocks t
+        modus-vivendi-theme-rainbow-org-src-blocks t
+        ))
 (use-package doom-themes)
 
 ;; (load-theme 'modus-operandi t)
@@ -4559,10 +4571,12 @@ In that case, insert the number."
 (use-package olivetti
   ;; Center text for nicer writing and reading
   :defer 3
-  ;; :hook (org-mode . olivetti-mode)
+  :hook (org-mode . olivetti-mode)
+  :hook (sdcv-mode . olivetti-mode)
   ;; :hook (org-agenda-mode . olivetti-mode)
   :config
-  (setq-default olivetti-body-width 70)
+  (setq-default olivetti-body-width 90
+                fill-column 80)
   )
 
 (use-package literate-calc-mode
