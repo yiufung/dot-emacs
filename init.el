@@ -604,6 +604,8 @@ is already narrowed."
      ("~" "~")
      ("+" "+")
      ("“" "”")
+     ("#+begin_verse\n" "\n#+end_verse" "v" org-mode)
+     ("#+begin_quote\n" "\n#+end_quote" "q" org-mode)
      ("/* " " */" "#" (java-mode javascript-mode css-mode))))
   (add-to-list 'wrap-region-except-modes 'ibuffer-mode)
   (add-to-list 'wrap-region-except-modes 'magit-mode)
