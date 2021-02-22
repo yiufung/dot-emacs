@@ -3504,6 +3504,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+END_QUOTE"     . "』")
                   ("#+begin_src"     . "λ")
                   ("#+end_src"       . "λ")
+                  ("#+begin_verse"   . "؎") ;; Arabic poetic verse sign
+                  ("#+end_verse"     . "؎")
                   ("#+results"       . ">")
                   ("#+begin_example" . "¶")
                   ("#+end_example"   . "¶")
