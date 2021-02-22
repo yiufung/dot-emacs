@@ -4606,6 +4606,16 @@ In that case, insert the number."
 
 ;;; Misc Tools
 
+;; Handy macro
+(use-package my-kmacros
+  :demand t
+  :no-require
+  :straight nil
+  :config
+  (fset 'paste-from-grace-gems
+        (kmacro-lambda-form [?\C-x ?n ?\C-c ?r ?> ?  return return ?\C-c ?r ?> return return ?\C-c ?\C-p ?\C-/ ?\C-n ?\C-p ?\M-< ?\C-c ?r ?> ?  return return ?\C-c ?\C-p ?\C-x ?h ?\C-x ?\C-o ?\C-x ?\C-s ?\C-x ?n] 0 "%d"))
+  )
+
 (defalias 'rot13-mode 'toggle-rot13-mode)
 
 (require 'dom)
