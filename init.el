@@ -370,6 +370,9 @@ behavior added."
   :config
   (setq beacon-size 10))
 
+(use-package bug-hunter
+  :defer 3)
+
 (use-package uniquify
   ;; unique buffer names dependent on file name
   :straight nil
@@ -684,6 +687,7 @@ is already narrowed."
 
 (use-package wrap-region
   ;; Wrap selected region
+  :defer 3
   :hook ((prog-mode text-mode) . wrap-region-mode)
   :config
   (wrap-region-add-wrappers
@@ -697,8 +701,8 @@ is already narrowed."
      ("~" "~")
      ("+" "+")
      ("“" "”")
-     ("#+begin_verse\n" "#+end_verse" "v" org-mode)
-     ("#+begin_quote\n" "#+end_quote" "q" org-mode)
+     ("#+begin_verse\n" "#+end_verse" "v")
+     ("#+begin_quote\n" "#+end_quote" "q")
      ("/* " " */" "#" (java-mode javascript-mode css-mode))))
   (add-to-list 'wrap-region-except-modes 'ibuffer-mode)
   (add-to-list 'wrap-region-except-modes 'magit-mode)
@@ -1300,8 +1304,8 @@ horizontal mode."
          ("C-x g" . magit-status)
          ("C-x G" . magit-dispatch))
   :config
-  ;; Enable magit-file-mode, to enable operations that touches a file, such as log, blame
-  (global-magit-file-mode)
+  ;; ;; Enable magit-file-mode, to enable operations that touches a file, such as log, blame
+  ;; (magit-define-global-key-bglobal-magit-file-mode)
 
   ;; Prettier looks, and provides dired diffs
   (use-package diff-hl
