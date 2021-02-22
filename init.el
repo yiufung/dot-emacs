@@ -2375,6 +2375,12 @@ The screenshot tool is determined by `org-download-screenshot-method'."
                      :file-name "${slug}"
                      :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:" :unnarrowed t))
                   )
+    (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
+    (add-to-list 'org-capture-templates
+                 '("v" "Vocabulary" plain
+                   (file my-vocabulary-file)
+                   "%?%c"
+                   :empty-lines-before 1))
     ;; Rebuild every 10 minutes when idle
     (run-with-idle-timer 600 t 'org-roam-db-build-cache)
     )
