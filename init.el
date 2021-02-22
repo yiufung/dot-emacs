@@ -697,8 +697,8 @@ is already narrowed."
      ("~" "~")
      ("+" "+")
      ("“" "”")
-     ("#+begin_verse\n" "\n#+end_verse" "v" org-mode)
-     ("#+begin_quote\n" "\n#+end_quote" "q" org-mode)
+     ("#+begin_verse\n" "#+end_verse" "v" org-mode)
+     ("#+begin_quote\n" "#+end_quote" "q" org-mode)
      ("/* " " */" "#" (java-mode javascript-mode css-mode))))
   (add-to-list 'wrap-region-except-modes 'ibuffer-mode)
   (add-to-list 'wrap-region-except-modes 'magit-mode)
@@ -938,7 +938,9 @@ If first character is /, search camelCase."
        ;; If the first charater of input in ivy is ":"
        ;; remaining input is converted into Chinese pinyin regex.
        ((string= (substring str 0 1) ":")
-        (setq str (pinyinlib-build-regexp-string (substring str 1 len) t t t t)))
+        (setq str (pinyinlib-build-regexp-string (substring str 1 len) t t t t))
+        ;; (ivy--regex-plus str)
+        )
 
        ;; If the first charater of input in ivy is "/",
        ;; remaining input is converted to pattern to search camel case word
@@ -961,8 +963,9 @@ If first character is /, search camelCase."
                                               "[a-z]+")))))
               (setq i (1+ i))))
           (setq str rlt))))
-      ;; (ivy--regex-plus str)
-      (orderless-ivy-re-builder str) ;; Use orderless regex engine
+      (ivy--regex-plus str)
+      ;; (orderless-ivy-re-builder str)
+      ;; Use orderless regex engine
       ))
 
   (setq ivy-height 10
@@ -1231,7 +1234,7 @@ horizontal mode."
     (reusable-frames . visible)
     )
    ("^\\*SDCV" ;; Open dictionary in a new frame
-    (display-buffer-pop-up-frame display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
     (reusable-frames . visible)
     )
    )
@@ -1411,6 +1414,10 @@ horizontal mode."
   (eyebrowse-mode)
   )
 
+(use-package tab-bar
+  :config
+  )
+
 ;;; Org
 
 (use-package org
@@ -1556,6 +1563,8 @@ horizontal mode."
 
   ;; Keep using narrow-or-widen-dwim. See above.
   (unbind-key (kbd "C-x n") org-mode-map)
+  ;; Don't cycle through org-files
+  ;; (unbind-key (kbd "C-,") org-mode-map)
 
   (setq
    ;; Refile candidates
@@ -2296,6 +2305,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
 
   (use-package org-recent-headings
     :defer 3
+    :disabled t
     :config (org-recent-headings-mode))
 
   ;; org-chef
@@ -3076,8 +3086,8 @@ Yiufung
   :straight hydra
   :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server")
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                        (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                          my-emacs-conf-directory)))
+                            (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                              my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   ;; :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -3986,6 +3996,7 @@ In that case, insert the number."
   ;; when SSH is available, use emacs-jupyter. If only web frontend is
   ;; available, use EIN.
   :if (equal system-type 'gnu/linux)
+  :disabled
   :defer 5
   :after org
   :config
@@ -4870,6 +4881,7 @@ In that case, insert the number."
   )
 
 (use-package docker
+  :straight t
   :straight dockerfile-mode
   :bind ("H-d" . docker))
 
@@ -4942,6 +4954,7 @@ In that case, insert the number."
 (use-package erc
   ;; Internet Relay Chat (IRC)
   :straight erc-hl-nicks
+  :disabled
   :straight erc-image
   :defer 3
   :commands (erc erc-tls)
@@ -4989,6 +5002,7 @@ In that case, insert the number."
   )
 
 (use-package slack
+  :disabled t
   :commands (slack-start)
   :bind (
          ;; Track changed buffers. Use this to check updates from channels, groups and ims!
