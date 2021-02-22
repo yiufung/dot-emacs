@@ -2433,14 +2433,17 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   ;; Load org-ref, and use ivy for completion
   (use-package org-ref
     :defer 10
+    :after helm
     :straight t
     :straight ivy-bibtex
     :straight helm-bibtex
     :straight org-noter
+    :straight (org-noter-plus :type git :host github :repo "yuchen-lea/org-noter-plus")
     :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
     :bind ("H-b" . ivy-bibtex) ;; open bibliography
     :hook ((org-noter-notes-mode org-noter-doc-mode) . hide-mode-line-mode) ;; Hide modeline when taking notes
     :init
+    (require 'helm-source)
     ;; Common variables
     (setq my-bibliography-directory (expand-file-name "bibliography" my-sync-directory))
     (setq my-default-bibliography (expand-file-name
@@ -2598,7 +2601,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
    )
 
   ;; helm-org-rifle
-  (require 'helm-source)
   (setq helm-org-rifle-show-path t)
 
   ;; Export to Confluence Wiki
