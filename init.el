@@ -5104,9 +5104,9 @@ In that case, insert the number."
 (defalias 'share-code-snippet 'ixio-paste)
 
 ;;; Start Emacs Server
-(if (daemonp)
-    (add-hook 'server-after-make-frame-hook #'(lambda () (load-theme 'modus-operandi t)))
-  (load-theme 'modus-operandi t))
+;; (if (daemonp)
+;;     (add-hook 'server-after-make-frame-hook #'(lambda () (load-theme 'modus-operandi t)))
+;;   (load-theme 'modus-operandi t))
 
 (require 'server)
 (unless (server-running-p)
