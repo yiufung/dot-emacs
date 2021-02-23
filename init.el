@@ -534,8 +534,8 @@ behavior added."
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
          ("C-x C-o"         . remove-extra-blank-lines)
-         ("<up>"            . scroll-down-line)
-         ("<down>"          . scroll-up-line)
+         ;; ("<up>"            . scroll-down-line)
+         ;; ("<down>"          . scroll-up-line)
          )
   :init
   ;; Move more quickly
@@ -1666,11 +1666,13 @@ horizontal mode."
           (org-agenda-remove-tags t)
           (htmlize-output-type 'css)))
   ;; Regenerate task-view periodically. Prefer light theme when export
-  (run-with-idle-timer 600 t '(lambda ()
-                                (progn
-                                  (load-theme 'modus-operandi t)
-                                  (org-store-agenda-views)
-                                  (load-theme 'modus-vivendi t))))
+  (defun my-generate-agenda-views ()
+    (interactive)
+    (progn
+      (load-theme 'modus-operandi t)
+      (org-store-agenda-views)
+      (load-theme 'modus-vivendi t)))
+  (run-with-idle-timer 600 t 'my-generate-agenda-views)
 
   ;; Auto save org-files, so that we prevent the locking problem between computers
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -3322,7 +3324,6 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
               ("n" . sdcv-next-dictionary)
               ("p" . sdcv-previous-dictionary)
               ("g" . sdcv-search-input)
-              ("q" . delete-frame)
               ("l" . recenter-top-bottom)
               ("<tab>" . cyf-toggle-sdcv-entry)
               ("<S-iso-lefttab>" . cyf-toggle-sdcv-all) ;; <S-tab>
@@ -3369,6 +3370,9 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         sdcv-tooltip-border-width 5
         sdcv-tooltip-timeout 3
         sdcv-dictionary-data-dir (expand-file-name "stardict" my-private-conf-directory))
+  ;; Fix font locking for Webster's Revised Unabridged Dictionary
+  (font-lock-add-keywords 'sdcv-mode '(("\\\\\\(.*\\)\\\\" . (1 font-lock-string-face))))
+  )
   )
 
 (use-package mw-thesaurus
