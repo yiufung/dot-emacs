@@ -357,10 +357,12 @@ behavior added."
 (unbind-key "C-z") ;; Reserve for hydra related commands
 
 ;; Quick access to commonly used files
-(global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
+(global-set-key (kbd "s-0") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
                                                                                     my-emacs-conf-directory))))
 (global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
+(global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file org-my-todo-file)))
+(global-set-key (kbd "s-9") (lambda () (interactive) (find-file org-my-plan-office-file)))
 
 (use-package beacon
   ;; Highlight the cursor whenever it scrolls
@@ -1451,7 +1453,6 @@ horizontal mode."
   :straight helm-org-rifle
   :hook (org-mode . org-bullets-mode)
   ;; :hook (org-mode . org-indent-mode)
-  :hook (org-mode . turn-off-auto-fill)
   :hook (org-mode . visual-line-mode)
   :hook (org-mode . auto-fill-mode)
   ;; :hook (org-mode . hide-mode-line-mode)
@@ -1462,7 +1463,7 @@ horizontal mode."
          ("C-c a" . org-agenda)
          ("C-c c" . org-capture)
          ("C-c l" . org-store-link)
-         ("C-c 0" . org-set-created-property)
+         ("C-c 0" . org-expiry-insert-created)
          ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
          ;; Rifle through all my org files to identify an item.
          ;; Use C-s to display results in occur-like style.
@@ -1509,8 +1510,8 @@ horizontal mode."
   ;; Personal files
   (setq org-my-plan-office-file (expand-file-name "plan-office.org" org-directory))
   (setq org-my-office-file (expand-file-name "office.org" org-directory))
-  (setq org-my-plan-free-file (expand-file-name "plan-free.org" org-directory))
-  (setq org-my-plan-church-file (expand-file-name "church/plan-church.org" org-directory))
+  (setq org-my-todo-file (expand-file-name "todo.org" org-directory))
+  (setq org-my-church-file (expand-file-name "church/church.org" org-directory))
   (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
   (setq org-my-life-file (expand-file-name "life.org" org-directory))
   (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
@@ -1570,11 +1571,15 @@ horizontal mode."
   ;; Don't cycle through org-files
   ;; (unbind-key (kbd "C-,") org-mode-map)
 
-  (setq
+  (setq-default
    ;; Refile candidates
-   org-refile-targets '((org-agenda-files :maxlevel . 2))
+   org-refile-targets '((org-agenda-files :tag . "project")
+                        (org-agenda-files :tag . "recent"))
+   org-reverse-note-order 't
    ;; Show candidates in one go
    org-outline-path-complete-in-steps nil
+   ;; Don't split line
+   org-M-RET-may-split-line '((default . nil))
    ;; Cache refile targets
    ;; Use ‘C-u C-u C-u C-c C-w’ to clear cache
    org-refile-use-cache t
@@ -1591,6 +1596,30 @@ horizontal mode."
    org-deadline-warning-days 14
    ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
    org-agenda-log-mode-items '(closed clock state)
+   ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
+   ;; refresh instead. Note that it can still be killed by kill-buffer. To
+   ;; avoid this, set the emacs-lock-mode
+   org-agenda-sticky t
+   ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
+   org-agenda-skip-scheduled-if-done t
+   org-agenda-skip-deadline-if-done t
+   org-agenda-skip-timestamp-if-done t
+   ;; Don't show scheduled/deadlines/timestamp items on todo list.
+   org-agenda-todo-ignore-scheduled t
+   org-agenda-todo-ignore-deadlines t
+   org-agenda-todo-ignore-timestamp t
+   org-agenda-todo-ignore-with-date t
+   ;; Define when my day really ends (well, normally earlier than that)
+   org-extend-today-until 4
+   org-use-effective-time t
+   ;; Show meetings in org agenda
+   org-agenda-include-diary t
+   ;; Show customized time
+   org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
+   org-display-custom-times t
+   )
+
+  (setq-default
    ;; Customized agenda-view
    org-agenda-custom-commands
    '(("x" agenda)
@@ -1615,7 +1644,7 @@ horizontal mode."
      ("o" "Agenda and Office-related Tasks"
       (
        ;; Task todo
-       (todo "TODO")
+       (todo "TODO" ((org-agenda-overriding-header "All todos")))
        ;; Task planned next
        (todo "NEXT")
        ;; recent agenda
@@ -1638,33 +1667,14 @@ horizontal mode."
      ("c" "Church"
       ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
      )
-   ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
-   ;; refresh instead. Note that it can still be killed by kill-buffer. To
-   ;; avoid this, set the emacs-lock-mode
-   org-agenda-sticky t
-   ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
-   org-agenda-skip-scheduled-if-done t
-   org-agenda-skip-deadline-if-done t
-   org-agenda-skip-timestamp-if-done t
-   ;; Don't show scheduled/deadlines/timestamp items on todo list.
-   org-agenda-todo-ignore-scheduled t
-   org-agenda-todo-ignore-deadlines t
-   org-agenda-todo-ignore-timestamp t
-   org-agenda-todo-ignore-with-date t
-   ;; Define when my day really ends (well, normally earlier than that)
-   org-extend-today-until 4
-   org-use-effective-time t
-   ;; Show meetings in org agenda
-   org-agenda-include-diary t)
-
-  (setq org-agenda-exporter-settings
-        '((ps-number-of-columns 1)
-          (ps-landscape-mode t)
-          (org-agenda-add-entry-text-maxlines 5)
-          (org-agenda-prefix-format " [ ] ")
-          (org-agenda-with-colors t)
-          (org-agenda-remove-tags t)
-          (htmlize-output-type 'css)))
+   org-agenda-exporter-settings
+   '((ps-number-of-columns 1)
+     (ps-landscape-mode t)
+     (org-agenda-add-entry-text-maxlines 5)
+     (org-agenda-prefix-format " [ ] ")
+     (org-agenda-with-colors t)
+     (org-agenda-remove-tags t)
+     (htmlize-output-type 'css)))
   ;; Regenerate task-view periodically. Prefer light theme when export
   (defun my-generate-agenda-views ()
     (interactive)
@@ -1692,27 +1702,15 @@ horizontal mode."
            (file+headline org-my-anki-file "Dispatch")
            "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%?\n** Extra\n")
 
-          ("c" "all todos" ;; Capture first, refile later
+          ("c" "Add tasks" ;; Capture first, refile daily
            entry
-           (file+headline org-my-plan-free-file "Schedule")
-           "* TODO %?\n")
+           (file+headline org-my-todo-file "Inbox")
+           "* TODO %?\n" :prepend t)
 
-          ("C" "church" ;; Church todos
+          ("m" "Appointment"
            entry
-           (file+headline org-my-plan-church-file "Schedule")
-           "* TODO %?\n")
-
-          ("o" "office tasks"
-           entry
-           (file+headline org-my-plan-office-file "Schedule")
-           "* TODO %?\n")
-
-          ("m" "meeting"
-           entry
-           (file+headline org-my-office-file
-                          "Meeting")
-           "* TODO %^{prompt}\nSCHEDULED: %^t\n:PEOPLE:\n- %?\n:END:\n** Agenda\n** Action Items\n- [ ] "
-           :prepend t)
+           (file+headline org-my-todo-file "Inbox")
+           "* APPT %?\n" :prepend t)
 
           ("j" "working journal"
            plain
@@ -1720,16 +1718,11 @@ horizontal mode."
            "%?\n"
            :prepend t)
 
-          ("b" "finance book-keeping"
-           plain
-           (file+headline org-my-beancount-file "Expenses")
-           "bc%?"  ;; yasnippet template
-           :prepend t)
-
-          ("d" "diary"
-           plain
-           (file+olp+datetree org-my-life-file "Diary")
-           "%?\n")
+          ;; ("b" "finance book-keeping"
+          ;;  plain
+          ;;  (file+headline org-my-beancount-file "Expenses")
+          ;;  "bc%?"  ;; yasnippet template
+          ;;  :prepend t)
           ))
 
   (defun make-orgcapture-frame ()
@@ -1745,27 +1738,32 @@ horizontal mode."
   ;; Automatically add "CREATED" timestamp to org-capture entries
   ;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
   ;; Change: Don't add property when filing at beancount/anki files.
-  (defvar org-created-property-name "CREATED"
-    "The name of the org-mode property that stores the creation date of the entry")
-  (defun org-set-created-property (&optional active NAME)
-    "Set a property on the entry giving the creation time.
+  ;; (defvar org-created-property-name "CREATED"
+  ;;   "The name of the org-mode property that stores the creation date of the entry")
+  ;; (defun org-set-created-property (&optional active NAME)
+  ;;   "Set a property on the entry giving the creation time.
 
-    By default the property is called CREATED. If given the `NAME'
-    argument will be used instead. If the property already exists, it
-    will not be modified."
-    (interactive)
-    (let* ((created (or NAME org-created-property-name))
-           (fmt (if active "<%s>" "[%s]"))
-           (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
-      (unless (or (org-entry-get (point) created nil)
-                  ;; Don't match file-level capture. (e.g: org-roam)
-                  (string-match "\\#\\+TITLE\\:" (buffer-string))
-                  ;; Beancount format does not accept :PROPERTY: syntax
-                  (string-match "\\.beancount$" (buffer-name))
-                  (string-match "\\.bean$" (buffer-name))
-                  (string-match "anki.org" (buffer-name)))
-        (org-set-property created now))))
-  (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
+  ;;   By default the property is called CREATED. If given the `NAME'
+  ;;   argument will be used instead. If the property already exists, it
+  ;;   will not be modified."
+  ;;   (interactive)
+  ;;   (let* ((created (or NAME org-created-property-name))
+  ;;          (fmt (if active "<%s>" "[%s]"))
+  ;;          (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
+  ;;     (unless (or (org-entry-get (point) created nil)
+  ;;                 ;; Don't match file-level capture. (e.g: org-roam)
+  ;;                 (string-match "\\#\\+TITLE\\:" (buffer-string))
+  ;;                 ;; Beancount format does not accept :PROPERTY: syntax
+  ;;                 (string-match "\\.beancount$" (buffer-name))
+  ;;                 (string-match "\\.bean$" (buffer-name))
+  ;;                 (string-match "anki.org" (buffer-name)))
+  ;;       (org-set-property created now))))
+  ;; (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
+
+  (require 'org-expiry)
+  (setq org-expiry-inactive-timestamps t)
+  (org-expiry-insinuate) ;; Activate org-expiry mechanism on new heading creation using M-RET etc
+  (add-hook 'org-capture-before-finalize-hook 'org-expiry-insert-created) ;; Add to capture too
 
   ;; General org settings
   (setq-default
@@ -2920,13 +2918,13 @@ Yiufung
    ;; Multiple calendar setup
    org-caldav-calendars `(
                           (:calendar-id "1fe12417-fe19-41d2-a105-a94d1a562e21"
-                                        :files (,org-my-plan-free-file ,org-my-life-file)
+                                        :files (,org-my-todo-file ,org-my-life-file)
                                         :inbox ,(expand-file-name "CalHome.org" my-private-calendar-directory))
                           (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
                                         :files (,org-my-office-file ,org-my-plan-office-file) ;; default note is plan-office
                                         :inbox ,(expand-file-name "CalOffice.org" my-private-calendar-directory))
                           (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
-                                        :files (,org-my-plan-church-file)
+                                        :files (,org-my-church-file)
                                         :inbox ,(expand-file-name "CalChurch.org" my-private-calendar-directory))
                           )
    ;; If entries are deleted in Org, always delete at the CALDAV end without asking
