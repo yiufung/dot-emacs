@@ -63,7 +63,7 @@ ACCESS-TYPE if non-nil should specify the kind of access that will trigger
   obsolete-name)
 
 (defmacro define-obsolete-variable-alias (obsolete-name current-name
-						        &optional when docstring)
+                                                        &optional when docstring)
   "Make OBSOLETE-NAME a variable alias for CURRENT-NAME and mark it obsolete.
 This uses `defvaralias' and `make-obsolete-variable' (which see).
 See the Info node `(elisp)Variable Aliases' for more details.
@@ -529,8 +529,8 @@ behavior added."
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>"            . (lambda () (interactive) (progn (visual-line-mode) (follow-mode))))
-         ("M-u"             . upcase-dwim)
-         ("M-l"             . downcase-dwim)
+         ("M-u"             . upcase-char)
+         ("M-l"             . downcase-char)
          ("M-SPC"           . cycle-spacing)
          ;; M-backspace to backward-delete-word
          ("M-S-<backspace>" . backward-kill-sentence)
@@ -3090,16 +3090,21 @@ Yiufung
   ;; Requires unoconv, ghostscript, dvipdf
   :custom (doc-view-odf->pdf-converter-program "soffice"))
 
+(use-package simple-httpd
+  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd"))
+(use-package web-server
+  :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server"))
+
 (use-package pdf-tools
   :defer t
   ;; :pin manual ;; manually update
+  :after web-server
   :straight t
   :straight tablist
   :straight hydra
-  :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server")
   :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
-                            (expand-file-name "elisp/pdf-tools-20180428.827/"
-                                              my-emacs-conf-directory)))
+                        (expand-file-name "elisp/pdf-tools-20180428.827/"
+                                          my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
   ;; :init (load "pdf-tools-autoloads" nil t)
   ;; If under Linux, manually install it with package-install.
@@ -3370,6 +3375,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         sdcv-dictionary-data-dir (expand-file-name "stardict" my-private-conf-directory))
   ;; Fix font locking for Webster's Revised Unabridged Dictionary
   (font-lock-add-keywords 'sdcv-mode '(("\\\\\\(.*\\)\\\\" . (1 font-lock-string-face))))
+  (font-lock-add-keywords 'sdcv-mode '(("\\\/\\(.*\\)\\\/". (1 font-lock-string-face))))
   )
   )
 
@@ -3984,6 +3990,7 @@ In that case, insert the number."
 ;;;; C/C++
 ;; [[https://www.reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/][Reddit post on creating C++ IDE in Emacs]].
 (use-package ccls
+  :disabled
   ;; C lsp backend
   ;; Requires binary ccls
   :after projectile
@@ -4022,11 +4029,9 @@ In that case, insert the number."
    '((jupyter . t)))
   )
 
-(use-package simple-httpd
-  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd"))
+
 
 (use-package ein
-  :disabled t
   ;; Jupyter Notebook in Emacs
   :straight t
   :bind (("H-j" . 'ein:notebooklist-login)
@@ -4038,10 +4043,9 @@ In that case, insert the number."
          ("s-'" . ein:worksheet-turn-on-autoexec))
   :commands (ein:notebooklist-login ein:jupyter-server-start ein:jupyterhub-connect)
   :hook (ein:notebook-mode . visual-line-mode)
-  :init
+  :config
   ;; Need to require here to initialize 'ein:notebook-mode-map, so that :bind directive works.
   (require 'ein-notebook)
-  :config
   (setq-default ein:worksheet-enable-undo 't
                 ein:polymode 'nil)
   (add-to-list 'ein:notebook-mode-hook '(lambda () (show-paren-mode -1)))
@@ -4703,10 +4707,12 @@ In that case, insert the number."
   :defer 3
   :hook (org-mode . olivetti-mode)
   :hook (sdcv-mode . olivetti-mode)
+  :hook (Info-mode . olivetti-mode)
+  :hook (dired-mode . olivetti-mode)
   ;; :hook (org-agenda-mode . olivetti-mode)
   :config
-  (setq-default olivetti-body-width 90
-                fill-column 80)
+  (setq-default olivetti-body-width 120
+                fill-column 90)
   )
 
 (use-package literate-calc-mode
@@ -4795,6 +4801,7 @@ In that case, insert the number."
 
 (use-package alert
   ;; Notification
+  :defer 5
   :config
   (setq alert-default-style 'libnotify))
 
