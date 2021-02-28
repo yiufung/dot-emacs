@@ -138,7 +138,7 @@ CURRENT-NAME, if it does not already have them:
 (setq-default
  ;; use-package-always-demand t ; Always defer loading package to speed up startup time
  use-package-always-defer t
- use-package-verbose t ; Don't report loading details
+ use-package-verbose nil ; Don't report loading details
  use-package-expand-minimally t  ; make the expanded code as minimal as possible
  use-package-enable-imenu-support t) ; Let imenu finds use-package definitions
 ;; Integration with use-package
@@ -362,7 +362,7 @@ behavior added."
 (global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file org-my-todo-file)))
-(global-set-key (kbd "s-9") (lambda () (interactive) (find-file org-my-plan-office-file)))
+(global-set-key (kbd "s-9") (lambda () (interactive) (find-file org-my-work-file)))
 
 (use-package beacon
   ;; Highlight the cursor whenever it scrolls
@@ -442,11 +442,14 @@ behavior added."
   :after (eyebrowse ace-window)
   :config
   (setq auto-save-default t
+        super-save-auto-save-when-idle 20
         super-save-auto-save-when-idle t)
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
   (add-to-list 'super-save-triggers 'ace-window)
-  (super-save-mode +1))
+  (super-save-mode +1)
+  (bind-key (kbd "C-x C-s") '(lambda () (interactive) (y-or-n-p "Give your pinky some rest!")))
+  )
 
 (use-package aggressive-indent
   ;; Aggressive indent mode
@@ -1071,6 +1074,20 @@ output file. %i path(s) are relative, while %o is absolute.")
                (command (format "ffmpeg -i \"%s\" \"%s\"" file output-file)))
           (message command)
           (async-shell-command command)))))
+  (defun dired/ffmpeg-split-mp3 ()
+    "Used in dired to split mp3. ffmpeg required."
+    (interactive)
+    (let* ((files (dired-get-marked-files)))
+      (dolist (file files)
+        (let* ((basename (file-name-nondirectory file))
+               (file-base (file-name-base file))
+               (dirname (file-name-directory file))
+               (start-time (read-string "Start time: "))
+               (end-time (read-string "End time: "))
+               (output-file (concat dirname file-base "-output.mp3"))
+               (command (format "ffmpeg -ss %s -to %s -i \"%s\" \"%s\"" start-time end-time file output-file)))
+          (message command)
+          (async-shell-command command)))))
   (defun dired/docx-to-html ()
     "Used in dired to convert docx files to html. pandoc required."
     (interactive)
@@ -1426,1003 +1443,1045 @@ horizontal mode."
 
 ;;; Org
 
-(use-package org
-  ;; Combining demand and org-plus-contrib to ensure the latest version of org is used
-  :demand t
-  :straight org-plus-contrib
-  :straight ob-ipython
-  :straight ob-async
-  :straight (ob-mermaid :host github :repo "yiufung/ob-mermaid")
-  :straight ob-http
-  :straight org-bullets
-  :straight org-super-agenda
-  :straight org-pomodoro
-  :straight org-sidebar
-  :straight org-present
-  :straight org-msg
-  :straight org-chef
-  :straight ox-clip
+;; Directly load org
+;; Since using use-package may introduce overhead, and org is part of my life, load it directly here.
+(require 'org)
+
+(defun my-org-startup ()
+  (org-agenda-list)
+  (org-agenda-to-appt)
+  (call-interactively #'org-resolve-clocks))
+
+(use-package ob-ipython)
+(use-package ob-async)
+(use-package ob-mermaid :straight (:fork (:host github :repo "yiufung/ob-mermaid")))
+(use-package ob-http)
+(use-package org-bullets)
+(use-package org-super-agenda)
+(use-package org-pomodoro)
+(use-package org-sidebar)
+(use-package org-present)
+(use-package org-msg)
+(use-package org-chef)
+(use-package ox-clip)
+(use-package ox-twbs)
+(use-package ox-tufte)
+(use-package org-cliplink)
+(use-package ox-gfm)
+(use-package org-download)
+(use-package ox-hugo)
+(use-package easy-hugo)
+(use-package gnuplot)
+(use-package helm-org-rifle)
+
+;; Org mode hooks
+(add-hook 'org-mode-hook 'org-bullets-mode)
+;; :hook (org-mode . org-indent-mode)
+(add-hook 'org-mode-hook 'visual-line-mode)
+(add-hook 'org-mode-hook 'auto-fill-mode)
+;; customized export formats
+(straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
+
+;; Key bindings
+(bind-keys ("C-c a" . org-agenda)
+           ("C-c c" . org-capture)
+           ("C-c l" . org-store-link)
+           ("C-c 0" . org-expiry-insert-created)
+           ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
+           ;; Rifle through all my org files to identify an item.
+           ;; Use C-s to display results in occur-like style.
+           ("C-S-s" . helm-org-rifle)
+           ("s-e" . ivy-insert-org-entity)
+           ("H-p" . org-pomodoro))
+(bind-keys :map org-mode-map
+           ("C-x n s" . nil)
+           ("C-x n b" . nil)
+           ("C-x n e" . nil)
+           ("C-x n"   . nil)
+           ("C-c C-j" . counsel-org-goto)
+           ("s-P"     . anki-editor-push-notes)
+           ("s-L"     . org-cliplink)
+           ("s-b"     . (lambda () (interactive) (org-emphasize ?*)))
+           ("s-/"     . (lambda () (interactive) (org-emphasize ?/)))
+           ("s-u"     . (lambda () (interactive) (org-emphasize ?_)))
+           ("s-="     . (lambda () (interactive) (org-emphasize ?=)))
+           ("s-+"     . (lambda () (interactive) (org-emphasize ?+)))
+           ("s-c"     . (lambda () (interactive) (org-emphasize ?~)))
+           ("s-s"     . org-subscript-region-or-point)
+           ("s-S"     . org-superscript-region-or-point)
+           ;; Unbinding org-cycle-agenda-files
+           ("C-'"          . nil)
+           ("C-,"          . nil)
+           ("C-c C-v C-g"  . org-babel-goto-named-src-block)
+           ;; Unbinding org-force-cycle-archived
+           ("<C-tab>"      . nil)
+           ;; default option respects content, I don't use it
+           ("C-<return>"   . nil) ;; Reserved for ace-window
+           ("C-S-<return>" . org-insert-heading-respect-content)
+           ("s-n"          . org-next-block)
+           ("s-p"          . org-previous-block))
+;; All org directory under Dropbox
+(setq org-directory (expand-file-name "journals" my-sync-directory))
+;; Setup diary too
+(setq diary-file (expand-file-name "diary" org-directory))
+;; See also org-caldav
+(setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
+;; Personal files
+(setq org-my-work-file (expand-file-name "work.org" org-directory))
+(setq org-my-todo-file (expand-file-name "todo.org" org-directory))
+(setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
+(setq org-my-anki-file (expand-file-name "anki.org" org-directory))
+
+;; Default org-mode startup
+(setq org-startup-folded t
+      org-startup-indented t
+      org-startup-with-inline-images nil
+      org-startup-with-latex-preview nil
+      org-latex-preview-ltxpng-directory (expand-file-name "ltximg/" org-directory))
+;; Larger latex fragments
+(plist-put org-format-latex-options :scale 1.5)
+
+;; Don't let visual-line-mode shadow org-mode's key binding
+(add-hook 'visual-line-mode-hook
+          (lambda () (when (derived-mode-p 'org-mode)
+                   (local-set-key (kbd "C-a") #'org-beginning-of-line)
+                   (local-set-key (kbd "C-e") #'org-end-of-line)
+                   (local-set-key (kbd "C-k") #'org-kill-line))))
+
+;; Where to archive files
+(setq org-archive-location (concat (expand-file-name "archive.org" org-directory) "::* From %s"))
+
+;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
+;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
+;; list of tags for font settings
+(setq org-todo-keywords
+      '((sequence "TODO(t!)" "WAIT(w@)" "CANCELED(c@)" "SOMEDAY(y)" "STORY(o)" "EPIC(e)" "STARTED(s)" "DEFERRED(r@)" "DELEGATED(g@)" "DONE(d!)")))
+;; Setup for ordered tasks. Initiate with C-c C-x o
+(setq org-enforce-todo-dependencies nil)
+;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
+(setq org-todo-state-tags-triggers
+      '(("CANCELLED" ("ARCHIVE" . t))
+        ("TODO" ("ARCHIVE" . nil))
+        ("NEXT" ("ARCHIVE" . nil))
+        ("WAIT" ("ARCHIVE" . nil))
+        ("DONE" ("ARCHIVE" . nil)))
+      )
+
+;; Org-agenda
+(require 'org-agenda)
+(bind-keys :map org-agenda-mode-map
+           ("S" . org-agenda-schedule)
+           ("o" . org-agenda-open-link))
+(setq
+ ;; All files for agenda
+ org-agenda-files (list
+                   org-my-todo-file org-my-work-file
+                   my-private-calendar-directory ;; For incoming calendar
+                   ;;org-directory (expand-file-name "projects" org-directory)
+                   ))
+
+;; Keep using narrow-or-widen-dwim. See above.
+(unbind-key (kbd "C-x n") org-mode-map)
+;; Don't cycle through org-files
+;; (unbind-key (kbd "C-,") org-mode-map)
+
+(setq-default
+ ;; Refile candidates
+ org-refile-targets '((org-agenda-files :tag . "project") ;; Coarse refile to tasks
+                      (org-agenda-files :tag . "church") ;; Exception for church so that org-caldav is easier to configure
+                      (org-agenda-files :tag . "recent")
+                      (org-agenda-files :level . 1)
+                      ) ;; Mark some recent targets so I can refile them as sub-children
+ org-reverse-note-order 't
+ ;; Show candidates in one go
+ org-outline-path-complete-in-steps nil
+ ;; Don't split line
+ org-M-RET-may-split-line '((default . nil))
+ ;; Cache refile targets
+ ;; Use ‘C-u C-u C-u C-c C-w’ to clear cache
+ org-refile-use-cache t
+ ;; Show full paths for refiling
+ org-refile-use-outline-path t
+ ;; Use current window
+ org-agenda-window-setup 'reorganize-frame
+ org-agenda-restore-windows-after-quit t
+ ;; It doesn't have to start on weekday
+ org-agenda-start-on-weekday nil
+ ;; Agenda view start on today
+ org-agenda-start-day nil
+ ;; Warn me in 2 weeks
+ org-deadline-warning-days 14
+ ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
+ org-agenda-log-mode-items '(closed clock state)
+ ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
+ ;; refresh instead. Note that it can still be killed by kill-buffer. To
+ ;; avoid this, set the emacs-lock-mode
+ org-agenda-sticky t
+ ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
+ org-agenda-skip-scheduled-if-done t
+ org-agenda-skip-deadline-if-done t
+ org-agenda-skip-timestamp-if-done t
+ ;; Don't show scheduled/deadlines/timestamp items on todo list.
+ org-agenda-todo-ignore-scheduled t
+ org-agenda-todo-ignore-deadlines t
+ org-agenda-todo-ignore-timestamp t
+ org-agenda-todo-ignore-with-date t
+ ;; Define when my day really ends (well, normally earlier than that)
+ org-extend-today-until 4
+ org-use-effective-time t
+ ;; Show meetings in org agenda
+ org-agenda-include-diary nil
+ ;; Show customized time
+ org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
+ org-display-custom-times t
+ )
+
+(defun my-org-agenda-should-skip-p ()
+  "Skip all but the first non-done entry."
+  (let (should-skip-entry)
+    (unless (org-current-is-todo)
+      (setq should-skip-entry t))
+    (when (or (org-get-scheduled-time (point))
+              (org-get-deadline-time (point)))
+      (setq should-skip-entry t))
+    (when (/= (point)
+              (save-excursion
+                (org-goto-first-child)
+                (point)))
+      (setq should-skip-entry t))
+    (save-excursion
+      (while (and (not should-skip-entry) (org-goto-sibling t))
+        (when (and (org-current-is-todo)
+                   (not (org-get-scheduled-time (point)))
+                   (not (org-get-deadline-time (point))))
+          (setq should-skip-entry t))))
+    should-skip-entry))
+
+(defun my-org-agenda-skip-all-siblings-but-first ()
+  "Skip all but the first non-done entry."
+  (when (my-org-agenda-should-skip-p)
+    (or (outline-next-heading)
+        (goto-char (point-max)))))
+
+(defun org-current-is-todo ()
+  (member (org-get-todo-state) '("TODO" "EPIC" "STORY" "STARTED")))
+
+
+;; org-super-agenda
+(setq org-super-agenda-groups
+      '(
+        (:name "Scheduled earlier"
+               :scheduled past
+               ;; :and (:scheduled past
+               ;;                  :not (:todo "DONE") :not (:habit t))
+               )
+        (:name "Due today"
+               :deadline today)
+        ;; TODO Add some priority tasks
+        (:name "Schedule"
+               :time-grid t)
+        (:name "Today"
+               :and (:scheduled today :not (:habit t))) ;; Show habits separately.
+        (:name "Overdue"
+               :and (:deadline past :not (:todo "DONE")))
+        (:name "Habits"
+               :habit t)
+        (:name "Due soon"
+               :deadline future)
+        (:name "Special Dates"
+               :category "holidays & anniversaries")
+
+        ))
+(setq org-super-agenda-groups
+      '((:name "Schedule"
+               :time-grid t)
+        (:name "Due today"
+               :deadline today)
+        (:name "Today"
+               :and (:scheduled today :not (:habit t))) ;; Show habits separately.
+        (:name "Overdue"
+               :deadline past)
+        (:name "Habits"
+               :habit t)
+        (:name "Due soon"
+               :deadline future)
+        (:name "Scheduled earlier"
+               :scheduled past)
+        ))
+(org-super-agenda-mode)
+
+(setq-default
+ ;; Customized agenda-view
+ org-agenda-custom-commands
+ '(
+   ("o" "Work-related Tasks"
+    ((agenda "" ((org-agenda-files `(,org-my-work-file)))))
+    ;; Common setting for above commands
+    nil
+    ;; Export with org-store-agenda-views
+    ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
+   ("h" "Home"
+    ((agenda "" ((org-agenda-files `(,org-my-todo-file)))))
+    nil ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
+   ("c" "Church"
+    ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
+   )
+ org-agenda-exporter-settings
+ '((ps-number-of-columns 1)
+   (ps-landscape-mode t)
+   (org-agenda-add-entry-text-maxlines 5)
+   (org-agenda-prefix-format " [ ] ")
+   (org-agenda-with-colors t)
+   (org-agenda-remove-tags t)
+   (htmlize-output-type 'inline-css)))
+;; Regenerate task-view periodically. Prefer light theme when export
+;; (defun my-generate-agenda-views ()
+;;   (interactive)
+;;   (progn
+;;     (load-theme 'modus-operandi t)
+;;     (org-store-agenda-views)
+;;     (load-theme 'modus-vivendi t)))
+(run-with-idle-timer 600 t 'org-store-agenda-views)
+
+;; Auto save org-files, so that we prevent the locking problem between computers
+(add-hook 'auto-save-hook 'org-save-all-org-buffers)
+;; Suppress output "Saving all Org buffers... done"
+(advice-add 'org-save-all-org-buffers :around #'suppress-messages)
+
+;; Capturing thoughts and Level 1 Headings.
+(setq org-capture-templates
+      '(
+        ("a" "Anki basic"
+         entry
+         (file+headline org-my-anki-file "Dispatch")
+         "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n")
+
+        ("A" "Anki cloze"
+         entry
+         (file+headline org-my-anki-file "Dispatch")
+         "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%?\n** Extra\n")
+
+        ("c" "Add tasks" ;; Capture first, refile daily
+         entry
+         (file+headline org-my-todo-file "Inbox")
+         "* TODO %?\n" :prepend t)
+
+        ("m" "Appointment"
+         entry
+         (file+headline org-my-todo-file "Inbox")
+         "* APPT %?\n" :prepend t)
+
+        ("j" "working journal"
+         plain
+         (file+olp+datetree org-my-work-file "Working Journal")
+         "%?\n"
+         :prepend t)
+
+        ;; ("b" "finance book-keeping"
+        ;;  plain
+        ;;  (file+headline org-my-beancount-file "Expenses")
+        ;;  "bc%?"  ;; yasnippet template
+        ;;  :prepend t)
+        ))
+
+(defun make-orgcapture-frame ()
+  "Create a new frame and run org-capture."
+  (interactive)
+  (switch-to-buffer "*scratch*")
+  (make-frame '((name . "org-capture") (window-system . x)))
+  (select-frame-by-name "org-capture")
+  (counsel-org-capture)
+  (delete-other-windows)
+  )
+
+;; Automatically add "CREATED" timestamp to org-capture entries
+;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
+;; Change: Don't add property when filing at beancount/anki files.
+;; (defvar org-created-property-name "CREATED"
+;;   "The name of the org-mode property that stores the creation date of the entry")
+;; (defun org-set-created-property (&optional active NAME)
+;;   "Set a property on the entry giving the creation time.
+
+;;   By default the property is called CREATED. If given the `NAME'
+;;   argument will be used instead. If the property already exists, it
+;;   will not be modified."
+;;   (interactive)
+;;   (let* ((created (or NAME org-created-property-name))
+;;          (fmt (if active "<%s>" "[%s]"))
+;;          (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
+;;     (unless (or (org-entry-get (point) created nil)
+;;                 ;; Don't match file-level capture. (e.g: org-roam)
+;;                 (string-match "\\#\\+TITLE\\:" (buffer-string))
+;;                 ;; Beancount format does not accept :PROPERTY: syntax
+;;                 (string-match "\\.beancount$" (buffer-name))
+;;                 (string-match "\\.bean$" (buffer-name))
+;;                 (string-match "anki.org" (buffer-name)))
+;;       (org-set-property created now))))
+;; (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
+
+(require 'org-expiry)
+(setq org-expiry-inactive-timestamps t)
+(org-expiry-insinuate) ;; Activate org-expiry mechanism on new heading creation using M-RET etc
+(add-hook 'org-capture-before-finalize-hook 'org-expiry-insert-created) ;; Add to capture too
+
+;; General org settings
+(setq-default
+ ;; Indentation setting
+ ;; Always indent to the left
+ org-indent-indentation-per-level 2
+ ;; Start up indented
+ org-startup-indented 'nil
+ ;; Narrowing behavior
+ org-indirect-buffer-display 'current-window
+ ;; Insert Org-mode mode-line automatically on an empty line when `org-mode' is called
+ org-insert-mode-line-in-empty-file t
+ ;; Leave 1 empty lines in collapsed view, which makes headings more compact
+ org-cycle-separator-lines 1
+ ;; List demote sequence
+ org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+"))
+ ;; List indent offsets, making it more apparent
+ org-list-indent-offset 1
+ ;; allow lists with letters in them.
+ org-list-allow-alphabetical t
+ ;; Increase imenu index depth
+ org-imenu-depth 5
+ ;; Interpret sub-superscripts only when they're quoted with braces
+ org-use-sub-superscripts '{}
+ org-export-with-sub-superscripts '{}
+ ;; Do not use babel to evaluate code when exporting.
+ org-export-use-babel 't
+ ;; Don't include the validation link & creation tag
+ org-html-postamble 'nil ;; Don't include validation link and created tags
+ ;; Logging settings: Better verbose than miss
+ org-log-into-drawer t
+ org-log-done 'time
+ org-log-reschedule 'note
+ org-log-redeadline 'note
+ org-log-delschedule 'note
+ org-log-deldeadline 'note
+ ;; Setup log note templates. Add "to [new date]" in reschedule and redeadline
+ org-log-note-headings '((done        . "CLOSING NOTE %t")
+                         (state       . "State %-12s from %-12S %t")
+                         (note        . "Note taken on %t")
+                         (reschedule  . "Schedule changed on %t: %S -> %s")
+                         (delschedule . "Not scheduled, was %S on %t")
+                         (redeadline  . "Deadline changed on %t: %S -> %s")
+                         (deldeadline . "Removed deadline, was %S on %t")
+                         (refile      . "Refiled on %t")
+                         (clock-out   . ""))
+ ;; All entries in the subtree are considered todo items
+ org-hierarchical-todo-statistics 'nil
+ ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
+ org-hide-emphasis-markers t
+ ;; Hide leading stars
+ org-hide-leading-stars t
+ ;; resepect heading.
+ org-insert-heading-respect-content nil
+ ;; Warn when editing invisible area
+ org-catch-invisible-edits 'show-and-error
+ ;; Protect subtree
+ org-ctrl-k-protect-subtree t
+ ;; Use C-c C-o to open links, but this should be handier.
+ org-return-follows-link t
+ )
+
+;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
+;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
+(setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
+
+;; Enable org-id for globally unique IDs
+(add-to-list 'org-modules 'org-id)
+(setq org-id-locations-file (expand-file-name ".org-id-locations" my-private-conf-directory)
+      org-id-link-to-org-use-id 'create-if-interactive)
+
+;; Enable org-habit
+(add-to-list 'org-modules 'org-habit)
+(require 'org-habit)
+(setq org-habit-show-all-today t
+      org-habit-show-habits-only-for-today t
+      org-habit-show-done-always-green t
+      org-habit-graph-column 40
+      org-habit-preceding-days 28
+      org-habit-following-days 7)
+
+;; When clock in a task, don't show Org heading name in mode line
+;; (defun myorg-remove-clock-in-string ()
+;;   (delete 'org-mode-line-string global-mode-string))
+;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
+
+;; Update cookie automatically
+(defun myorg-update-parent-cookie ()
+  (when (equal major-mode 'org-mode)
+    (save-excursion
+      (ignore-errors
+        (org-back-to-heading)
+        (org-update-parent-todo-statistics)))))
+(defadvice org-kill-line (after fix-cookies activate)
+  (myorg-update-parent-cookie))
+(defadvice kill-whole-line (after fix-cookies activate)
+  (myorg-update-parent-cookie))
+
+;; Enable link abbreviation
+(setq org-link-abbrev-alist '(("bugzilla"  . "http://10.1.2.9/bugzilla/show_bug.cgi?id=")
+                              ("url-to-ja" . "http://translate.google.fr/translate?sl=en&tl=ja&u=%h")
+                              ("google"    . "http://www.google.com/search?q=")
+                              ("gmap"      . "http://maps.google.com/maps?q=%s")
+                              ("omap"      . "http://nominatim.openstreetmap.org/search?q=%s&polygon=1")
+                              ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
+                              ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
+                              ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
+                              ("youtube" . "https://www.youtube.com/results?search_query=%s")))
+;; Enable link to manual pages
+;; Org-man.el is downloaded from https://orgmode.org/manual/Adding-hyperlink-types.html
+(use-package org-man
+  :straight nil)
+
+(use-package org-my-html-export-style
+  ;; My personal HTML export settings
+  :no-require
   :straight ox-twbs
-  :straight ox-tufte
-  :straight org-cliplink
-  :straight ox-gfm
-  :straight org-download
-  :straight ox-hugo
-  :straight easy-hugo
-  :straight gnuplot
-  :straight helm-org-rifle
-  :hook (org-mode . org-bullets-mode)
-  ;; :hook (org-mode . org-indent-mode)
-  :hook (org-mode . visual-line-mode)
-  :hook (org-mode . auto-fill-mode)
-  ;; :hook (org-mode . hide-mode-line-mode)
-  :init
-  ;; customized export formats
-  (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
-  :bind (
-         ("C-c a" . org-agenda)
-         ("C-c c" . org-capture)
-         ("C-c l" . org-store-link)
-         ("C-c 0" . org-expiry-insert-created)
-         ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
-         ;; Rifle through all my org files to identify an item.
-         ;; Use C-s to display results in occur-like style.
-         ("C-S-s" . helm-org-rifle)
-         ("s-e" . ivy-insert-org-entity)
-         ("H-p" . org-pomodoro)
-         :map org-mode-map
-         ("C-x n s" . nil)
-         ("C-x n b" . nil)
-         ("C-x n e" . nil)
-         ("C-x n"   . nil)
-         ("C-c C-j" . counsel-org-goto)
-         ("s-P"     . anki-editor-push-notes)
-         ("s-L"     . org-cliplink)
-         ("s-b"     . (lambda () (interactive) (org-emphasize ?*)))
-         ("s-/"     . (lambda () (interactive) (org-emphasize ?/)))
-         ("s-u"     . (lambda () (interactive) (org-emphasize ?_)))
-         ("s-="     . (lambda () (interactive) (org-emphasize ?=)))
-         ("s-+"     . (lambda () (interactive) (org-emphasize ?+)))
-         ("s-c"     . (lambda () (interactive) (org-emphasize ?~)))
-         ("s-s"     . org-subscript-region-or-point)
-         ("s-S"     . org-superscript-region-or-point)
-         )
-  :bind (:map org-mode-map
-              ;; Unbinding org-cycle-agenda-files
-              ("C-'"          . nil)
-              ("C-,"          . nil)
-              ("C-c C-v C-g"  . org-babel-goto-named-src-block)
-              ;; Unbinding org-force-cycle-archived
-              ("<C-tab>"      . nil)
-              ;; default option respects content, I don't use it
-              ("C-<return>"   . nil) ;; Reserved for ace-window
-              ("C-S-<return>" . org-insert-heading-respect-content)
-              ("s-n"          . org-next-block)
-              ("s-p"          . org-previous-block)
-              )
+  :demand t
+  :after org
+  :init (require 'ox)
   :config
-  ;; All org directory under Dropbox
-  (setq org-directory (expand-file-name "journals" my-sync-directory))
-  ;; Setup diary too
-  (setq diary-file (expand-file-name "diary" org-directory))
-  ;; See also org-caldav
-  (setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
-  ;; Personal files
-  (setq org-my-plan-office-file (expand-file-name "plan-office.org" org-directory))
-  (setq org-my-office-file (expand-file-name "office.org" org-directory))
-  (setq org-my-todo-file (expand-file-name "todo.org" org-directory))
-  (setq org-my-church-file (expand-file-name "church/church.org" org-directory))
-  (setq org-my-web-archive-file (expand-file-name "web-archive.org" org-directory))
-  (setq org-my-life-file (expand-file-name "life.org" org-directory))
-  (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
-  (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
-  (setq org-my-archive-file (expand-file-name "archive.org" org-directory))
+  ;; let Org/Htmlize assign classes only, and to use a style file to
+  ;; define the look of these classes. See docs for more info.
+  (setq-default org-html-htmlize-output-type 'css
+                org-html-head-include-default-style nil)
 
-  ;; Default org-mode startup
-  (setq org-startup-folded t
-        org-startup-indented t
-        org-startup-with-inline-images nil
-        org-startup-with-latex-preview nil
-        org-latex-preview-ltxpng-directory (expand-file-name "ltximg/" org-directory))
-  ;; Larger latex fragments
-  (plist-put org-format-latex-options :scale 1.5)
+  ;; put your css files here
+  ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
+  (setq org-theme-css-dir (expand-file-name "static/" my-emacs-conf-directory))
 
-  ;; Don't let visual-line-mode shadow org-mode's key binding
-  (add-hook 'visual-line-mode-hook
-            (lambda () (when (derived-mode-p 'org-mode)
-                     (local-set-key (kbd "C-a") #'org-beginning-of-line)
-                     (local-set-key (kbd "C-e") #'org-end-of-line)
-                     (local-set-key (kbd "C-k") #'org-kill-line))))
-
-  ;; Where to archive files
-  (setq org-archive-location (concat org-my-archive-file "::* From %s"))
-
-  ;; set todo keywords. As of v9.2.3, any file-local keyword list will overwrite (instead of append) value set in here.
-  ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
-  ;; list of tags for font settings
-  (setq org-todo-keywords
-        '((sequence "TODO(t!)" "NEXT(n)" "WAIT(w@)" "CANCELLED(c@/!)" "DONE(d!)")))
-  ;; Setup for ordered tasks. Initiate with C-c C-x o
-  (setq org-enforce-todo-dependencies nil)
-  ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
-  (setq org-todo-state-tags-triggers
-        '(("CANCELLED" ("ARCHIVE" . t))
-          ("TODO" ("ARCHIVE" . nil))
-          ("NEXT" ("ARCHIVE" . nil))
-          ("WAIT" ("ARCHIVE" . nil))
-          ("DONE" ("ARCHIVE" . nil)))
-        )
-
-  ;; Org-agenda
-  (setq
-   ;; All files for agenda
-   org-agenda-files (list
-                     org-directory my-private-calendar-directory
-                     (expand-file-name "notes" org-directory)
-                     (expand-file-name "projects" org-directory)
-                     (expand-file-name "church" org-directory)
-                     (expand-file-name "finance" my-sync-directory)))
-  ;; Don't include archive files.
-  (org-remove-file org-my-web-archive-file)
-  (org-remove-file org-my-archive-file)
-
-  ;; Keep using narrow-or-widen-dwim. See above.
-  (unbind-key (kbd "C-x n") org-mode-map)
-  ;; Don't cycle through org-files
-  ;; (unbind-key (kbd "C-,") org-mode-map)
-
-  (setq-default
-   ;; Refile candidates
-   org-refile-targets '((org-agenda-files :tag . "project")
-                        (org-agenda-files :tag . "recent"))
-   org-reverse-note-order 't
-   ;; Show candidates in one go
-   org-outline-path-complete-in-steps nil
-   ;; Don't split line
-   org-M-RET-may-split-line '((default . nil))
-   ;; Cache refile targets
-   ;; Use ‘C-u C-u C-u C-c C-w’ to clear cache
-   org-refile-use-cache t
-   ;; Show full paths for refiling
-   org-refile-use-outline-path t
-   ;; Use current window
-   org-agenda-window-setup 'reorganize-frame
-   org-agenda-restore-windows-after-quit t
-   ;; It doesn't have to start on weekday
-   org-agenda-start-on-weekday nil
-   ;; Agenda view start on today
-   org-agenda-start-day nil
-   ;; Warn me in 2 weeks
-   org-deadline-warning-days 14
-   ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
-   org-agenda-log-mode-items '(closed clock state)
-   ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
-   ;; refresh instead. Note that it can still be killed by kill-buffer. To
-   ;; avoid this, set the emacs-lock-mode
-   org-agenda-sticky t
-   ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
-   org-agenda-skip-scheduled-if-done t
-   org-agenda-skip-deadline-if-done t
-   org-agenda-skip-timestamp-if-done t
-   ;; Don't show scheduled/deadlines/timestamp items on todo list.
-   org-agenda-todo-ignore-scheduled t
-   org-agenda-todo-ignore-deadlines t
-   org-agenda-todo-ignore-timestamp t
-   org-agenda-todo-ignore-with-date t
-   ;; Define when my day really ends (well, normally earlier than that)
-   org-extend-today-until 4
-   org-use-effective-time t
-   ;; Show meetings in org agenda
-   org-agenda-include-diary t
-   ;; Show customized time
-   org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
-   org-display-custom-times t
-   )
-
-  (setq-default
-   ;; Customized agenda-view
-   org-agenda-custom-commands
-   '(("x" agenda)
-     ("y" agenda*)
-     ("w" "Weekly Review"
-      ( ;; deadlines
-       (tags-todo "+DEADLINE<=\"<today>\""
-                  ((org-agenda-overriding-header "Late Deadlines")))
-       ;; scheduled past due
-       (tags-todo "+SCHEDULED<=\"<today>\""
-                  ((org-agenda-overriding-header "Late Scheduled")))
-       ;; now the agenda
-       (agenda ""
-               ((org-agenda-overriding-header "weekly agenda")
-                (org-agenda-ndays 7)
-                (org-agenda-tags-todo-honor-ignore-options t)
-                (org-agenda-todo-ignore-scheduled nil)
-                (org-agenda-todo-ignore-deadlines nil)
-                (org-deadline-warning-days 0)))
-       ;; and last a global todo list
-       (todo "TODO")))
-     ("o" "Agenda and Office-related Tasks"
-      (
-       ;; Task todo
-       (todo "TODO" ((org-agenda-overriding-header "All todos")))
-       ;; Task planned next
-       (todo "NEXT")
-       ;; recent agenda
-       (agenda "" ((org-agenda-start-on-weekday 1) ;; Always start on Monday
-                   (org-agenda-span 3)))
-       ;; Waiting someone
-       (todo "WAIT")
-       ;; Recently done
-       (tags "schedule/DONE")
-       )
-      ;; Common setting for above commands
-      ((org-agenda-files `(,org-my-plan-office-file)))
-      ;; Export with org-store-agenda-views
-      ("/tmp/office.html" "/tmp/office.txt" "/tmp/office.pdf" "/tmp/office.ps"))
-     ("h" "Home"
-      ((agenda "" ((org-agenda-tag-filter-preset '("+home"))
-                   ;; Show upcoming 3 days
-                   (org-agenda-span 3))))
-      nil ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
-     ("c" "Church"
-      ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
-     )
-   org-agenda-exporter-settings
-   '((ps-number-of-columns 1)
-     (ps-landscape-mode t)
-     (org-agenda-add-entry-text-maxlines 5)
-     (org-agenda-prefix-format " [ ] ")
-     (org-agenda-with-colors t)
-     (org-agenda-remove-tags t)
-     (htmlize-output-type 'css)))
-  ;; Regenerate task-view periodically. Prefer light theme when export
-  (defun my-generate-agenda-views ()
+  ;; Use this function to allow exporting using css file. No need to define html_head
+  (defun toggle-org-custom-inline-style ()
     (interactive)
-    (progn
-      (load-theme 'modus-operandi t)
-      (org-store-agenda-views)
-      (load-theme 'modus-vivendi t)))
-  (run-with-idle-timer 600 t 'my-generate-agenda-views)
+    (let ((hook 'org-export-before-parsing-hook)
+          (fun 'set-org-html-style))
+      (if (memq fun (eval hook))
+          (progn
+            (remove-hook hook fun 'buffer-local)
+            (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
+        (add-hook hook fun nil 'buffer-local)
+        (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
+  ;; By default toggle to true
+  (toggle-org-custom-inline-style)
 
-  ;; Auto save org-files, so that we prevent the locking problem between computers
-  (add-hook 'auto-save-hook 'org-save-all-org-buffers)
-  ;; Suppress output "Saving all Org buffers... done"
-  (advice-add 'org-save-all-org-buffers :around #'suppress-messages)
+  (defun org-theme ()
+    (let* ((cssdir org-theme-css-dir)
+           (css-choices (directory-files cssdir nil ".css$"))
+           (css (completing-read "theme: " css-choices nil t)))
+      (concat cssdir css)))
 
-  ;; Capturing thoughts and Level 1 Headings.
-  (setq org-capture-templates
-        '(
-          ("a" "Anki basic"
-           entry
-           (file+headline org-my-anki-file "Dispatch")
-           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Mega\n:END:\n** Front\n%?\n** Back\n")
-
-          ("A" "Anki cloze"
-           entry
-           (file+headline org-my-anki-file "Dispatch")
-           "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%?\n** Extra\n")
-
-          ("c" "Add tasks" ;; Capture first, refile daily
-           entry
-           (file+headline org-my-todo-file "Inbox")
-           "* TODO %?\n" :prepend t)
-
-          ("m" "Appointment"
-           entry
-           (file+headline org-my-todo-file "Inbox")
-           "* APPT %?\n" :prepend t)
-
-          ("j" "working journal"
-           plain
-           (file+olp+datetree org-my-office-file "Working Journal")
-           "%?\n"
-           :prepend t)
-
-          ;; ("b" "finance book-keeping"
-          ;;  plain
-          ;;  (file+headline org-my-beancount-file "Expenses")
-          ;;  "bc%?"  ;; yasnippet template
-          ;;  :prepend t)
-          ))
-
-  (defun make-orgcapture-frame ()
-    "Create a new frame and run org-capture."
+  (defun set-org-html-style (&optional backend)
     (interactive)
-    (switch-to-buffer "*scratch*")
-    (make-frame '((name . "org-capture") (window-system . x)))
-    (select-frame-by-name "org-capture")
-    (counsel-org-capture)
-    (delete-other-windows)
-    )
-
-  ;; Automatically add "CREATED" timestamp to org-capture entries
-  ;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
-  ;; Change: Don't add property when filing at beancount/anki files.
-  ;; (defvar org-created-property-name "CREATED"
-  ;;   "The name of the org-mode property that stores the creation date of the entry")
-  ;; (defun org-set-created-property (&optional active NAME)
-  ;;   "Set a property on the entry giving the creation time.
-
-  ;;   By default the property is called CREATED. If given the `NAME'
-  ;;   argument will be used instead. If the property already exists, it
-  ;;   will not be modified."
-  ;;   (interactive)
-  ;;   (let* ((created (or NAME org-created-property-name))
-  ;;          (fmt (if active "<%s>" "[%s]"))
-  ;;          (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
-  ;;     (unless (or (org-entry-get (point) created nil)
-  ;;                 ;; Don't match file-level capture. (e.g: org-roam)
-  ;;                 (string-match "\\#\\+TITLE\\:" (buffer-string))
-  ;;                 ;; Beancount format does not accept :PROPERTY: syntax
-  ;;                 (string-match "\\.beancount$" (buffer-name))
-  ;;                 (string-match "\\.bean$" (buffer-name))
-  ;;                 (string-match "anki.org" (buffer-name)))
-  ;;       (org-set-property created now))))
-  ;; (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
-
-  (require 'org-expiry)
-  (setq org-expiry-inactive-timestamps t)
-  (org-expiry-insinuate) ;; Activate org-expiry mechanism on new heading creation using M-RET etc
-  (add-hook 'org-capture-before-finalize-hook 'org-expiry-insert-created) ;; Add to capture too
-
-  ;; General org settings
-  (setq-default
-   ;; Indentation setting
-   ;; Always indent to the left
-   org-indent-indentation-per-level 2
-   ;; Start up indented
-   org-startup-indented 'nil
-   ;; Narrowing behavior
-   org-indirect-buffer-display 'current-window
-   ;; Insert Org-mode mode-line automatically on an empty line when `org-mode' is called
-   org-insert-mode-line-in-empty-file t
-   ;; Never leave empty lines in collapsed view, which makes headings more compact
-   org-cycle-separator-lines 0
-   ;; List demote sequence
-   org-list-demote-modify-bullet '(("+" . "-") ("-" . "+") ("*" . "+"))
-   ;; List indent offsets, making it more apparent
-   org-list-indent-offset 1
-   ;; allow lists with letters in them.
-   org-list-allow-alphabetical t
-   ;; Increase imenu index depth
-   org-imenu-depth 5
-   ;; Interpret sub-superscripts only when they're quoted with braces
-   org-use-sub-superscripts '{}
-   org-export-with-sub-superscripts '{}
-   ;; Do not use babel to evaluate code when exporting.
-   org-export-use-babel 't
-   ;; Don't include the validation link & creation tag
-   org-html-postamble 'nil ;; Don't include validation link and created tags
-   ;; Logging settings: Better verbose than miss
-   org-log-into-drawer t
-   org-log-done 'time
-   org-log-reschedule 'note
-   org-log-redeadline 'note
-   org-log-delschedule 'note
-   org-log-deldeadline 'note
-   ;; Setup log note templates. Add "to [new date]" in reschedule and redeadline
-   org-log-note-headings '((done        . "CLOSING NOTE %t")
-                           (state       . "State %-12s from %-12S %t")
-                           (note        . "Note taken on %t")
-                           (reschedule  . "Schedule changed on %t: %S -> %s")
-                           (delschedule . "Not scheduled, was %S on %t")
-                           (redeadline  . "Deadline changed on %t: %S -> %s")
-                           (deldeadline . "Removed deadline, was %S on %t")
-                           (refile      . "Refiled on %t")
-                           (clock-out   . ""))
-   ;; All entries in the subtree are considered todo items
-   org-hierarchical-todo-statistics 'nil
-   ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
-   org-hide-emphasis-markers t
-   ;; Hide leading stars
-   org-hide-leading-stars t
-   ;; resepect heading.
-   org-insert-heading-respect-content nil
-   ;; Warn when editing invisible area
-   org-catch-invisible-edits 'show-and-error
-   ;; Protect subtree
-   org-ctrl-k-protect-subtree t
-   ;; Use C-c C-o to open links, but this should be handier.
-   org-return-follows-link t
-   )
-
-  ;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
-  ;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
-  (setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
-
-  ;; Enable org-id for globally unique IDs
-  (add-to-list 'org-modules 'org-id)
-  (setq org-id-locations-file (expand-file-name ".org-id-locations" my-private-conf-directory)
-        org-id-link-to-org-use-id 'create-if-interactive)
-
-  ;; Enable org-habit
-  (add-to-list 'org-modules 'org-habit)
-  (require 'org-habit)
-  (setq org-habit-show-all-today t
-        org-habit-show-habits-only-for-today t
-        org-habit-show-done-always-green t
-        org-habit-graph-column 40
-        org-habit-preceding-days 28
-        org-habit-following-days 7)
-
-  ;; When clock in a task, don't show Org heading name in mode line
-  (defun myorg-remove-clock-in-string ()
-    (delete 'org-mode-line-string global-mode-string))
-  (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
-
-  ;; Update cookie automatically
-  (defun myorg-update-parent-cookie ()
-    (when (equal major-mode 'org-mode)
-      (save-excursion
-        (ignore-errors
-          (org-back-to-heading)
-          (org-update-parent-todo-statistics)))))
-  (defadvice org-kill-line (after fix-cookies activate)
-    (myorg-update-parent-cookie))
-  (defadvice kill-whole-line (after fix-cookies activate)
-    (myorg-update-parent-cookie))
-
-  ;; Enable link abbreviation
-  (setq org-link-abbrev-alist '(("bugzilla"  . "http://10.1.2.9/bugzilla/show_bug.cgi?id=")
-                                ("url-to-ja" . "http://translate.google.fr/translate?sl=en&tl=ja&u=%h")
-                                ("google"    . "http://www.google.com/search?q=")
-                                ("gmap"      . "http://maps.google.com/maps?q=%s")
-                                ("omap"      . "http://nominatim.openstreetmap.org/search?q=%s&polygon=1")
-                                ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
-                                ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
-                                ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
-                                ("youtube" . "https://www.youtube.com/results?search_query=%s")))
-  ;; Enable link to manual pages
-  ;; Org-man.el is downloaded from https://orgmode.org/manual/Adding-hyperlink-types.html
-  (use-package org-man
-    :straight nil)
-
-  (use-package org-my-html-export-style
-    ;; My personal HTML export settings
-    :no-require
-    :straight ox-twbs
-    :demand t
-    :after org
-    :init (require 'ox)
-    :config
-    ;; let Org/Htmlize assign classes only, and to use a style file to
-    ;; define the look of these classes. See docs for more info.
-    (setq-default org-html-htmlize-output-type 'css
-                  org-html-head-include-default-style nil)
-
-    ;; put your css files here
-    ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
-    (setq org-theme-css-dir (expand-file-name "static/" my-emacs-conf-directory))
-
-    ;; Use this function to allow exporting using css file. No need to define html_head
-    (defun toggle-org-custom-inline-style ()
-      (interactive)
-      (let ((hook 'org-export-before-parsing-hook)
-            (fun 'set-org-html-style))
-        (if (memq fun (eval hook))
+    (when (or (null backend) (eq backend 'html))
+      (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
+        (if (file-exists-p f)
             (progn
-              (remove-hook hook fun 'buffer-local)
-              (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
-          (add-hook hook fun nil 'buffer-local)
-          (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
-    ;; By default toggle to true
-    (toggle-org-custom-inline-style)
+              (set (make-local-variable 'org-theme-css) f)
+              (set (make-local-variable 'org-html-head)
+                   (with-temp-buffer
+                     (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
+                     (insert-file-contents f)
+                     (goto-char (point-max))
+                     (insert "\n/*]]>*/-->\n</style>\n")
+                     (buffer-string)))
+              (set (make-local-variable 'org-html-head-include-default-style)
+                   nil)
+              (message "Set custom style from %s" f))
+          (message "Custom header file %s doesnt exist")))))
+  )
 
-    (defun org-theme ()
-      (let* ((cssdir org-theme-css-dir)
-             (css-choices (directory-files cssdir nil ".css$"))
-             (css (completing-read "theme: " css-choices nil t)))
-        (concat cssdir css)))
+;; org-babel
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((ipython    . t)
+   (emacs-lisp . t)
+   (R          . t)
+   (haskell    . t)
+   (lilypond . t)
+   (python     .t)
+   (org        .t)
+   (dot        .t)
+   (sql        .t)
+   (http       . t)
+   (latex      . t)
+   (js         . t)
+   (shell      . t)
+   (plantuml   . t)
+   (ditaa      . t) ;; turn ascii art into bitmap graphics.
+   (asymptote .  t) ;; create vector graphics
+   ))
 
-    (defun set-org-html-style (&optional backend)
-      (interactive)
-      (when (or (null backend) (eq backend 'html))
-        (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
-          (if (file-exists-p f)
-              (progn
-                (set (make-local-variable 'org-theme-css) f)
-                (set (make-local-variable 'org-html-head)
-                     (with-temp-buffer
-                       (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
-                       (insert-file-contents f)
-                       (goto-char (point-max))
-                       (insert "\n/*]]>*/-->\n</style>\n")
-                       (buffer-string)))
-                (set (make-local-variable 'org-html-head-include-default-style)
-                     nil)
-                (message "Set custom style from %s" f))
-            (message "Custom header file %s doesnt exist")))))
-    )
+;; Setup code block templates.
+;; For Org-mode < 9.2
+(setq old-structure-template-alist
+      '(("py" "#+BEGIN_SRC python :results output\n?\n#+END_SRC" "")
+        ("ipy" "#+BEGIN_SRC ipython :results output\n?\n#+END_SRC" "")
+        ("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "")
+        ("hs" "#+BEGIN_SRC haskell\n?\n#+END_SRC" "")
+        ("laeq" "#+BEGIN_LaTeX\n\\begin{equation} \\label{eq-sinh}\ny=\\sinh x\n\\end{equation}\n#+END_LaTeX" "")
+        ("sh" "#+BEGIN_SRC sh\n?\n#+END_SRC" "")
+        ("r" "#+BEGIN_SRC R\n?\n#+END_SRC" "")
+        ("js" "#+BEGIN_SRC js\n?\n#+END_SRC" "")
+        ("http" "#+BEGIN_SRC http\n?\n#+END_SRC" "")
+        ("ditaa" "#+BEGIN_SRC ditaa :file\n?\n#+END_SRC" "")
+        ("dot" "#+BEGIN_SRC dot :file\n?\n#+END_SRC" "")
+        ("rp" "#+BEGIN_SRC R :results output graphics :file \n?\n#+END_SRC" "")
+        ("plantuml" "#+BEGIN_SRC plantuml :file\n?\n#+END_SRC" "")
+        ("n" "#+NAME: ?")
+        ("cap" "#+CAPTION: ?")))
+;; For Org-mode >= 9.2
+(setq new-structure-template-alist
+      '(("py"       . "src python :results output")
+        ("ipy"      . "src ipython :results output")
+        ("el"       . "src emacs-lisp")
+        ("hs"       . "src haskell")
+        ("laeq"     . "latex \n\\begin{equation} \\label{eq-sinh}\ny=\\sinh x\\end{equation}")
+        ("sh"       . "src sh")
+        ("r"        . "src R")
+        ("js"       . "src js")
+        ("http"     . "src http")
+        ("ditaa"    . "src ditaa :file")
+        ("dot"      . "src dot :file")
+        ("rp"       . "src R :results output graphics :file ")
+        ("plantuml" . "src plantuml :file")
+        ))
+;; Keyword expansion also changed in 9.2
+(setq my-tempo-keywords-alist
+      '(("n" . "NAME")
+        ("cap" . "CAPTION")))
 
-  ;; org-babel
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((ipython    . t)
-     (emacs-lisp . t)
-     (R          . t)
-     (haskell    . t)
-     (lilypond . t)
-     (python     .t)
-     (org        .t)
-     (dot        .t)
-     (sql        .t)
-     (http       . t)
-     (latex      . t)
-     (js         . t)
-     (shell      . t)
-     (plantuml   . t)
-     (ditaa      . t) ;; turn ascii art into bitmap graphics.
-     (asymptote .  t) ;; create vector graphics
-     ))
+;; In org-version >= 9.2, structure template is changed.
+;; Below line allows me to keep using previous patterns.
+(require 'org-tempo)
+(dolist (ele new-structure-template-alist)
+  (add-to-list 'org-structure-template-alist ele))
+(dolist (ele my-tempo-keywords-alist)
+  (add-to-list 'org-tempo-keywords-alist ele))
+;; (when (not (version< (org-version) "9.2"))
+;;   (require 'org-tempo))
+;; ;; Now set structures for both new and old.
+;; (if (version<  (org-version) "9.2")
+;;     (dolist (ele old-structure-template-alist)
+;;       (add-to-list 'org-structure-template-alist ele))
+;;   (dolist (ele new-structure-template-alist)
+;;     (add-to-list 'org-structure-template-alist ele))
+;;   (dolist (ele my-tempo-keywords-alist)
+;;     (add-to-list 'org-tempo-keywords-alist ele))
+;;   )
 
-  ;; Setup code block templates.
-  ;; For Org-mode < 9.2
-  (setq old-structure-template-alist
-        '(("py" "#+BEGIN_SRC python :results output\n?\n#+END_SRC" "")
-          ("ipy" "#+BEGIN_SRC ipython :results output\n?\n#+END_SRC" "")
-          ("el" "#+BEGIN_SRC emacs-lisp\n?\n#+END_SRC" "")
-          ("hs" "#+BEGIN_SRC haskell\n?\n#+END_SRC" "")
-          ("laeq" "#+BEGIN_LaTeX\n\\begin{equation} \\label{eq-sinh}\ny=\\sinh x\n\\end{equation}\n#+END_LaTeX" "")
-          ("sh" "#+BEGIN_SRC sh\n?\n#+END_SRC" "")
-          ("r" "#+BEGIN_SRC R\n?\n#+END_SRC" "")
-          ("js" "#+BEGIN_SRC js\n?\n#+END_SRC" "")
-          ("http" "#+BEGIN_SRC http\n?\n#+END_SRC" "")
-          ("ditaa" "#+BEGIN_SRC ditaa :file\n?\n#+END_SRC" "")
-          ("dot" "#+BEGIN_SRC dot :file\n?\n#+END_SRC" "")
-          ("rp" "#+BEGIN_SRC R :results output graphics :file \n?\n#+END_SRC" "")
-          ("plantuml" "#+BEGIN_SRC plantuml :file\n?\n#+END_SRC" "")
-          ("n" "#+NAME: ?")
-          ("cap" "#+CAPTION: ?")))
-  ;; For Org-mode >= 9.2
-  (setq new-structure-template-alist
-        '(("py"       . "src python :results output")
-          ("ipy"      . "src ipython :results output")
-          ("el"       . "src emacs-lisp")
-          ("hs"       . "src haskell")
-          ("laeq"     . "latex \n\\begin{equation} \\label{eq-sinh}\ny=\\sinh x\\end{equation}")
-          ("sh"       . "src sh")
-          ("r"        . "src R")
-          ("js"       . "src js")
-          ("http"     . "src http")
-          ("ditaa"    . "src ditaa :file")
-          ("dot"      . "src dot :file")
-          ("rp"       . "src R :results output graphics :file ")
-          ("plantuml" . "src plantuml :file")
-          ))
-  ;; Keyword expansion also changed in 9.2
-  (setq my-tempo-keywords-alist
-        '(("n" . "NAME")
-          ("cap" . "CAPTION")))
+;; Default code block settings
+(setq org-babel-default-header-args:python
+      '((:results . "output replace")
+        (:session . "none")
+        (:exports . "both")
+        (:cache .   "no")
+        (:noweb . "no")
+        (:hlines . "no")
+        (:tangle . "no")
+        (:eval . "never-export")))
 
-  ;; In org-version >= 9.2, structure template is changed.
-  ;; Below line allows me to keep using previous patterns.
-  (require 'org-tempo)
-  (dolist (ele new-structure-template-alist)
-    (add-to-list 'org-structure-template-alist ele))
-  (dolist (ele my-tempo-keywords-alist)
-    (add-to-list 'org-tempo-keywords-alist ele))
-  ;; (when (not (version< (org-version) "9.2"))
-  ;;   (require 'org-tempo))
-  ;; ;; Now set structures for both new and old.
-  ;; (if (version<  (org-version) "9.2")
-  ;;     (dolist (ele old-structure-template-alist)
-  ;;       (add-to-list 'org-structure-template-alist ele))
-  ;;   (dolist (ele new-structure-template-alist)
-  ;;     (add-to-list 'org-structure-template-alist ele))
-  ;;   (dolist (ele my-tempo-keywords-alist)
-  ;;     (add-to-list 'org-tempo-keywords-alist ele))
-  ;;   )
+(setq org-babel-default-header-args:R
+      '((:results . "output replace")
+        (:session . "none")
+        (:exports . "both")
+        (:cache .   "no")
+        (:noweb . "no")
+        (:hlines . "no")
+        (:tangle . "no")
+        (:eval . "never-export")))
 
-  ;; Default code block settings
-  (setq org-babel-default-header-args:python
-        '((:results . "output replace")
-          (:session . "none")
-          (:exports . "both")
-          (:cache .   "no")
-          (:noweb . "no")
-          (:hlines . "no")
-          (:tangle . "no")
-          (:eval . "never-export")))
+;; Plotting with ditaa and plantuml
+(setq org-ditaa-jar-path (expand-file-name "bin/ditaa.jar" my-emacs-conf-directory))
+(setq org-plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
+;; For R plotting.
+;; Default template uses :results output as header arguments.
+;; If we want to use ggplot2, which plots to org AND saves a file in
+;; directory, we need to use :results output graphics.
 
-  (setq org-babel-default-header-args:R
-        '((:results . "output replace")
-          (:session . "none")
-          (:exports . "both")
-          (:cache .   "no")
-          (:noweb . "no")
-          (:hlines . "no")
-          (:tangle . "no")
-          (:eval . "never-export")))
+(setq org-src-fontify-natively t   ; Syntax highlight in #+BEGIN_SRC blocks
+      org-src-tab-acts-natively t ; Why isn't this default?
+      org-src-window-setup 'current-window ;; Edit source block location
+      org-edit-src-content-indentation 0
+      org-fontify-quote-and-verse-blocks t ;; fontify text within verse/quote
+      org-adapt-indentation nil)
 
-  ;; Plotting with ditaa and plantuml
-  (setq org-ditaa-jar-path (expand-file-name "bin/ditaa.jar" my-emacs-conf-directory))
-  (setq org-plantuml-jar-path (expand-file-name "bin/plantuml.jar" my-emacs-conf-directory))
-  ;; For R plotting.
-  ;; Default template uses :results output as header arguments.
-  ;; If we want to use ggplot2, which plots to org AND saves a file in
-  ;; directory, we need to use :results output graphics.
+;; Don't prompt before running code in org
+(setq org-confirm-babel-evaluate nil)
+;; Fix an incompatibility between the ob-async and ob-ipython packages
+(setq ob-async-no-async-languages-alist '("ipython"))
+;; display/update images in the buffer after I evaluate
+(add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
 
-  (setq org-src-fontify-natively t   ; Syntax highlight in #+BEGIN_SRC blocks
-        org-src-tab-acts-natively t ; Why isn't this default?
-        org-src-window-setup 'current-window ;; Edit source block location
-        org-edit-src-content-indentation 0
-        org-fontify-quote-and-verse-blocks t ;; fontify text within verse/quote
-        org-adapt-indentation nil)
+;; This automatically aligns tables, which is nice if you use code to generate
+;; tables.
+(defun scimax-align-result-table ()
+  "Align tables in the subtree."
+  (save-restriction
+    (save-excursion
+      (unless (org-before-first-heading-p) (org-narrow-to-subtree))
+      (org-element-map (org-element-parse-buffer) 'table
+        (lambda (tbl)
+          (goto-char (org-element-property :post-affiliated tbl))
+          (org-table-align))))))
 
-  ;; Don't prompt before running code in org
-  (setq org-confirm-babel-evaluate nil)
-  ;; Fix an incompatibility between the ob-async and ob-ipython packages
-  (setq ob-async-no-async-languages-alist '("ipython"))
-  ;; display/update images in the buffer after I evaluate
-  (add-hook 'org-babel-after-execute-hook 'org-display-inline-images 'append)
+(add-hook 'org-babel-after-execute-hook
+          'scimax-align-result-table)
 
-  ;; This automatically aligns tables, which is nice if you use code to generate
-  ;; tables.
-  (defun scimax-align-result-table ()
-    "Align tables in the subtree."
-    (save-restriction
-      (save-excursion
-        (unless (org-before-first-heading-p) (org-narrow-to-subtree))
-        (org-element-map (org-element-parse-buffer) 'table
-          (lambda (tbl)
-            (goto-char (org-element-property :post-affiliated tbl))
-            (org-table-align))))))
-
-  (add-hook 'org-babel-after-execute-hook
-            'scimax-align-result-table)
-
-  ;; emphasize commands copied from scimax
-  (defun org-markup-region-or-point (type beginning-marker end-marker)
-    "Apply the markup TYPE with BEGINNING-MARKER and END-MARKER to region, word or point.
+;; emphasize commands copied from scimax
+(defun org-markup-region-or-point (type beginning-marker end-marker)
+  "Apply the markup TYPE with BEGINNING-MARKER and END-MARKER to region, word or point.
 This is a generic function used to apply markups. It is mostly
 the same for the markups, but there are some special cases for
 subscripts and superscripts."
+  (cond
+   ;; We have an active region we want to apply
+   ((region-active-p)
+    (let* ((bounds (list (region-beginning) (region-end)))
+           (start (apply 'min bounds))
+           (end (apply 'max bounds))
+           (lines))
+      (unless (memq type '(subscript superscript))
+        (save-excursion
+          (goto-char start)
+          (unless (looking-at " \\|\\<")
+            (backward-word)
+            (setq start (point)))
+          (goto-char end)
+          (unless (or (looking-at " \\|\\>")
+                      (looking-back "\\>" 1))
+            (forward-word)
+            (setq end (point)))))
+      (setq lines
+            (s-join "\n" (mapcar
+                          (lambda (s)
+                            (if (not (string= (s-trim s) ""))
+                                (concat beginning-marker
+                                        (s-trim s)
+                                        end-marker)
+                              s))
+                          (split-string
+                           (buffer-substring start end) "\n"))))
+      (setf (buffer-substring start end) lines)
+      (forward-char (length lines))))
+   ;; We are on a word with no region selected
+   ((thing-at-point 'word)
     (cond
-     ;; We have an active region we want to apply
-     ((region-active-p)
-      (let* ((bounds (list (region-beginning) (region-end)))
-             (start (apply 'min bounds))
-             (end (apply 'max bounds))
-             (lines))
-        (unless (memq type '(subscript superscript))
-          (save-excursion
-            (goto-char start)
-            (unless (looking-at " \\|\\<")
-              (backward-word)
-              (setq start (point)))
-            (goto-char end)
-            (unless (or (looking-at " \\|\\>")
-                        (looking-back "\\>" 1))
-              (forward-word)
-              (setq end (point)))))
-        (setq lines
-              (s-join "\n" (mapcar
-                            (lambda (s)
-                              (if (not (string= (s-trim s) ""))
-                                  (concat beginning-marker
-                                          (s-trim s)
-                                          end-marker)
-                                s))
-                            (split-string
-                             (buffer-substring start end) "\n"))))
-        (setf (buffer-substring start end) lines)
-        (forward-char (length lines))))
-     ;; We are on a word with no region selected
-     ((thing-at-point 'word)
-      (cond
-       ;; beginning of a word
-       ((looking-back " " 1)
-        (insert beginning-marker)
-        (re-search-forward "\\>")
-        (insert end-marker))
-       ;; end of a word
-       ((looking-back "\\>" 1)
-        (insert (concat beginning-marker end-marker))
-        (backward-char (length end-marker)))
-       ;; not at start or end so we just sub/sup the character at point
-       ((memq type '(subscript superscript))
-        (insert beginning-marker)
-        (forward-char (- (length beginning-marker) 1))
-        (insert end-marker))
-       ;; somewhere else in a word and handled sub/sup. mark up the
-       ;; whole word.
-       (t
-        (re-search-backward "\\<")
-        (insert beginning-marker)
-        (re-search-forward "\\>")
-        (insert end-marker))))
-     ;; not at a word or region insert markers and put point between
-     ;; them.
-     (t
+     ;; beginning of a word
+     ((looking-back " " 1)
+      (insert beginning-marker)
+      (re-search-forward "\\>")
+      (insert end-marker))
+     ;; end of a word
+     ((looking-back "\\>" 1)
       (insert (concat beginning-marker end-marker))
-      (backward-char (length end-marker)))))
+      (backward-char (length end-marker)))
+     ;; not at start or end so we just sub/sup the character at point
+     ((memq type '(subscript superscript))
+      (insert beginning-marker)
+      (forward-char (- (length beginning-marker) 1))
+      (insert end-marker))
+     ;; somewhere else in a word and handled sub/sup. mark up the
+     ;; whole word.
+     (t
+      (re-search-backward "\\<")
+      (insert beginning-marker)
+      (re-search-forward "\\>")
+      (insert end-marker))))
+   ;; not at a word or region insert markers and put point between
+   ;; them.
+   (t
+    (insert (concat beginning-marker end-marker))
+    (backward-char (length end-marker)))))
 
-  (defun org-subscript-region-or-point ()
-    "Mark the region, word or character at point as a subscript.
+(defun org-subscript-region-or-point ()
+  "Mark the region, word or character at point as a subscript.
 This function tries to do what you mean:
 1. If you select a region, markup the region.
 2. If in a word, markup the word.
 3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'subscript "_{" "}"))
+  (interactive)
+  (org-markup-region-or-point 'subscript "_{" "}"))
 
-  (defun org-superscript-region-or-point ()
-    "Mark the region, word or character at point as superscript.
+(defun org-superscript-region-or-point ()
+  "Mark the region, word or character at point as superscript.
 This function tries to do what you mean:
 1. If you select a region, markup the region.
 2. If in a word, markup the word.
 3. Otherwise wrap the character at point in the markup."
-    (interactive)
-    (org-markup-region-or-point 'superscript "^{" "}"))
+  (interactive)
+  (org-markup-region-or-point 'superscript "^{" "}"))
 
-  ;; Org export to doc
-  (setq org-odt-preferred-output-format "docx"
-        org-odt-fontify-srcblocks t)
-  ;; Export Org table to xlsx
-  (defun org-table-export-to-xlsx ()
-    (interactive)
-    (let* ((file-name (nth 4 (org-heading-components))
-                      ;; (file-name-sans-extension (buffer-file-name
-                      ;;                            (current-buffer)))
-                      )
-           (csv-file (concat file-name ".csv")))
-      (org-table-export csv-file "orgtbl-to-csv")
-      (org-odt-convert csv-file "xlsx")))
+;; Org export to doc
+(setq org-odt-preferred-output-format "docx"
+      org-odt-fontify-srcblocks t)
+;; Export Org table to xlsx
+(defun org-table-export-to-xlsx ()
+  (interactive)
+  (let* ((file-name (nth 4 (org-heading-components))
+                    ;; (file-name-sans-extension (buffer-file-name
+                    ;;                            (current-buffer)))
+                    )
+         (csv-file (concat file-name ".csv")))
+    (org-table-export csv-file "orgtbl-to-csv")
+    (org-odt-convert csv-file "xlsx")))
 
-  ;; Org Speed commands
-  (setq org-use-speed-commands t)
-  (add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
-  (add-to-list 'org-speed-commands-user (cons "d" 'org-deadline))
-  (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
-  ;; Use indirect buffer instead of narrowing, so that visibility of original
-  ;; buffer is not changed.
-  ;; Widen is replace as toggle too.
-  (add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
-  ;; Mark a subtree
-  (add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
-  ;; kill a subtree
-  (add-to-list 'org-speed-commands-user (cons "k" (lambda ()
-                                                    (org-mark-subtree)
-                                                    (kill-region
-                                                     (region-beginning)
-                                                     (region-end)))))
-  ;; Jump to headline
-  (add-to-list 'org-speed-commands-user (cons "j" (lambda ()
-                                                    (avy-with avy-goto-line
-                                                      (avy--generic-jump "^\\*+" nil)))))
+;; Org Speed commands
+(setq org-use-speed-commands t)
+(add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
+(add-to-list 'org-speed-commands-user (cons "d" 'org-deadline))
+(add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
+;; Use indirect buffer instead of narrowing, so that visibility of original
+;; buffer is not changed.
+;; Widen is replace as toggle too.
+(add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
+;; Mark a subtree
+(add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
+;; kill a subtree
+(add-to-list 'org-speed-commands-user (cons "k" (lambda ()
+                                                  (org-mark-subtree)
+                                                  (kill-region
+                                                   (region-beginning)
+                                                   (region-end)))))
+;; Jump to headline
+(add-to-list 'org-speed-commands-user (cons "j" (lambda ()
+                                                  (avy-with avy-goto-line
+                                                    (avy--generic-jump "^\\*+" nil)))))
 
-  ;; Capturing pages from web. Integrates org-protocol-capture-html,
-  ;; org-capture-extensions and org-protocol
-  (use-package org-protocol-capture-html
-    :defer 3
-    :straight (:host github :repo "alphapapa/org-protocol-capture-html")
-    :straight org-web-tools
-    :bind (:map org-mode-map
-                ("C-c C-S-l" . org-web-tools-insert-link-for-url))
-    :config
-    ;; org-capture-extension
-    ;; Suitable for marking a link, or selected text within a page
-    (require 'org-protocol)
-    (defun transform-square-brackets-to-round-ones(string-to-transform)
-      "Transforms [ into ( and ] into ), other chars left unchanged."
-      (concat
-       (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform))
-      )
-    (add-to-list 'org-capture-templates
-                 '("p" "Protocol" entry (file+headline org-my-web-archive-file "Archives")
-                   "* %?[[%:link][%:description]]\n%i"))
-    (add-to-list 'org-capture-templates
-                 '("L" "Protocol Link" entry (file+headline org-my-web-archive-file "Archives")
-                   "* %?[[%:link][%:description]]"))
-    ;; org-procotol-capture-html
-    ;; Turning the whole HTML as Org entry, using pandoc for formatting,
-    ;; downloading all pics etc.
-    ;; Useful for archiving.
-    (add-to-list 'org-capture-templates
-                 '("w" "Web site" entry
-                   (file+olp org-my-web-archive-file "Archives")
-                   "* %a %?\n%:initial"))
+;; Capturing pages from web. Integrates org-protocol-capture-html,
+;; org-capture-extensions and org-protocol
+(use-package org-protocol-capture-html
+  :defer 3
+  :straight (:host github :repo "alphapapa/org-protocol-capture-html")
+  :straight org-web-tools
+  :bind (:map org-mode-map
+              ("C-c C-S-l" . org-web-tools-insert-link-for-url))
+  :config
+  ;; org-capture-extension
+  ;; Suitable for marking a link, or selected text within a page
+  (require 'org-protocol)
+  (defun transform-square-brackets-to-round-ones(string-to-transform)
+    "Transforms [ into ( and ] into ), other chars left unchanged."
+    (concat
+     (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform))
+    )
+  (add-to-list 'org-capture-templates
+               '("p" "Protocol" entry (file+headline org-my-todo-file "Inbox")
+                 "* %?[[%:link][%:description]]\n%i"))
+  (add-to-list 'org-capture-templates
+               '("L" "Protocol Link" entry (file+headline org-my-todo-file "Inbox")
+                 "* %?[[%:link][%:description]]"))
+  ;; org-procotol-capture-html
+  ;; Turning the whole HTML as Org entry, using pandoc for formatting,
+  ;; downloading all pics etc.
+  ;; Useful for archiving.
+  (add-to-list 'org-capture-templates
+               '("w" "Web site" entry
+                 (file+olp org-my-todo-file "Inbox")
+                 "* %a %?\n%:initial"))
 
-    (defun search-forward-and-org-download-images()
-      "Search forward for HTTP Image URLs, replace each using
+  (defun search-forward-and-org-download-images()
+    "Search forward for HTTP Image URLs, replace each using
     org-download-image to obtain a local copy."
-      (interactive)
-      (while (re-search-forward org-bracket-link-regexp nil t)
-        (let* (
-               (end (match-end 0))
-               (beg (match-beginning 0))
-               (s (buffer-substring-no-properties beg end))
-               (match? (string-match org-bracket-link-regexp s))
-               (link (match-string 1 s))
-               )
-          (when (string-match "^http.*?\\.\\(?:png\\|jpg\\|jpeg\\)\\(.*\\)$"
-                              link) ;; This is an image link
-            (message (concat "Downloading image: "link))
-            (delete-region beg end)
-            (org-download-image link)
-            (sleep-for 1) ;; Some sites dislike frequent requests
-            ))))
-    )
-
-  ;; ob-ipython
-  (setq ob-ipython-resources-dir "/tmp/ob-ipython-resources/")
-
-  ;; ox-hugo setup
-  (with-eval-after-load 'ox
-    (require 'ox-hugo))
-  ;; easy-hugo setup
-  (setq easy-hugo-basedir (expand-file-name "blog" my-sync-directory))
-
-  (with-eval-after-load 'org-capture
-    (defun org-hugo-new-subtree-post-capture-template ()
-      "Returns `org-capture' template string for new Hugo post.
-    See `org-capture-templates' for more information."
-      (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
-             (fname (org-hugo-slug title)))
-        (mapconcat #'identity
-                   `(
-                     ,(concat "* TODO " title)
-                     ":PROPERTIES:"
-                     ,(concat ":EXPORT_FILE_NAME: " fname)
-                     ":END:"
-                     "%?\n")          ;Place the cursor here finally
-                   "\n")))
-
-    (add-to-list 'org-capture-templates
-                 '("H"                ;`org-capture' binding + h
-                   "Blog post (Hugo)"
-                   entry
-                   (file+olp "blog.org" "Blog Ideas")
-                   (function org-hugo-new-subtree-post-capture-template))))
-
-  ;; org-download
-  (require 'org-download)
-  ;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
-  ;; folder.
-  (setq-default org-download-method 'attach ;; Screenshots are stored in data/ directory by ID. Easier to manage
-                org-download-heading-lvl nil
-                org-download-delete-image-after-download t
-                org-download-screenshot-method "echo"
-                org-download-screenshot-file "/tmp/screenshot.png"
-                org-download-image-org-width 800
-                org-download-annotate-function (lambda (link) "") ;; Don't annotate
-                )
-
-  ;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
-  ;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
-  ;; with /tmp/screenshot.png. Nullify org-download-screenshot-method by setting it to `echo', so that essentially we
-  ;; are only calling (org-download-image org-download-screenshot-file).
-  (defun my-org-download-screenshot ()
-    "Capture screenshot and insert the resulting file.
-The screenshot tool is determined by `org-download-screenshot-method'."
     (interactive)
-    (let ((tmp-file "/tmp/screenshot.png"))
-      (delete-file tmp-file)
-      (call-process-shell-command "flameshot gui -p /tmp/")
-      ;; Because flameshot exit immediately, keep polling to check file existence
-      (while (not (file-exists-p tmp-file))
-        (sleep-for 2))
-      (org-download-image tmp-file)))
-  (global-set-key (kbd "<print>") 'my-org-download-screenshot)
-  ;; Use #+ATTR_ORG: :width 300px to customized image display width
-  (setq org-image-actual-width nil)
+    (while (re-search-forward org-bracket-link-regexp nil t)
+      (let* (
+             (end (match-end 0))
+             (beg (match-beginning 0))
+             (s (buffer-substring-no-properties beg end))
+             (match? (string-match org-bracket-link-regexp s))
+             (link (match-string 1 s))
+             )
+        (when (string-match "^http.*?\\.\\(?:png\\|jpg\\|jpeg\\)\\(.*\\)$"
+                            link) ;; This is an image link
+          (message (concat "Downloading image: "link))
+          (delete-region beg end)
+          (org-download-image link)
+          (sleep-for 1) ;; Some sites dislike frequent requests
+          ))))
+  )
 
-  (use-package org-recent-headings
-    :defer 3
-    :disabled t
-    :config (org-recent-headings-mode))
+;; ob-ipython
+(setq ob-ipython-resources-dir "/tmp/ob-ipython-resources/")
 
-  ;; org-chef
-  (require 'org-chef)
+;; ox-hugo setup
+(with-eval-after-load 'ox
+  (require 'ox-hugo))
+;; easy-hugo setup
+(setq easy-hugo-basedir (expand-file-name "blog" my-sync-directory))
 
-  ;; org-crypt
-  (require 'org-crypt)
-  (org-crypt-use-before-save-magic)
-  (setq org-tags-exclude-from-inheritance '("crypt")
-        org-crypt-key "")
+(with-eval-after-load 'org-capture
+  (defun org-hugo-new-subtree-post-capture-template ()
+    "Returns `org-capture' template string for new Hugo post.
+    See `org-capture-templates' for more information."
+    (let* ((title (read-from-minibuffer "Post Title: ")) ;Prompt to enter the post title
+           (fname (org-hugo-slug title)))
+      (mapconcat #'identity
+                 `(
+                   ,(concat "* TODO " title)
+                   ":PROPERTIES:"
+                   ,(concat ":EXPORT_FILE_NAME: " fname)
+                   ":END:"
+                   "%?\n")          ;Place the cursor here finally
+                 "\n")))
 
-  ;; org-roam
-  (use-package org-roam
-    :defer 5
-    :after org
-    :after company
-    :straight t
-    :straight org-journal
-    :custom
-    (org-roam-directory (expand-file-name "roam/" org-directory))
-    (org-journal-dir (expand-file-name "roam/journal/" org-directory))
-    (org-journal-date-format "%Y-%m-%d-%a")
-    (org-journal-time-format "%H:%M")
-    (org-journal-enable-agenda-integration t)
-    (org-journal-file-type 'daily)
-    (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
-    (org-journal-time-prefix "** ")
-    (org-journal-encrypt-journal t)
-    (org-roam-encrypt-files nil)
-    (org-journal-enable-encryption nil)
-    (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
-    :bind (("C-c g SPC" . org-roam)
-           ("C-c g g"   . org-roam-find-file)
-           ("C-c g j"   . org-roam-dailies-today)
-           ("C-c g G"   . org-roam-graph-show)
-           ("C-c g i"   . org-roam-insert-immediate)
-           ("C-c J"     . org-journal-new-entry)
-           ("<f12>"     . org-roam-capture))
-    :config
-    (org-roam-mode +1)
-    (require 'org-roam-protocol)
-    (push 'company-capf company-backends)
-    (setq org-roam-completion-everywhere t
-          org-roam-completion-ignore-case t
-          org-roam-db-update-method 'immediate)
-    (setq-default org-roam-capture-templates
-                  '(("d" "default" plain
-                     #'org-roam-capture--get-point "%?"
-                     :file-name "${slug}"
-                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
-                     :unnarrowed t)
-                    ("b" "bible" plain
-                     #'org-roam-capture--get-point "%?"
-                     :file-name "${slug}"
-                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:\n  %(concat \"hello\"
+  (add-to-list 'org-capture-templates
+               '("H"                ;`org-capture' binding + h
+                 "Blog post (Hugo)"
+                 entry
+                 (file+olp "blog.org" "Blog Ideas")
+                 (function org-hugo-new-subtree-post-capture-template))))
+
+;; org-download
+(require 'org-download)
+;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
+;; folder.
+(setq-default org-download-method 'attach ;; Screenshots are stored in data/ directory by ID. Easier to manage
+              org-download-heading-lvl nil
+              org-download-delete-image-after-download t
+              org-download-screenshot-method "echo"
+              org-download-screenshot-file "/tmp/screenshot.png"
+              org-download-image-org-width 800
+              org-download-annotate-function (lambda (link) "") ;; Don't annotate
+              )
+
+;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
+;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
+;; with /tmp/screenshot.png. Nullify org-download-screenshot-method by setting it to `echo', so that essentially we
+;; are only calling (org-download-image org-download-screenshot-file).
+(defun my-org-download-screenshot ()
+  "Capture screenshot and insert the resulting file.
+The screenshot tool is determined by `org-download-screenshot-method'."
+  (interactive)
+  (let ((tmp-file "/tmp/screenshot.png"))
+    (delete-file tmp-file)
+    (call-process-shell-command "flameshot gui -p /tmp/")
+    ;; Because flameshot exit immediately, keep polling to check file existence
+    (while (not (file-exists-p tmp-file))
+      (sleep-for 2))
+    (org-download-image tmp-file)))
+(global-set-key (kbd "<print>") 'my-org-download-screenshot)
+;; Use #+ATTR_ORG: :width 300px to customized image display width
+(setq org-image-actual-width nil)
+
+(use-package org-recent-headings
+  :defer 3
+  :disabled t
+  :config (org-recent-headings-mode))
+
+;; org-chef
+(require 'org-chef)
+
+;; org-crypt
+(require 'org-crypt)
+(org-crypt-use-before-save-magic)
+(setq org-tags-exclude-from-inheritance '("crypt")
+      org-crypt-key "")
+
+;; org-roam
+(use-package org-roam
+  :defer 5
+  :after org
+  :after company
+  :straight t
+  :straight org-journal
+  :custom
+  (org-roam-directory (expand-file-name "roam/" org-directory))
+  (org-journal-dir (expand-file-name "roam/journal/" org-directory))
+  (org-journal-date-format "%Y-%m-%d-%a")
+  (org-journal-time-format "%H:%M")
+  (org-journal-enable-agenda-integration t)
+  (org-journal-file-type 'daily)
+  (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
+  (org-journal-time-prefix "** ")
+  (org-journal-encrypt-journal t)
+  (org-roam-encrypt-files nil)
+  (org-journal-enable-encryption nil)
+  (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
+  :bind (("C-c g SPC" . org-roam)
+         ("C-c g g"   . org-roam-find-file)
+         ("C-c g j"   . org-roam-dailies-today)
+         ("C-c g G"   . org-roam-graph-show)
+         ("C-c g i"   . org-roam-insert-immediate)
+         ("C-c J"     . org-journal-new-entry)
+         ("<f12>"     . org-roam-capture))
+  :config
+  (org-roam-mode +1)
+  (require 'org-roam-protocol)
+  (push 'company-capf company-backends)
+  (setq org-roam-completion-everywhere t
+        org-roam-completion-ignore-case t
+        org-roam-db-update-method 'immediate)
+  (setq-default org-roam-capture-templates
+                '(("d" "default" plain
+                   #'org-roam-capture--get-point "%?"
+                   :file-name "${slug}"
+                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                   :unnarrowed t)
+                  ("b" "bible" plain
+                   #'org-roam-capture--get-point "%?"
+                   :file-name "${slug}"
+                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:\n  %(concat \"hello\"
            \"world\" \"${title}\")"
-                     :unnarrowed t))
-                  org-roam-capture-immediate-template
-                  '("d" "default" plain #'org-roam-capture--get-point "%?"
-                    :file-name "${slug}"
-                    :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
-                    :unnarrowed t
-                    :immediate-finish t)
-                  org-roam-capture-ref-templates
-                  '(("r" "ref" plain
-                     #'org-roam-capture--get-point "%?"
-                     :file-name "${slug}"
-                     :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:" :unnarrowed t))
-                  )
-    (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
-    (add-to-list 'org-capture-templates
-                 '("v" "Vocabulary" plain
-                   (file my-vocabulary-file)
-                   "%?%c"
-                   :empty-lines-before 1))
-    ;; Rebuild every 10 minutes when idle
-    (run-with-idle-timer 600 t 'org-roam-db-build-cache)
-    )
-  (use-package org-roam-server
-    :after org-roam
-    :defer 15
-    :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
-    :custom
-    (org-roam-server-host "127.0.0.1")
-    (org-roam-server-port 8080)
-    (org-roam-server-authenticate nil)
-    (org-roam-server-export-inline-images t)
-    (org-roam-server-serve-files nil)
-    (org-roam-server-served-file-extensions '("pdf" "mp4" "ogv"))
-    (org-roam-server-network-poll t)
-    (org-roam-server-network-arrows nil)
-    (org-roam-server-network-label-truncate t)
-    (org-roam-server-network-label-truncate-length 60)
-    (org-roam-server-network-label-wrap-length 20)
-    :config
-    (org-roam-server-mode +1)
-    )
-  (use-package org-roam-bibtex
-    :defer 10
-    :after org-roam
-    :hook (org-roam-mode . org-roam-bibtex-mode)
-    :bind ((("C-c g b" . orb-note-actions))))
+                   :unnarrowed t))
+                org-roam-capture-immediate-template
+                '("d" "default" plain #'org-roam-capture--get-point "%?"
+                  :file-name "${slug}"
+                  :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                  :unnarrowed t
+                  :immediate-finish t)
+                org-roam-capture-ref-templates
+                '(("r" "ref" plain
+                   #'org-roam-capture--get-point "%?"
+                   :file-name "${slug}"
+                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:" :unnarrowed t))
+                )
+  (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
+  (add-to-list 'org-capture-templates
+               '("v" "Vocabulary" plain
+                 (file my-vocabulary-file)
+                 "%?%c"
+                 :empty-lines-before 1))
+  ;; Rebuild every 10 minutes when idle
+  (run-with-idle-timer 600 t 'org-roam-db-build-cache)
+  )
+(use-package org-roam-server
+  :after org-roam
+  :defer 15
+  :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
+  :custom
+  (org-roam-server-host "127.0.0.1")
+  (org-roam-server-port 8080)
+  (org-roam-server-authenticate nil)
+  (org-roam-server-export-inline-images t)
+  (org-roam-server-serve-files nil)
+  (org-roam-server-served-file-extensions '("pdf" "mp4" "ogv"))
+  (org-roam-server-network-poll t)
+  (org-roam-server-network-arrows nil)
+  (org-roam-server-network-label-truncate t)
+  (org-roam-server-network-label-truncate-length 60)
+  (org-roam-server-network-label-wrap-length 20)
+  :config
+  (org-roam-server-mode +1)
+  )
+(use-package org-roam-bibtex
+  :defer 10
+  :after org-roam
+  :hook (org-roam-mode . org-roam-bibtex-mode)
+  :bind ((("C-c g b" . orb-note-actions))))
 
-  ;; org-contacts
-  (use-package org-contacts
-    :defer 10
-    :straight nil
-    :after (org org-capture)
-    :config
-    (add-to-list 'org-capture-templates
-                 '("lc"  "contact" entry
-                   (file+headline "contacts.org" "To File")
-                   "* %(org-contacts-template-name)
+;; org-contacts
+(use-package org-contacts
+  :defer 10
+  :straight nil
+  :after (org org-capture)
+  :config
+  (add-to-list 'org-capture-templates
+               '("lc"  "contact" entry
+                 (file+headline "contacts.org" "To File")
+                 "* %(org-contacts-template-name)
     :PROPERTIES:
     :EMAIL: %(org-contacts-template-email)
     :PHONE: %^{Phone}
@@ -2431,51 +2490,52 @@ The screenshot tool is determined by `org-download-screenshot-method'."
     :ORG:  %^{Company}
     :NOTE: %^{NOTE}
     :END:"
-                   :empty-lines 1))
-    )
+                 :empty-lines 1))
+  )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Org-ref + Org-noter integration ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;; Load org-ref, and use ivy for completion
-  (use-package org-ref
-    :defer 10
-    :after helm
-    :straight t
-    :straight ivy-bibtex
-    :straight helm-bibtex
-    :straight org-noter
-    :straight (org-noter-plus :type git :host github :repo "yuchen-lea/org-noter-plus")
-    :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
-    :bind ("H-b" . ivy-bibtex) ;; open bibliography
-    :hook ((org-noter-notes-mode org-noter-doc-mode) . hide-mode-line-mode) ;; Hide modeline when taking notes
-    :init
-    (require 'helm-source)
-    ;; Common variables
-    (setq my-bibliography-directory (expand-file-name "bibliography" my-sync-directory))
-    (setq my-default-bibliography (expand-file-name
-                                   "references.bib" my-bibliography-directory))
-    (setq my-default-notes (expand-file-name
-                            "notes/paper-notes.org" org-directory))
-    ;; variables for ivy-bibtex, which uses bibtex-completion
-    (setq bibtex-completion-bibliography `(,my-default-bibliography)
-          bibtex-completion-notes-path my-default-notes
-          bibtex-completion-library-path `(,(expand-file-name "pdfs/" my-bibliography-directory)))
-    ;; variables for org-ref-ivy
-    (setq reftex-default-bibliography my-default-bibliography)
-    ;; variables for org-ref
-    (setq org-ref-bibliography-notes my-default-notes
-          org-ref-default-bibliography `(,my-default-bibliography)
-          org-ref-pdf-directory (expand-file-name
-                                 "pdfs/" ;; Must have / ending for working with org-noter
-                                 my-bibliography-directory))
-    ;; variables for org-noter
-    (setq-default org-noter-notes-search-path `(,(expand-file-name "notes" org-directory) ,org-roam-directory)
-                  org-noter-default-notes-file-names '("paper-notes.org")
-                  org-noter-auto-save-last-location t
-                  org-noter-always-create-frame t)
+;; Load org-ref, and use ivy for completion
+(use-package org-ref
+  :defer 10
+  :after helm
+  :after org-roam
+  :straight t
+  :straight ivy-bibtex
+  :straight helm-bibtex
+  :straight org-noter
+  :straight (org-noter-plus :type git :host github :repo "yuchen-lea/org-noter-plus")
+  :straight biblio ;; Browse and import bibliographic references from CrossRef, DBLP, HAL, arXiv, Dissemin, and doi.org
+  :bind ("H-b" . ivy-bibtex) ;; open bibliography
+  :hook ((org-noter-notes-mode org-noter-doc-mode) . hide-mode-line-mode) ;; Hide modeline when taking notes
+  :init
+  (require 'helm-source)
+  ;; Common variables
+  (setq my-bibliography-directory (expand-file-name "bibliography" my-sync-directory))
+  (setq my-default-bibliography (expand-file-name
+                                 "references.bib" my-bibliography-directory))
+  (setq my-default-notes (expand-file-name
+                          "notes/paper-notes.org" org-directory))
+  ;; variables for ivy-bibtex, which uses bibtex-completion
+  (setq bibtex-completion-bibliography `(,my-default-bibliography)
+        bibtex-completion-notes-path my-default-notes
+        bibtex-completion-library-path `(,(expand-file-name "pdfs/" my-bibliography-directory)))
+  ;; variables for org-ref-ivy
+  (setq reftex-default-bibliography my-default-bibliography)
+  ;; variables for org-ref
+  (setq org-ref-bibliography-notes my-default-notes
+        org-ref-default-bibliography `(,my-default-bibliography)
+        org-ref-pdf-directory (expand-file-name
+                               "pdfs/" ;; Must have / ending for working with org-noter
+                               my-bibliography-directory))
+  ;; variables for org-noter
+  (setq-default org-noter-notes-search-path `(,(expand-file-name "notes" org-directory) ,org-roam-directory)
+                org-noter-default-notes-file-names '("paper-notes.org")
+                org-noter-auto-save-last-location t
+                org-noter-always-create-frame t)
 
-    ;; Integrate org-ref + org-noter
-    ;; Add NOTER_DOCUMENT to org-ref template
-    (setq org-ref-note-title-format
-          "** TODO %y - %t
+  ;; Integrate org-ref + org-noter
+  ;; Add NOTER_DOCUMENT to org-ref template
+  (setq org-ref-note-title-format
+        "** TODO %y - %t
  :PROPERTIES:
   :Custom_ID: %k
   :AUTHOR: %9a
@@ -2489,161 +2549,144 @@ The screenshot tool is determined by `org-download-screenshot-method'."
  :END:
 ")
 
-    :config
-    ;; Load libraries
-    (require 'org-ref-ivy)
-    (require 'ivy-bibtex)
-    (require 'org-noter)
+  :config
+  ;; Load libraries
+  (require 'org-ref-ivy)
+  (require 'ivy-bibtex)
+  (require 'org-noter)
 
-    ;; Integrate org-ref + ivy-bibtex
-    ;; Uses org-ref function to open notes
-    ;; See https://github.com/jkitchin/org-ref/issues/225
-    (defun my-ivy/org-ref-notes-function (keys)
-      (dolist (key keys)
-        (funcall org-ref-notes-function key)))
-    (ivy-bibtex-ivify-action my-ivy/org-ref-notes-function ivy-bibtex-edit-notes)
+  ;; Integrate org-ref + ivy-bibtex
+  ;; Uses org-ref function to open notes
+  ;; See https://github.com/jkitchin/org-ref/issues/225
+  (defun my-ivy/org-ref-notes-function (keys)
+    (dolist (key keys)
+      (funcall org-ref-notes-function key)))
+  (ivy-bibtex-ivify-action my-ivy/org-ref-notes-function ivy-bibtex-edit-notes)
 
-    ;; Usage:
-    ;; General entrance: org-ref
-    ;; Use arxiv-get-pdf-add-bibtex-entry to download and add entry
-    ;; Use C-c ] (org-ref-insert-link) to insert citation.
-    ;; When point at citation, H-o opens the hydra. Useful to navigate to relative notes.
-    ;; Use org-ref-insert-cite-with-completion for special formatting
-    ;; For PDFs that don't have a DOI, add references in .bib and rename pdfs with correct key.
-    ;; Google Scholar has a "cite" button that's convenient for this purpose
-    )
+  ;; Usage:
+  ;; General entrance: org-ref
+  ;; Use arxiv-get-pdf-add-bibtex-entry to download and add entry
+  ;; Use C-c ] (org-ref-insert-link) to insert citation.
+  ;; When point at citation, H-o opens the hydra. Useful to navigate to relative notes.
+  ;; Use org-ref-insert-cite-with-completion for special formatting
+  ;; For PDFs that don't have a DOI, add references in .bib and rename pdfs with correct key.
+  ;; Google Scholar has a "cite" button that's convenient for this purpose
+  )
   ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; Org-ref + Org-noter integration ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 
-  (use-package ox-latex
-    ;; Org-latex output global settings
-    ;;
-    ;; 1. Source code fontification
-    ;; 2. Chinese output
-    ;;
-    ;; Dependencies:
-    ;; pacman -S python-pygments pygmentize
-    :straight nil
-    :init
-    ;; Below settings are accompanied with my own LaTeX options which are defined in a yasnippet.
-    ;; Consult https://github.com/dfeich/org-babel-examples/blob/master/latex/latex-example.org for example.
-    (setq-default
-     ;; Use xelatex by default
-     org-latex-compiler "xelatex"
-     ;; Export in background
-     org-export-in-background 'nil) ;; TODO: Seems buggy when set to t
-
-    ;; Enable source code fontification
-    (setq-default org-latex-listings 'minted)  ;; Use python minted to fontify
-    (setq org-latex-minted-options '(("frame" "lines") ("fontsize" "\\footnotesize")))
-
-    ;; PDF output process with comments
-    ;; 1. `--shell-escape' required for minted. See `org-latex-listings'
-    ;; 2. "bibtex %b" ensures bibliography (of org-ref) is processed during pdf generation
-    ;; 3. Remove output logs, out, auto at the end of generation
-    (setq org-latex-pdf-process
-          '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "bibtex %b"
-            "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
-            ))
-
-    )
-
-  ;; Add beamer output support
-  (require 'ox-beamer)
-
-  ;; org-present
-  (eval-after-load "org-present"
-    '(progn
-       (add-hook 'org-present-mode-hook
-                 (lambda ()
-                   (org-present-big)
-                   (org-display-inline-images)
-                   (org-present-hide-cursor)
-                   (org-present-read-only)
-                   (hide-mode-line-mode)))
-       (add-hook 'org-present-mode-quit-hook
-                 (lambda ()
-                   (org-present-small)
-                   (org-remove-inline-images)
-                   (org-present-show-cursor)
-                   (org-present-read-write)))))
-
-  ;; org-super-agenda
-  (setq org-super-agenda-groups
-        '((:name "Schedule"
-                 :time-grid t)
-          (:name "Due today"
-                 :deadline today)
-          (:name "Today"
-                 :and (:scheduled today :not (:habit t))) ;; Show habits separately.
-          (:name "Overdue"
-                 :deadline past)
-          (:name "Habits"
-                 :habit t)
-          (:name "Due soon"
-                 :deadline future)
-          (:name "Scheduled earlier"
-                 :scheduled past)
-          ))
-  (org-super-agenda-mode)
-
-  ;; Org-icalendar setting
+(use-package ox-latex
+  ;; Org-latex output global settings
+  ;;
+  ;; 1. Source code fontification
+  ;; 2. Chinese output
+  ;;
+  ;; Dependencies:
+  ;; pacman -S python-pygments pygmentize
+  :straight nil
+  :init
+  ;; Below settings are accompanied with my own LaTeX options which are defined in a yasnippet.
+  ;; Consult https://github.com/dfeich/org-babel-examples/blob/master/latex/latex-example.org for example.
   (setq-default
-   ;; Please make sure to set your correct timezone here
-   org-icalendar-timezone "Asia/Hong_Kong"
-   org-icalendar-date-time-format ";TZID=%Z:%Y%m%dT%H%M%S"
-   ;; Alarm me 15 minutes in advance
-   org-icalendar-alarm-time 15
-   ;; This makes sure to-do items as a category can show up on the calendar
-   org-icalendar-include-todo t
-   ;; ensures all org "deadlines" show up, and show up as due dates
-   org-icalendar-use-deadline '(event-if-todo todo-due event-if-todo-not-done)
-   ;; ensures "scheduled" org items show up, and show up as start times
-   org-icalendar-use-scheduled '(event-if-todo todo-start event-if-todo-not-done)
-   )
+   ;; Use xelatex by default
+   org-latex-compiler "xelatex"
+   ;; Export in background
+   org-export-in-background 'nil) ;; TODO: Seems buggy when set to t
 
-  ;; helm-org-rifle
-  (setq helm-org-rifle-show-path t)
+  ;; Enable source code fontification
+  (setq-default org-latex-listings 'minted)  ;; Use python minted to fontify
+  (setq org-latex-minted-options '(("frame" "lines") ("fontsize" "\\footnotesize")))
 
-  ;; Export to Confluence Wiki
-  (require 'ox-confluence)
+  ;; PDF output process with comments
+  ;; 1. `--shell-escape' required for minted. See `org-latex-listings'
+  ;; 2. "bibtex %b" ensures bibliography (of org-ref) is processed during pdf generation
+  ;; 3. Remove output logs, out, auto at the end of generation
+  (setq org-latex-pdf-process
+        '("%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "bibtex %b"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
+          ))
 
-  ;; Enable KOMA-script support
-  (require 'ox-koma-letter)
+  )
 
-  ;; Export to mermaid
-  ;; npm install mermaid.cli
-  (setq ob-mermaid-cli-path "/usr/bin/mmdc")
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((mermaid . t)))
+;; Add beamer output support
+(require 'ox-beamer)
 
-  ;; org-pdftools
-  (use-package org-pdftools
-    :straight (:host github :repo "fuxialexander/org-pdftools")
-    :defer 3)
+;; org-present
+(eval-after-load "org-present"
+  '(progn
+     (add-hook 'org-present-mode-hook
+               (lambda ()
+                 (org-present-big)
+                 (org-display-inline-images)
+                 (org-present-hide-cursor)
+                 (org-present-read-only)
+                 (hide-mode-line-mode)))
+     (add-hook 'org-present-mode-quit-hook
+               (lambda ()
+                 (org-present-small)
+                 (org-remove-inline-images)
+                 (org-present-show-cursor)
+                 (org-present-read-write)))))
 
-  ;; Use org-bookmark-heading
-  (use-package org-bookmark-heading
-    :defer 3)
+;; Org-icalendar setting
+(setq-default
+ ;; Please make sure to set your correct timezone here
+ org-icalendar-timezone "Asia/Hong_Kong"
+ org-icalendar-date-time-format ";TZID=%Z:%Y%m%dT%H%M%S"
+ ;; Alarm me 15 minutes in advance
+ org-icalendar-alarm-time 15
+ ;; This makes sure to-do items as a category can show up on the calendar
+ org-icalendar-include-todo t
+ ;; ensures all org "deadlines" show up, and show up as due dates
+ org-icalendar-use-deadline '(event-if-todo todo-due event-if-todo-not-done)
+ ;; ensures "scheduled" org items show up, and show up as start times
+ ;; All events with TODO-state except DONE will be pushed to mobile calendar.
+ ;; For events that I wish to show only in Emacs, I do NOT assign a TODO state.
+ org-icalendar-use-scheduled '(todo-start event-if-todo-not-done)
+ )
 
-  ;; Org-Msg mode. Send email the Outlook style
-  (require 'org-msg)
-  (setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil"
-        org-msg-startup "hidestars indent inlineimages"
-        org-msg-greeting-fmt "\nHi %s,\n\n"
-        org-msg-greeting-fmt-mailto t
-        org-msg-signature "
+;; helm-org-rifle
+(setq helm-org-rifle-show-path t)
+
+;; Export to Confluence Wiki
+(require 'ox-confluence)
+
+;; Enable KOMA-script support
+(require 'ox-koma-letter)
+
+;; Export to mermaid
+;; npm install mermaid.cli
+(setq ob-mermaid-cli-path "/usr/bin/mmdc")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((mermaid . t)))
+
+;; org-pdftools
+(use-package org-pdftools
+  :straight (:host github :repo "fuxialexander/org-pdftools")
+  :defer 3)
+
+;; Use org-bookmark-heading
+(use-package org-bookmark-heading
+  :defer 3)
+
+;; Org-Msg mode. Send email the Outlook style
+(require 'org-msg)
+(setq org-msg-options "html-postamble:nil H:5 num:nil ^:{} toc:nil"
+      org-msg-startup "hidestars indent inlineimages"
+      org-msg-greeting-fmt "\nHi %s,\n\n"
+      org-msg-greeting-fmt-mailto t
+      org-msg-signature "
 Regards,
 #+begin_signature
 Yiufung
 #+end_signature")
-  ;; org-msg doesn't support notmuch for now.
-  (setq mail-user-agent 'message-user-agent)
-  (defalias 'html-mail-mode 'org-msg-mode) ;; An easy-to-remember name
-  )
+;; org-msg doesn't support notmuch for now.
+(setq mail-user-agent 'message-user-agent)
+(defalias 'html-mail-mode 'org-msg-mode) ;; An easy-to-remember name
+
 
 (use-package outshine
   ;; Easier navigation for source code files
@@ -2912,20 +2955,23 @@ Yiufung
   :config
   (setq
    ;; The CalDAV URL with your full and primary email address at the end.
-   org-caldav-url "https://caldav.fastmail.com/dav/calendars/user/mail@yiufung.net"
+   org-caldav-url (auth-source-pass-get "dav" "Nextcloud")
    ;; Only entries with "schedule" tags should be exported to CalDAV
-   org-caldav-select-tags '("schedule")
+   org-caldav-select-tags 'nil
    ;; Multiple calendar setup
    org-caldav-calendars `(
-                          (:calendar-id "1fe12417-fe19-41d2-a105-a94d1a562e21"
-                                        :files (,org-my-todo-file ,org-my-life-file)
+                          (:calendar-id "personal"
+                                        :files (,org-my-todo-file)
+                                        :select-tags ("home")
                                         :inbox ,(expand-file-name "CalHome.org" my-private-calendar-directory))
-                          (:calendar-id "d556f213-2b71-4bcd-a1a4-370a9b1a1eae"
-                                        :files (,org-my-office-file ,org-my-plan-office-file) ;; default note is plan-office
-                                        :inbox ,(expand-file-name "CalOffice.org" my-private-calendar-directory))
-                          (:calendar-id "7100372b-7ab5-409f-a68e-8977c19e77bf"
-                                        :files (,org-my-church-file)
+                          (:calendar-id "church"
+                                        :files (,org-my-todo-file)
+                                        :select-tags ("church")
                                         :inbox ,(expand-file-name "CalChurch.org" my-private-calendar-directory))
+                          (:calendar-id "work"
+                                        :files (,org-my-work-file) ;; default note is plan-work
+                                        :inbox ,(expand-file-name "CalWork.org" my-private-calendar-directory))
+
                           )
    ;; If entries are deleted in Org, always delete at the CALDAV end without asking
    org-caldav-delete-calendar-entries 'always
@@ -4397,7 +4443,7 @@ In that case, insert the number."
 (global-set-key (kbd "H-c") 'calc)
 (global-set-key (kbd "H-e") 'mu4e)
 (global-set-key (kbd "H-t") 'load-theme)
-(global-set-key (kbd "<XF86Open>") 'ivy-switch-buffer)
+(global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (bookmark-jump "inbox")))
 
 ;; <f1> for help-* commands
 (global-set-key (kbd "<f2>") 'counsel-find-file-extern)
@@ -4457,21 +4503,48 @@ In that case, insert the number."
   (interactive)
   (cond ((equal 'dark (cyf/theme-type))
          (progn
+           ;; (setq org-todo-keyword-faces
+           ;;       '(("TODO" . "darkkhaki")
+           ;;         ("NEXT" . "darksalmon")
+           ;;         ("WAIT" . "darkgoldenrod")
+           ;;         ("CANCELLED" . "darkgrey")
+           ;;         ("DONE" . "darkseagreen")))
            (setq org-todo-keyword-faces
-                 '(("TODO" . "darkkhaki")
-                   ("NEXT" . "darksalmon")
-                   ("WAIT" . "darkgoldenrod")
-                   ("CANCELLED" . "darkgrey")
-                   ("DONE" . "darkseagreen")))
-           (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE")))
+                 '(("TODO" :foreground "medium blue" :weight bold)
+                   ("EPIC" :foreground "deep sky blue" :weight bold)
+                   ("STORY" :foreground "royal blue" :weight bold)
+                   ("RECUR" :foreground "cornflowerblue" :weight bold)
+                   ("APPT" :foreground "medium blue" :weight bold)
+                   ("STARTED" :foreground "dark orange" :weight bold)
+                   ("WAITING" :foreground "red" :weight bold)
+                   ("DELEGATED" :foreground "dark violet" :weight bold)
+                   ("DEFERRED" :foreground "dark blue" :weight bold)
+                   ("SOMEDAY" :foreground "dark blue" :weight bold)
+                   ("PROJECT" :foreground "#088e8e" :weight bold)
+                   ("DONE" :foreground "darkseagreen" :weight bold)
+                   )))
+         (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE"))
         ((equal 'light (cyf/theme-type))
          (progn
            (setq org-todo-keyword-faces
-                 '(("TODO" . "black")
-                   ("NEXT" . "rosybrown")
-                   ("WAIT" . "sienna")
-                   ("CANCELLED" . "dimgrey")
-                   ("DONE" . "mediumseagreen")))
+                 '(("TODO" :foreground "medium blue" :weight bold)
+                   ("EPIC" :foreground "deep sky blue" :weight bold)
+                   ("STORY" :foreground "royal blue" :weight bold)
+                   ("RECUR" :foreground "cornflowerblue" :weight bold)
+                   ("APPT" :foreground "medium blue" :weight bold)
+                   ("STARTED" :foreground "dark orange" :weight bold)
+                   ("WAITING" :foreground "red" :weight bold)
+                   ("DELEGATED" :foreground "dark violet" :weight bold)
+                   ("DEFERRED" :foreground "dark blue" :weight bold)
+                   ("SOMEDAY" :foreground "dark blue" :weight bold)
+                   ("PROJECT" :foreground "#088e8e" :weight bold)
+                   ("DONE" :foreground "darkseagreen" :weight bold)))
+           ;; (setq org-todo-keyword-faces
+           ;;       '(("TODO" . "black")
+           ;;         ("NEXT" . "rosybrown")
+           ;;         ("WAIT" . "sienna")
+           ;;         ("CANCELLED" . "dimgrey")
+           ;;         ("DONE" . "mediumseagreen")))
            (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE")))))
 
 (defun cyf/set-light-theme-background ()
