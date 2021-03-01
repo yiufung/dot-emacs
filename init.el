@@ -375,6 +375,11 @@ behavior added."
 (use-package bug-hunter
   :defer 3)
 
+(defun my-rest-pinky ()
+  "Penalize my impulsive Ctrl syndrome"
+  (interactive)
+  (y-or-n-p "Give your pinky some rest!"))
+
 (use-package uniquify
   ;; unique buffer names dependent on file name
   :straight nil
@@ -442,13 +447,14 @@ behavior added."
   :after (eyebrowse ace-window)
   :config
   (setq auto-save-default t
-        super-save-auto-save-when-idle 20
+        super-save-auto-save-when-idle 10
         super-save-auto-save-when-idle t)
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
   (add-to-list 'super-save-triggers 'ace-window)
   (super-save-mode +1)
-  (bind-key (kbd "C-x C-s") '(lambda () (interactive) (y-or-n-p "Give your pinky some rest!")))
+  (auto-save-visited-mode +1)
+  (bind-key (kbd "C-x C-s") 'my-rest-pinky)
   )
 
 (use-package aggressive-indent
