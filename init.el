@@ -1561,7 +1561,8 @@ horizontal mode."
 ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
 ;; list of tags for font settings
 (setq org-todo-keywords
-      '((sequence "TODO(t!)" "WAIT(w@)" "CANCELED(c@)" "SOMEDAY(y)" "STORY(o)" "EPIC(e)" "STARTED(s)" "DEFERRED(r@)" "DELEGATED(g@)" "DONE(d!)")))
+      '((sequence "TODO(t!)" "STARTED(s)" "WAIT(w@)" "CANCELED(c@)" "SOMEDAY(y)" "TASK(k)" "EPIC(e)" "DEFERRED(r@)"
+                  "DELEGATED(g@)" "APPT(a)" "DONE(d!)")))
 ;; Setup for ordered tasks. Initiate with C-c C-x o
 (setq org-enforce-todo-dependencies nil)
 ;; If it's cancel, set ARCHIVE to be true, so that org-agenda won't show it
@@ -1800,31 +1801,7 @@ horizontal mode."
   (delete-other-windows)
   )
 
-;; Automatically add "CREATED" timestamp to org-capture entries
-;; See https://emacs.stackexchange.com/questions/21291/add-created-timestamp-to-logbook
-;; Change: Don't add property when filing at beancount/anki files.
-;; (defvar org-created-property-name "CREATED"
-;;   "The name of the org-mode property that stores the creation date of the entry")
-;; (defun org-set-created-property (&optional active NAME)
-;;   "Set a property on the entry giving the creation time.
-
-;;   By default the property is called CREATED. If given the `NAME'
-;;   argument will be used instead. If the property already exists, it
-;;   will not be modified."
-;;   (interactive)
-;;   (let* ((created (or NAME org-created-property-name))
-;;          (fmt (if active "<%s>" "[%s]"))
-;;          (now  (format fmt (format-time-string "%Y-%m-%d %a %H:%M"))))
-;;     (unless (or (org-entry-get (point) created nil)
-;;                 ;; Don't match file-level capture. (e.g: org-roam)
-;;                 (string-match "\\#\\+TITLE\\:" (buffer-string))
-;;                 ;; Beancount format does not accept :PROPERTY: syntax
-;;                 (string-match "\\.beancount$" (buffer-name))
-;;                 (string-match "\\.bean$" (buffer-name))
-;;                 (string-match "anki.org" (buffer-name)))
-;;       (org-set-property created now))))
-;; (add-hook 'org-capture-before-finalize-hook #'org-set-created-property)
-
+;; Automatically add CREATED property on creation of heading
 (require 'org-expiry)
 (setq org-expiry-inactive-timestamps t)
 (org-expiry-insinuate) ;; Activate org-expiry mechanism on new heading creation using M-RET etc
@@ -4363,7 +4340,7 @@ In that case, insert the number."
   (defun encode-json-array-of-numbers-on-one-line (encode array)
     (let* ((json-encoding-pretty-print
             (and json-encoding-pretty-print
-                 (not (loop for x across array always (numberp x)))))
+                 (not (cl-loop for x across array always (numberp x)))))
            (json-encoding-separator (if json-encoding-pretty-print "," ", ")))
       (funcall encode array)))
   (advice-add 'json-encode-array :around #'encode-json-array-of-numbers-on-one-line))
