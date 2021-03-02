@@ -453,6 +453,7 @@ behavior added."
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
   (add-to-list 'super-save-triggers 'ace-window)
   (super-save-mode +1)
+  (run-with-idle-timer 300 t 'org-save-all-org-buffers)
   (auto-save-visited-mode +1)
   (bind-key (kbd "C-x C-s") 'my-rest-pinky)
   )
@@ -1641,7 +1642,41 @@ horizontal mode."
  ;; Show customized time
  org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
  org-display-custom-times t
+ ;; org-agenda sorting strategies
+ org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
+                               (todo ;; user-defined-up
+                                priority-down todo-state-up  category-keep
+                                )
+                               (tags priority-down category-keep)
+                               (search category-keep))
+ ;; user agenda compare function. Pillage from John Wiegley
+ org-agenda-cmp-user-defined 'org-compare-todo-age
  )
+
+(defun org-todo-age-time (&optional pos)
+  (let ((stamp (org-entry-get (or pos (point)) "CREATED" t)))
+    (when stamp
+      (time-subtract (current-time)
+                     (org-time-string-to-time
+                      (org-entry-get (or pos (point)) "CREATED" t))))))
+
+(defun org-todo-age (&optional pos)
+  (let ((days (time-to-number-of-days (org-todo-age-time pos))))
+    (cond
+     ((< days 1)   "today")
+     ((< days 7)   (format "%dd" days))
+     ((< days 30)  (format "%.1fw" (/ days 7.0)))
+     ((< days 358) (format "%.1fM" (/ days 30.0)))
+     (t            (format "%.1fY" (/ days 365.0))))))
+
+(defun org-compare-todo-age (a b)
+  (let ((time-a (org-todo-age-time (get-text-property 0 'org-hd-marker a)))
+        (time-b (org-todo-age-time (get-text-property 0 'org-hd-marker b))))
+    (if (time-less-p time-a time-b)
+        -1
+      (if (equal time-a time-b)
+          0
+        1))))
 
 (defun my-org-agenda-should-skip-p ()
   "Skip all but the first non-done entry."
@@ -1700,7 +1735,9 @@ horizontal mode."
 
         ))
 (setq org-super-agenda-groups
-      '((:name "Schedule"
+      '((:name "Ongoing"
+               :todo "STARTED")
+        (:name "Schedule"
                :time-grid t)
         (:name "Due today"
                :deadline today)
@@ -2394,6 +2431,8 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (org-roam-mode +1)
   (require 'org-roam-protocol)
   (push 'company-capf company-backends)
+  ;; Add org-roam to org-agenda-files
+  (add-to-list 'org-agenda-files org-roam-directory)
   (setq org-roam-completion-everywhere t
         org-roam-completion-ignore-case t
         org-roam-db-update-method 'immediate)
@@ -3393,6 +3432,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                                         "Roget's II The New Thesaurus 3th Ed. (En-En)"
                                         "Webster's Revised Unabridged Dictionary (1913)"
                                         "牛津高阶英汉双解"
+                                        "简明英汉字典增强版"
                                         "Oxford Advanced Learner's Dictionary"
                                         "牛津现代英汉双解词典"
                                         "懒虫简明英汉词典"
