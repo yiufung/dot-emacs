@@ -358,8 +358,7 @@ behavior added."
 
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-0") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
-                                                                                    my-emacs-conf-directory))))
-(global-set-key (kbd "s-<print>") (lambda () (interactive) (find-file "~/screenshots")))
+                                                                              my-emacs-conf-directory))))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-9") (lambda () (interactive) (find-file org-my-work-file)))
@@ -1411,6 +1410,11 @@ horizontal mode."
   (setq ffip-use-rust-fd t)
   )
 
+(use-package awesome-tab
+  :defer 3
+  :config
+  (awesome-tab-mode +1))
+
 (use-package eyebrowse
   :defer 2
   :init
@@ -1737,7 +1741,7 @@ horizontal mode."
 (setq org-super-agenda-groups
       '((:name "Ongoing"
                :todo "STARTED")
-        (:name "Schedule"
+        (:name "Scheduled"
                :time-grid t)
         (:name "Due today"
                :deadline today)
@@ -2366,6 +2370,8 @@ This function tries to do what you mean:
               org-download-image-org-width 800
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
+;; org-attach method
+(setq-default org-attach-method 'mv)
 
 ;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
 ;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
@@ -2441,12 +2447,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
                    #'org-roam-capture--get-point "%?"
                    :file-name "${slug}"
                    :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
-                   :unnarrowed t)
-                  ("b" "bible" plain
-                   #'org-roam-capture--get-point "%?"
-                   :file-name "${slug}"
-                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:\n  %(concat \"hello\"
-           \"world\" \"${title}\")"
                    :unnarrowed t))
                 org-roam-capture-immediate-template
                 '("d" "default" plain #'org-roam-capture--get-point "%?"
@@ -3159,7 +3159,8 @@ Yiufung
   :custom (doc-view-odf->pdf-converter-program "soffice"))
 
 (use-package simple-httpd
-  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd"))
+  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" ;; :local-repo "simple-httpd"
+                          ))
 (use-package web-server
   :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server"))
 
