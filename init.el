@@ -1262,6 +1262,10 @@ horizontal mode."
     (window-min-height . 20)
     (reusable-frames . visible)
     )
+   ;; Don't show *Async Shell Command* output buffer
+   ("^\\*Async Shell Command"
+    (display-buffer-no-window)
+    (allow-no-window . t))
    ("^\\*SDCV" ;; Open dictionary in a new frame
     (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
     (reusable-frames . visible)
@@ -1634,6 +1638,10 @@ horizontal mode."
  org-agenda-restore-windows-after-quit t
  ;; It doesn't have to start on weekday
  org-agenda-start-on-weekday nil
+ ;; Show day view by default
+ org-agenda-span 'day
+ ;; Don't show tags in agenda view
+ org-agenda-remove-tags t
  ;; Agenda view start on today
  org-agenda-start-day nil
  ;; Warn me in 2 weeks
@@ -1648,11 +1656,11 @@ horizontal mode."
  org-agenda-skip-scheduled-if-done t
  org-agenda-skip-deadline-if-done t
  org-agenda-skip-timestamp-if-done t
- ;; Don't show scheduled/deadlines/timestamp items on todo list.
- org-agenda-todo-ignore-scheduled t
- org-agenda-todo-ignore-deadlines t
- org-agenda-todo-ignore-timestamp t
- org-agenda-todo-ignore-with-date t
+ ;; Don't show scheduled/deadlines/timestamp items on todo list if it's upcoming (future)
+ org-agenda-todo-ignore-scheduled 'future
+ org-agenda-todo-ignore-deadlines 'far
+ org-agenda-todo-ignore-timestamp 'nil
+ org-agenda-todo-ignore-with-date 'nil
  ;; Define when my day really ends (well, normally earlier than that)
  org-extend-today-until 4
  org-use-effective-time t
@@ -3001,11 +3009,10 @@ Yiufung
 (use-package org-caldav
   ;; Fastmail Calendar integration
   :defer 3
-  :after org
   :config
   (setq
    ;; The CalDAV URL with your full and primary email address at the end.
-   org-caldav-url (auth-source-pass-get "dav" "Nextcloud")
+   org-caldav-url (auth-source-pass-get "dav" "cloud.yiufung.net")
    ;; Only entries with "schedule" tags should be exported to CalDAV
    org-caldav-select-tags 'nil
    ;; Multiple calendar setup
@@ -3078,7 +3085,6 @@ Yiufung
 
 (use-package mpv
   :defer t
-  :after org
   :config
   (org-link-set-parameters "mpv" :follow #'mpv-play)
   (defun org-mpv-complete-link (&optional arg)
@@ -4119,7 +4125,6 @@ In that case, insert the number."
   :if (equal system-type 'gnu/linux)
   :disabled
   :defer 5
-  :after org
   :config
   ;; ob-jupyter integration is added in org settings.
   (org-babel-do-load-languages
@@ -4857,7 +4862,6 @@ In that case, insert the number."
 
 (use-package anki-editor
   :defer 10
-  :after org
   :bind (:map org-mode-map
               ("<f12>" . anki-editor-cloze-region-dont-incr)
               ("<f11>" . anki-editor-cloze-region-auto-incr)
@@ -4977,9 +4981,8 @@ In that case, insert the number."
 
 (use-package excorporate
   ;; Sync office365 calendar
-  :disabled
-  :defer 3
-  :after (org calfw)
+  :defer t
+  :after (calfw)
   :config
   (setq-default excorporate-configuration '((auth-source-pass-get "email" "outlook365")
                                             . "https://outlook.office365.com/EWS/Exchange.asmx")
