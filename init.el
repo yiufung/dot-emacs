@@ -4070,18 +4070,18 @@ In that case, insert the number."
 (use-package lsp-mode
   :straight t
   :straight lsp-ui
-  :straight company-lsp
   :straight lsp-ivy
   :straight lsp-treemacs
   :defer 3
   :after company
   :hook (python-mode . lsp) ;; Start LSP server in python-mode
-  :hook (lsp-mode . lsp-ui-mode)
   :config
   (setq lsp-enable-snippet t
-        company-lsp-enable-snippet t
         ;; Ignore duplicates when there is a same symbol with the same contents.
-        lsp-ui-sideline-ignore-duplicate t)
+        lsp-ui-sideline-ignore-duplicate t
+        ;; Enable peek
+        lsp-ui-peek-enable t
+        lsp-ui-doc-enable t)
   )
 
 ;;;; Debugging
