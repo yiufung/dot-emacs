@@ -3193,10 +3193,9 @@ Yiufung
   :custom (doc-view-odf->pdf-converter-program "soffice"))
 
 (use-package simple-httpd
-  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" ;; :local-repo "simple-httpd"
-                          ))
+  :straight (simple-httpd :host github :repo "skeeto/emacs-web-server" :local-repo "simple-httpd"))
 (use-package web-server
-  :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "emacs-web-server"))
+  :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "web-server"))
 
 (use-package pdf-tools
   :defer t
