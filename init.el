@@ -2411,7 +2411,9 @@ This function tries to do what you mean:
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
 ;; org-attach method
-(setq-default org-attach-method 'mv)
+(setq-default org-attach-method 'mv
+              org-attach-auto-tag "attach"
+              org-attach-store-link-p 't)
 
 ;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
 ;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
