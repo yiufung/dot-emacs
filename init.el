@@ -1619,11 +1619,11 @@ horizontal mode."
 
 (setq-default
  ;; Refile candidates
- org-refile-targets '((org-agenda-files :tag . "project") ;; Coarse refile to tasks
-                      (org-agenda-files :tag . "church") ;; Exception for church so that org-caldav is easier to configure
-                      (org-agenda-files :tag . "recent")
-                      (org-agenda-files :level . 1)
-                      ) ;; Mark some recent targets so I can refile them as sub-children
+ org-refile-targets `(
+                      ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :level . 1)
+                      ;; Recently ongoing tasks
+                      ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :todo . "STARTED")
+                      )
  org-reverse-note-order 't
  ;; Show candidates in one go
  org-outline-path-complete-in-steps nil
