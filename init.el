@@ -1557,8 +1557,9 @@ horizontal mode."
 ;; See also org-caldav
 (setq my-private-calendar-directory (expand-file-name "calendar" my-private-conf-directory))
 ;; Personal files
-(setq org-my-work-file (expand-file-name "work.org" org-directory))
 (setq org-my-todo-file (expand-file-name "todo.org" org-directory))
+(setq org-my-work-file (expand-file-name "work.org" org-directory))
+(setq org-my-church-file (expand-file-name "church.org" org-directory))
 (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
 (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
 
@@ -1606,7 +1607,7 @@ horizontal mode."
 (setq
  ;; All files for agenda
  org-agenda-files (list
-                   org-my-todo-file org-my-work-file
+                   org-my-todo-file org-my-work-file org-my-church-file
                    my-private-calendar-directory ;; For incoming calendar
                    ;;org-directory (expand-file-name "projects" org-directory)
                    ))
@@ -1787,29 +1788,32 @@ horizontal mode."
  ;; Customized agenda-view
  org-agenda-custom-commands
  '(
+   ("h" "Home Agenda Today"
+    agenda ""
+    ;; Common setting
+    ((org-agenda-overriding-header "Home Agenda Today")
+     (org-agenda-files `(,org-my-todo-file ,org-my-church-file))) ;; Show church tasks too
+    ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
+   ("H" "Home Tasks"
+    alltodo ""
+    ((org-agenda-overriding-header "All Home tasks")
+     (org-agenda-files `(,org-my-todo-file ,org-my-church-file))))
+   ("c" "Church Agenda & Tasks"
+    ((agenda "" )
+     (alltodo ""))
+    ((org-agenda-overriding-header "Church Agenda & Tasks")  ;; Church-only tasks
+     (org-agenda-files `(,org-my-church-file))))
    ("o" "Work Agenda Today"
-    ((agenda "")
-     ;; (alltodo "")
-     )
+    agenda ""
     ;; Common setting for above commands
     ((org-agenda-overriding-header "Work Agenda Today")
      (org-agenda-files `(,org-my-work-file)))
     ;; Export with org-store-agenda-views
     ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
-   ("h" "Home Agenda Today"
-    ((agenda "")
-     ;; (alltodo "")
-     )
-    ;; Common setting
-    ((org-agenda-overriding-header "Home Tasks")
-     (org-agenda-files `(,org-my-todo-file)))
-    ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
-   ("c" "Church Agenda & Tasks"
-    ((agenda "" )
-     (alltodo ""))
-    ((org-agenda-tag-filter-preset '("+church"))
-     (org-agenda-overriding-header "Church Agenda & Tasks"))
-    )
+   ("O" "Office Tasks"
+    alltodo ""
+    ((org-agenda-overriding-header "All Work tasks")
+     (org-agenda-files `(,org-my-work-file))))
    )
  org-agenda-exporter-settings
  '((ps-number-of-columns 1)
@@ -3013,20 +3017,16 @@ Yiufung
   (setq
    ;; The CalDAV URL with your full and primary email address at the end.
    org-caldav-url (auth-source-pass-get "dav" "cloud.yiufung.net")
-   ;; Only entries with "schedule" tags should be exported to CalDAV
-   org-caldav-select-tags 'nil
    ;; Multiple calendar setup
    org-caldav-calendars `(
                           (:calendar-id "personal"
                                         :files (,org-my-todo-file)
-                                        :select-tags ("home")
                                         :inbox ,(expand-file-name "CalHome.org" my-private-calendar-directory))
                           (:calendar-id "church"
-                                        :files (,org-my-todo-file)
-                                        :select-tags ("church")
+                                        :files (,org-my-church-file)
                                         :inbox ,(expand-file-name "CalChurch.org" my-private-calendar-directory))
                           (:calendar-id "work"
-                                        :files (,org-my-work-file) ;; default note is plan-work
+                                        :files (,org-my-work-file)
                                         :inbox ,(expand-file-name "CalWork.org" my-private-calendar-directory))
 
                           )
@@ -3039,8 +3039,7 @@ Yiufung
    ;; Debug like crazy
    org-caldav-debug-level 2
    ;; Change org-caldav save directory
-   org-caldav-save-directory my-private-calendar-directory
-   )
+   org-caldav-save-directory my-private-calendar-directory)
 
   (defvar org-caldav-sync-timer nil
     "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
