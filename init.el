@@ -446,7 +446,7 @@ behavior added."
   :after (eyebrowse ace-window)
   :config
   (setq auto-save-default t
-        super-save-auto-save-when-idle 10
+        super-save-idle-duration 5 ;; It's okay to set it longer
         super-save-auto-save-when-idle t)
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
@@ -672,7 +672,7 @@ is already narrowed."
 
 (use-package expand-region
   ;; Incrementally select a region
-  :after org ;; When using straight, er should byte-compiled with the latest Org
+  ;; :after org ;; When using straight, er should byte-compiled with the latest Org
   :bind (("C-'" . er/expand-region)
          ("C-M-'" . er/contract-region))
   :config
@@ -1411,9 +1411,24 @@ horizontal mode."
   )
 
 (use-package awesome-tab
+  :disabled
   :defer 3
   :config
-  (awesome-tab-mode +1))
+  (global-set-key (kbd "s-1") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-2") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-3") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-4") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-5") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-6") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-7") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-8") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-9") 'awesome-tab-select-visible-tab)
+  (global-set-key (kbd "s-0") 'awesome-tab-select-visible-tab)
+  (setq awesome-tab-show-tab-index t
+        awesome-tab-height 100)
+
+  (awesome-tab-mode +1)
+  )
 
 (use-package eyebrowse
   :defer 2
@@ -1739,7 +1754,9 @@ horizontal mode."
 
         ))
 (setq org-super-agenda-groups
-      '((:name "Ongoing"
+      '((:name "Important"
+               :priority "A")
+        (:name "Ongoing"
                :todo "STARTED")
         (:name "Scheduled"
                :time-grid t)
@@ -1762,17 +1779,29 @@ horizontal mode."
  ;; Customized agenda-view
  org-agenda-custom-commands
  '(
-   ("o" "Work-related Tasks"
-    ((agenda "" ((org-agenda-files `(,org-my-work-file)))))
+   ("o" "Work Agenda Today"
+    ((agenda "")
+     ;; (alltodo "")
+     )
     ;; Common setting for above commands
-    nil
+    ((org-agenda-overriding-header "Work Agenda Today")
+     (org-agenda-files `(,org-my-work-file)))
     ;; Export with org-store-agenda-views
     ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
-   ("h" "Home"
-    ((agenda "" ((org-agenda-files `(,org-my-todo-file)))))
-    nil ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
-   ("c" "Church"
-    ((agenda "" ((org-agenda-tag-filter-preset '("+church"))))))
+   ("h" "Home Agenda Today"
+    ((agenda "")
+     ;; (alltodo "")
+     )
+    ;; Common setting
+    ((org-agenda-overriding-header "Home Tasks")
+     (org-agenda-files `(,org-my-todo-file)))
+    ("/tmp/home.html" "/tmp/home.txt" "/tmp/home.pdf" "/tmp/home.ps"))
+   ("c" "Church Agenda & Tasks"
+    ((agenda "" )
+     (alltodo ""))
+    ((org-agenda-tag-filter-preset '("+church"))
+     (org-agenda-overriding-header "Church Agenda & Tasks"))
+    )
    )
  org-agenda-exporter-settings
  '((ps-number-of-columns 1)
@@ -1965,7 +1994,6 @@ horizontal mode."
   :no-require
   :straight ox-twbs
   :demand t
-  :after org
   :init (require 'ox)
   :config
   ;; let Org/Htmlize assign classes only, and to use a style file to
@@ -2409,7 +2437,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
 ;; org-roam
 (use-package org-roam
   :defer 5
-  :after org
   :after company
   :straight t
   :straight org-journal
@@ -2435,10 +2462,12 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          ("<f12>"     . org-roam-capture))
   :config
   (org-roam-mode +1)
+  (require 'org-journal)
   (require 'org-roam-protocol)
   (push 'company-capf company-backends)
   ;; Add org-roam to org-agenda-files
-  (add-to-list 'org-agenda-files org-roam-directory)
+  ;; Don't do this, it's very SLLOW
+  ;; (add-to-list 'org-agenda-files org-roam-directory)
   (setq org-roam-completion-everywhere t
         org-roam-completion-ignore-case t
         org-roam-db-update-method 'immediate)
@@ -2498,7 +2527,6 @@ The screenshot tool is determined by `org-download-screenshot-method'."
 (use-package org-contacts
   :defer 10
   :straight nil
-  :after (org org-capture)
   :config
   (add-to-list 'org-capture-templates
                '("lc"  "contact" entry
