@@ -1231,8 +1231,10 @@ horizontal mode."
     (reusable-frames . visible))
    ;; Same window
    ("*\\(R.*\\|Python\\)"
-    (display-buffer-reuse-window display-buffer-same-window)
-    (reusable-frames . visible))
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
+    (reusable-frames . visible)
+    (side . right)
+    (window-width . 120))
    ;; Show on bottom
    ("*\\(ielm\\)"
     (display-buffer-reuse-window display-buffer-in-side-window)
@@ -1248,7 +1250,9 @@ horizontal mode."
     (reusable-frames . visible))
    ;; Always show notmuch in new frame
    ("^\\*info"
-    (display-buffer-reuse-window display-buffer-in-previous-window))
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
+    (side . right)
+    (window-width . 80))
    ;; Display *BBDB* buffer on the bottom frame
    ("\\*BBDB"
     (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
@@ -1266,8 +1270,10 @@ horizontal mode."
    ("^\\*Async Shell Command"
     (display-buffer-no-window)
     (allow-no-window . t))
-   ("^\\*SDCV" ;; Open dictionary in a new frame
-    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-below-selected)
+   ("^\\*SDCV" ;; Open dictionary in a new window
+    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-pop-up-window)
+    (side . right)
+    (window-width . 80)
     (reusable-frames . visible)
     )
    )
