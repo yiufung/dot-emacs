@@ -451,6 +451,8 @@ behavior added."
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
   (add-to-list 'super-save-triggers 'eyebrowse-next-window-config)
   (add-to-list 'super-save-triggers 'ace-window)
+  (add-to-list 'super-save-triggers 'org-agenda-list)
+  (add-to-list 'super-save-triggers 'org-caldav-sync)
   (super-save-mode +1)
   (run-with-idle-timer 300 t 'org-save-all-org-buffers)
   (auto-save-visited-mode +1)
@@ -3038,6 +3040,8 @@ Yiufung
                                         :inbox ,(expand-file-name "CalWork.org" my-private-calendar-directory))
 
                           )
+   ;; Don't show sync results
+   org-caldav-show-sync-results 'nil
    ;; If entries are deleted in Org, always delete at the CALDAV end without asking
    org-caldav-delete-calendar-entries 'always
    ;; Never delete at local Org side
