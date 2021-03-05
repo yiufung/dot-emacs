@@ -1238,7 +1238,7 @@ horizontal mode."
     (side . right)
     (window-width . 120))
    ;; Show on bottom
-   ("*\\(ielm\\)"
+   ("*\\(ielm\\|Completions\\)"
     (display-buffer-reuse-window display-buffer-in-side-window)
     (side . bottom)
     (slot . 0)
@@ -1923,8 +1923,6 @@ horizontal mode."
  org-export-with-sub-superscripts '{}
  ;; Do not use babel to evaluate code when exporting.
  org-export-use-babel 't
- ;; Don't include the validation link & creation tag
- org-html-postamble 'nil ;; Don't include validation link and created tags
  ;; Logging settings: Better verbose than miss
  org-log-into-drawer t
  org-log-done 'time
@@ -2019,7 +2017,10 @@ horizontal mode."
   ;; let Org/Htmlize assign classes only, and to use a style file to
   ;; define the look of these classes. See docs for more info.
   (setq-default org-html-htmlize-output-type 'css
-                org-html-head-include-default-style nil)
+                org-html-head-include-default-style nil
+                ;; Don't include the validation link & creation tag
+                org-html-postamble 'nil ;; Don't include validation link and created tags
+                org-html-validation-link 'nil)
 
   ;; put your css files here
   ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
@@ -3637,8 +3638,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+RESULTS"       . ">")
                   ("#+BEGIN_EXAMPLE" . "¶")
                   ("#+END_EXAMPLE"   . "¶")
-                  ("#+BEGIN_QUOTE"   . "『")
-                  ("#+END_QUOTE"     . "』")
+                  ("#+BEGIN_QUOTE"   . "❮")
+                  ("#+END_QUOTE"     . "❯")
                   ("#+begin_src"     . "λ")
                   ("#+end_src"       . "λ")
                   ("#+begin_verse"   . "؎") ;; Arabic poetic verse sign
@@ -3646,8 +3647,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+results"       . ">")
                   ("#+begin_example" . "¶")
                   ("#+end_example"   . "¶")
-                  ("#+begin_quote"   . "『")
-                  ("#+end_quote"     . "』")
+                  ("#+begin_quote"   . "❮")
+                  ("#+end_quote"     . "❯")
                   ))
   (setq prettify-symbols-unprettify-at-point 'right-edge)
   :config
