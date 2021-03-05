@@ -4991,24 +4991,27 @@ In that case, insert the number."
 
 (use-package excorporate
   ;; Sync office365 calendar
+  :disabled
   :defer t
   :after (calfw)
   :config
-  (setq-default excorporate-configuration '((auth-source-pass-get "email" "outlook365")
-                                            . "https://outlook.office365.com/EWS/Exchange.asmx")
-                excorporate-diary-today-file (expand-file-name
-                                              "excorporate/diary-excorporate-today" org-directory)
-                excorporate-diary-transient-file (expand-file-name
-                                                  "excorporate/diary-excorporate-transient"
-                                                  org-directory)
-                ;; Press e and show exco in calfw
-                excorporate-calendar-show-day-function 'exco-org-show-day)
+  (setq-default ;; excorporate-configuration '((auth-source-pass-get "email" "outlook365")
+   ;;                             . "https://outlook.office365.com/EWS/Exchange.asmx")
+   excorporate-configuration `(,(auth-source-pass-get "user" "Outlook365&TopDesk"))
+   excorporate-diary-today-file (expand-file-name
+                                 "excorporate/diary-excorporate-today" org-directory)
+   excorporate-diary-transient-file (expand-file-name
+                                     "excorporate/diary-excorporate-transient"
+                                     org-directory)
+   ;; Press e and show exco in calfw
+   excorporate-calendar-show-day-function 'exco-org-show-day)
 
   ;; Make sure that Emacs diary knows how to follow `#include "..."'
   ;; directives (needed by excorporate)
   (add-hook 'diary-mark-entries-hook 'diary-mark-included-diary-files)
 
   (excorporate-diary-enable)
+  (excorporate)
   )
 
 (use-package telega)
