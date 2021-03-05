@@ -3491,6 +3491,17 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   (font-lock-add-keywords 'sdcv-mode '(("\\\\\\(.*\\)\\\\" . (1 font-lock-string-face))))
   (font-lock-add-keywords 'sdcv-mode '(("\\\/\\(.*\\)\\\/". (1 font-lock-string-face))))
   )
+
+(use-package lookup2
+  :disabled t
+  :straight (lookup2 :host github :repo "lookup2/lookup2" :no-build t)
+  ;; Go to repo directory
+  ;; 1. ./autogen.sh
+  ;; 2. ./configure
+  ;; 3. make && sudo make install.
+  :config
+  (setq lookup-search-agents '((ndeb "/media/nas_documents/Japanese Dictionaries/EPWINGs/")
+                               (ndeb "/home/yiufung/Dropbox/dotfiles/emacs/private/stardict/")))
   )
 
 (use-package mw-thesaurus
