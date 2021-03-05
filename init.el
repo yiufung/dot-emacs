@@ -4874,7 +4874,17 @@ In that case, insert the number."
 (use-package treemacs
   :commands treemacs)
 
+(use-package cadadr-elisp
+  ;; Göktuğ's Emacs Stuff
+  ;; pass-listing, bibliothek
+  :straight (:host github :repo "cadadr/elisp")
+  :defer 5
+  :config
+  (setq bibliothek-path '("~/Dropbox/portable-ebooks/"))
+  )
+
 (use-package explain-pause
+  ;; Find out what's slowing down.
   :straight (:host github :repo "lastquestion/explain-pause-mode")
   :defer 3
   :config
