@@ -161,7 +161,7 @@ CURRENT-NAME, if it does not already have them:
 (use-package auth-source
   :straight ivy-pass
   ;; Setup Credentials
-  :bind (("s-P" . ivy-pass))
+  :bind (("<menu>" . ivy-pass))
   :config
   (defun lookup-password (host user port)
     (require 'auth-source)
