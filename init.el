@@ -453,6 +453,7 @@ behavior added."
   (add-to-list 'super-save-triggers 'ace-window)
   (add-to-list 'super-save-triggers 'org-agenda-list)
   (add-to-list 'super-save-triggers 'org-caldav-sync)
+  (add-to-list 'super-save-triggers 'magit-status)
   (super-save-mode +1)
   (run-with-idle-timer 300 t 'org-save-all-org-buffers)
   (auto-save-visited-mode +1)
@@ -2107,8 +2108,8 @@ horizontal mode."
         ("cap" "#+CAPTION: ?")))
 ;; For Org-mode >= 9.2
 (setq new-structure-template-alist
-      '(("py"       . "src python :results output")
-        ("ipy"      . "src ipython :results output")
+      '(("py"       . "src python")
+        ("ipy"      . "src ipython")
         ("el"       . "src emacs-lisp")
         ("hs"       . "src haskell")
         ("laeq"     . "latex \n\\begin{equation} \\label{eq-sinh}\ny=\\sinh x\\end{equation}")
@@ -2118,7 +2119,7 @@ horizontal mode."
         ("http"     . "src http")
         ("ditaa"    . "src ditaa :file")
         ("dot"      . "src dot :file")
-        ("rp"       . "src R :results output graphics :file ")
+        ("rp"       . "src R graphics :file ")
         ("plantuml" . "src plantuml :file")
         ))
 ;; Keyword expansion also changed in 9.2
@@ -2481,6 +2482,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          ("C-c g j"   . org-roam-dailies-today)
          ("C-c g G"   . org-roam-graph-show)
          ("C-c g i"   . org-roam-insert-immediate)
+         ("C-c g \\"  . org-roam-jump-to-index)
          ("C-c J"     . org-journal-new-entry)
          ("<f12>"     . org-roam-capture))
   :config
@@ -3407,7 +3409,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :config
   ;; Requires aspell support.
   ;; Dictionaries to be downloaded via OS package manager
-  (setq flyspell-default-dictionary "american"
+  (setq flyspell-default-dictionary "english"
         ispell-personal-dictionary (expand-file-name "ispell_dict"
                                                      my-private-conf-directory))
   ;; Suppress ispell output
@@ -3649,6 +3651,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+end_example"   . "¶")
                   ("#+begin_quote"   . "❮")
                   ("#+end_quote"     . "❯")
+                  (":PROPERTIES:"     . "━")
                   ))
   (setq prettify-symbols-unprettify-at-point 'right-edge)
   :config
@@ -4208,9 +4211,7 @@ In that case, insert the number."
 
 (use-package blacken
   ;; Reformat python buffers using the "black" formatter
-  :config
-  (blacken-mode 1)
-  )
+  :hook (python-mode . blacken-mode))
 
 ;;;; R
 
