@@ -702,7 +702,6 @@ is already narrowed."
 (use-package wrap-region
   ;; Wrap selected region
   :defer 3
-  :hook ((prog-mode text-mode) . wrap-region-mode)
   :config
   (wrap-region-add-wrappers
    '(
@@ -722,6 +721,7 @@ is already narrowed."
   (add-to-list 'wrap-region-except-modes 'magit-mode)
   (add-to-list 'wrap-region-except-modes 'magit-todo-mode)
   (add-to-list 'wrap-region-except-modes 'magit-popup-mode)
+  (wrap-region-global-mode +1)
   )
 
 (use-package change-inner
