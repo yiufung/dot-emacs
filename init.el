@@ -2481,6 +2481,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          ("C-c g g"   . org-roam-find-file)
          ("C-c g j"   . org-roam-dailies-today)
          ("C-c g G"   . org-roam-graph-show)
+         ("C-c g t"   . org-roam-tag-add)
          ("C-c g i"   . org-roam-insert-immediate)
          ("C-c g \\"  . org-roam-jump-to-index)
          ("C-c J"     . org-journal-new-entry)
@@ -2797,6 +2798,7 @@ Yiufung
   :straight nil
   :straight nnhackernews
   :straight nnreddit
+  :commands (gnus)
   :bind (("C-c m" . 'gnus))
   :bind (:map gnus-article-mode-map
               ("o" . gnus-mime-copy-part)
