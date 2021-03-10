@@ -2481,11 +2481,15 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          ("C-c g g"   . org-roam-find-file)
          ("C-c g j"   . org-roam-dailies-today)
          ("C-c g G"   . org-roam-graph-show)
+         ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
          ("C-c g t"   . org-roam-tag-add)
          ("C-c g i"   . org-roam-insert-immediate)
          ("C-c g \\"  . org-roam-jump-to-index)
          ("C-c J"     . org-journal-new-entry)
-         ("<f12>"     . org-roam-capture))
+         ("<f12>"     . org-roam-capture)
+         :map org-roam-mode-map
+         ("<f12>"     . org-roam-tag-add)
+         ("<f11>"     . org-roam-insert-immediate))
   :config
   (org-roam-mode +1)
   (require 'org-journal)
@@ -4331,10 +4335,7 @@ In that case, insert the number."
             scala-mode)
     (add-hook it 'turn-on-smartparens-strict-mode))
   ;; Non strict modes
-  (--each '(ess-mode-hook
-            inferior-ess-r-mode-hook
-            python-mode-hook)
-    (add-hook it 'smartparens-mode))
+  (smartparens-global-mode +1)
   )
 
 ;;;; HTML
