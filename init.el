@@ -2501,19 +2501,50 @@ The screenshot tool is determined by `org-download-screenshot-method'."
                 '(("d" "default" plain
                    #'org-roam-capture--get-point "%?"
                    :file-name "${slug}"
-                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                   :head "#+title: ${title}
+#+created: %<%Y%m%d-%H%M>
+#+roam_tags:
+#+roam_alias:
+
+- related ::
+"
+                   :unnarrowed t)
+                  ("p" "Permanent notes" plain
+                   #'org-roam-capture--get-point "%?"
+                   :file-name "${slug}"
+                   :head "#+title: ${title}
+#+created: %<%Y%m%d-%H%M>
+#+roam_tags: pn
+#+roam_alias:
+
+- related ::
+"
                    :unnarrowed t))
                 org-roam-capture-immediate-template
                 '("d" "default" plain #'org-roam-capture--get-point "%?"
                   :file-name "${slug}"
-                  :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:"
+                  :head "#+title: ${title}
+#+created: %<%Y%m%d-%H%M>
+#+roam_tags:
+#+roam_alias:
+
+- related ::
+"
                   :unnarrowed t
                   :immediate-finish t)
                 org-roam-capture-ref-templates
                 '(("r" "ref" plain
                    #'org-roam-capture--get-point "%?"
                    :file-name "${slug}"
-                   :head "#+title: ${title}\n#+created: %<%Y%m%d-%H%M>\n#+roam_tags:\n#+roam_alias:" :unnarrowed t))
+                   :head "#+title: ${title}
+#+roam_tags:
+#+roam_alias:
+#+roam_key: ${ref}
+
+- related ::
+
+${body}
+" :unnarrowed t))
                 )
   (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
   (add-to-list 'org-capture-templates
