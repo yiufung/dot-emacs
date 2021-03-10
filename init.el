@@ -2473,7 +2473,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
   (org-journal-file-type 'daily)
   (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
   (org-journal-time-prefix "** ")
-  (org-journal-encrypt-journal t)
+  (org-journal-encrypt-journal nil)
   (org-roam-encrypt-files nil)
   (org-journal-enable-encryption nil)
   (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
