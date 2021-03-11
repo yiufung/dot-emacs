@@ -721,6 +721,8 @@ is already narrowed."
   (add-to-list 'wrap-region-except-modes 'magit-mode)
   (add-to-list 'wrap-region-except-modes 'magit-todo-mode)
   (add-to-list 'wrap-region-except-modes 'magit-popup-mode)
+  (add-to-list 'wrap-region-except-modes 'help-mode)
+  (add-to-list 'wrap-region-except-modes 'info-mode)
   (wrap-region-global-mode +1)
   )
 
@@ -1555,10 +1557,20 @@ horizontal mode."
            ;; Unbinding org-force-cycle-archived
            ("<C-tab>"      . nil)
            ;; default option respects content, I don't use it
-           ("C-<return>"   . nil) ;; Reserved for ace-window
+           ;; ("C-<return>"   . nil) ;; Reserved for ace-window
            ("C-S-<return>" . org-insert-heading-respect-content)
            ("s-n"          . org-next-block)
            ("s-p"          . org-previous-block))
+(defun org-fix-keymaps ()
+  "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
+  (interactive)
+  (bind-keys :map org-mode-map
+             ("C-'" . nil)
+             ("C-;" . nil)
+             ("C-," . nil))
+  ;; Keep using narrow-or-widen-dwim. See above.
+  (unbind-key (kbd "C-x n") org-mode-map)
+  )
 ;; All org directory under Dropbox
 (setq org-directory (expand-file-name "journals" my-sync-directory))
 ;; Setup diary too
@@ -1621,10 +1633,6 @@ horizontal mode."
                    ;;org-directory (expand-file-name "projects" org-directory)
                    ))
 
-;; Keep using narrow-or-widen-dwim. See above.
-(unbind-key (kbd "C-x n") org-mode-map)
-;; Don't cycle through org-files
-;; (unbind-key (kbd "C-,") org-mode-map)
 
 (setq-default
  ;; Refile candidates
@@ -2486,7 +2494,7 @@ The screenshot tool is determined by `org-download-screenshot-method'."
          ("C-c g i"   . org-roam-insert-immediate)
          ("C-c g \\"  . org-roam-jump-to-index)
          ("C-c J"     . org-journal-new-entry)
-         ("<f12>"     . org-roam-capture)
+         ("<f12>"     . org-roam-find-file)
          :map org-roam-mode-map
          ("<f12>"     . org-roam-tag-add)
          ("<f11>"     . org-roam-insert-immediate))
@@ -4556,7 +4564,7 @@ In that case, insert the number."
 ;; Hyper key for application shortcuts
 (global-set-key (kbd "H-c") 'calc)
 (global-set-key (kbd "H-e") 'mu4e)
-(global-set-key (kbd "H-t") 'load-theme)
+(global-set-key [remap 'load-theme] 'counsel-load-theme)
 (global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (bookmark-jump "inbox")))
 
 ;; <f1> for help-* commands
