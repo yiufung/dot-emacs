@@ -3281,30 +3281,7 @@ Yiufung
               ("S" . 'sync-pdf-in-pdfjs)
               )
   :magic ("%PDF" . pdf-view-mode)
-  :config
-  (setq-default pdf-view-display-size 'fit-height)
-  ;; automatically annotate highlights
-  (setq pdf-annot-activate-created-annotation t)
-  ;; more fine-grained zooming
-  (setq pdf-view-resize-factor 1.1)
-
-  (pdf-tools-install t) ;; Install pdf tools with no queries
-
-  ;; Start a CORS-enabled web-server from within Emacs, so that PDF.js can synchronize with pdf-tools
-  (lexical-let ((docroot (expand-file-name "portable-ebooks" my-sync-directory)))
-    (ws-start
-     (lambda (request)
-       (with-slots (process headers) request
-         (let ((path (substring (cdr (assoc :GET headers)) 1)))
-           (if (ws-in-directory-p docroot path)
-               (if (file-directory-p path)
-                   (ws-send-directory-list process
-                                           (expand-file-name path docroot) "^[^\.]")
-                 (ws-response-header process 200 '("Access-Control-Allow-Origin" . "*"))
-                 (ws-send-file process (expand-file-name path docroot)))
-             (ws-send-404 process)))))
-     9005 nil :name (format "pdfjs-%s" docroot)))
-
+  :init
   ;; In Arch Linux, need to install pdfjs package first.
   (defun sync-pdf-in-pdfjs (&optional file)
     "Open current PDF in the corresponding page in PDF.js."
@@ -3333,6 +3310,29 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         (org-html-convert-region-to-html)
         (browse-url-firefox (concat "file://" tmpfile))))
     )
+  :config
+  (setq-default pdf-view-display-size 'fit-height)
+  ;; automatically annotate highlights
+  (setq pdf-annot-activate-created-annotation t)
+  ;; more fine-grained zooming
+  (setq pdf-view-resize-factor 1.1)
+
+  (pdf-tools-install t) ;; Install pdf tools with no queries
+
+  ;; Start a CORS-enabled web-server from within Emacs, so that PDF.js can synchronize with pdf-tools
+  (lexical-let ((docroot (expand-file-name "portable-ebooks" my-sync-directory)))
+    (ws-start
+     (lambda (request)
+       (with-slots (process headers) request
+         (let ((path (substring (cdr (assoc :GET headers)) 1)))
+           (if (ws-in-directory-p docroot path)
+               (if (file-directory-p path)
+                   (ws-send-directory-list process
+                                           (expand-file-name path docroot) "^[^\.]")
+                 (ws-response-header process 200 '("Access-Control-Allow-Origin" . "*"))
+                 (ws-send-file process (expand-file-name path docroot)))
+             (ws-send-404 process)))))
+     9005 nil :name (format "pdfjs-%s" docroot)))
 
   (defhydra hydra-pdftools (:color blue :hint nil)
     "
