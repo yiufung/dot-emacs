@@ -151,7 +151,7 @@ CURRENT-NAME, if it does not already have them:
 ;;;; Emacs folder setup
 
 ;; Emacs configuration, along with many other journals, are synchronized across machines
-(setq my-sync-directory "~/Dropbox")
+(setq my-sync-directory "~/Nextcloud")
 ;; Define configuration directory.
 (setq my-emacs-conf-directory (expand-file-name "dotfiles/emacs/" my-sync-directory)
       my-private-conf-directory (expand-file-name "private/" my-emacs-conf-directory))
@@ -357,7 +357,7 @@ behavior added."
 (unbind-key "C-z") ;; Reserve for hydra related commands
 
 ;; Quick access to commonly used files
-(global-set-key (kbd "s-0") (lambda () (interactive) (find-file (expand-file-name ".emacs.d/init.el"
+(global-set-key (kbd "s-0") (lambda () (interactive) (find-file (expand-file-name ".emacs.default/init.el"
                                                                               my-emacs-conf-directory))))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file org-my-todo-file)))
@@ -413,7 +413,7 @@ behavior added."
    auto-revert-remote-files t
    ;; Check revert status every 60s
    auto-revert-interval 60)
-  (global-auto-revert-mode 1) ;; work with auto-save with Org files in Dropbox
+  (global-auto-revert-mode 1) ;; work with auto-save with Org files in Nextcloud
   )
 
 (use-package recentf
@@ -1128,7 +1128,7 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; :bind ("<f7>" . deft)
   :commands (deft)
   :config
-  (setq deft-directory "~/Dropbox/journals/"
+  (setq deft-directory "~/Nextcloud/journals/"
         deft-extensions '("md" "org")
         deft-recursive t
         )
@@ -3263,7 +3263,7 @@ Yiufung
   :straight t
   :straight tablist
   :straight hydra
-  :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Dropbox.
+  :load-path (lambda () (if (memq system-type '(windows-nt)) ;; If under Windows, use the customed build in Nextcloud.
                         (expand-file-name "elisp/pdf-tools-20180428.827/"
                                           my-emacs-conf-directory)))
   ;; Tell Emacs to autoloads the package
@@ -3427,7 +3427,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :straight (calibredb :repo "chenyanming/calibredb.el" :host github)
   :defer 5
   :config
-  (setq calibredb-root-dir (expand-file-name "~/Dropbox/calibre-library")
+  (setq calibredb-root-dir (expand-file-name "~/Nextcloud/calibre-library")
         calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
         calibredb-program "/usr/bin/calibredb"))
 
@@ -3549,7 +3549,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; 3. make && sudo make install.
   :config
   (setq lookup-search-agents '((ndeb "/media/nas_documents/Japanese Dictionaries/EPWINGs/")
-                               (ndeb "/home/yiufung/Dropbox/dotfiles/emacs/private/stardict/")))
+                               (ndeb "/home/yiufung/Nextcloud/dotfiles/emacs/private/stardict/")))
   )
 
 (use-package mw-thesaurus
@@ -4924,7 +4924,7 @@ In that case, insert the number."
   :straight (:host github :repo "cadadr/elisp")
   :defer 5
   :config
-  (setq bibliothek-path '("~/Dropbox/portable-ebooks/"))
+  (setq bibliothek-path '("~/Nextcloud/portable-ebooks/"))
   )
 
 (use-package explain-pause
@@ -5305,7 +5305,7 @@ In that case, insert the number."
     :name "blog preview"
     :command "hugo"
     :args '("server" "--disableFastRender" "-D")
-    :cwd "/home/yiufung/Dropbox/blog/"
+    :cwd "/home/yiufung/Nextcloud/blog/"
     :tags '(home work)
     )
   )
