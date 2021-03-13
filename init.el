@@ -1562,7 +1562,9 @@ horizontal mode."
            ;; ("C-<return>"   . nil) ;; Reserved for ace-window
            ("C-S-<return>" . org-insert-heading-respect-content)
            ("s-n"          . org-next-block)
-           ("s-p"          . org-previous-block))
+           ("s-p"          . org-previous-block)
+           ("s-<return>"   . org-insert-quote-under-item)
+           ("S-s-<return>" . org-insert-verse-under-item))
 (defun fix-keymaps ()
   "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
   (interactive)
@@ -4827,7 +4829,13 @@ In that case, insert the number."
   :straight nil
   :config
   (fset 'paste-from-grace-gems
-        (kmacro-lambda-form [?\C-x ?n ?\C-c ?r ?> ?  return return ?\C-c ?r ?> return return ?\C-c ?\C-p ?\C-/ ?\C-n ?\C-p ?\M-< ?\C-c ?r ?> ?  return return ?\C-c ?\C-p ?\C-x ?h ?\C-x ?\C-o ?\C-x ?\C-s ?\C-x ?n] 0 "%d"))
+        (kmacro-lambda-form [?\C-x ?n ?\C-c ?r ?> ?  return return ?\C-c ?r ?> return return ?\C-c ?\C-p ?\C-/ ?\C-n
+                                   ?\C-p ?\M-< ?\C-c ?r ?> ?  return return ?\C-c ?\C-p ?\C-x ?h ?\C-x ?\C-o ?\C-x
+                                   ?\C-s ?\C-x ?n] 0 "%d"))
+  (fset 'org-insert-verse-under-item
+        (kmacro-lambda-form [M-return backspace backspace ?  ?  ?< ?v tab tab] 0 "%d"))
+  (fset 'org-insert-quote-under-item
+        (kmacro-lambda-form [M-return backspace backspace ?  ?  ?< ?q tab tab] 0 "%d"))
   )
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
@@ -4991,7 +4999,7 @@ In that case, insert the number."
   (dtk-module "ChiNCVt") ;; 新譯本繁體版
   (dtk-diatheke-output-format :plain)
   (dtk-module-category "Biblical Texts")
-  (dtk-compact-view nil)
+  (dtk-compact-view t)
   ;; Bible reading.
   ;; Install sword and xiphos. Use xiphos to download modules.
   ;; :hook (dtk-mode . auto-fill-mode) ;; Not implemented yet
