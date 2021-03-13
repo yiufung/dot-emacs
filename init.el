@@ -2479,7 +2479,7 @@ This function tries to do what you mean:
   :bind (("C-c g SPC" . org-roam)
          ("C-c g g"   . org-roam-find-file)
          ("C-c g j"   . org-roam-dailies-today)
-         ("C-c g G"   . org-roam-graph-show)
+         ;; ("C-c g G"   . org-roam-graph-show)
          ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
          ("C-c g t"   . org-roam-tag-add)
          ("C-c g i"   . org-roam-insert-immediate)
@@ -2490,7 +2490,7 @@ This function tries to do what you mean:
          ("<f12>"     . org-roam-tag-add)
          ("<f11>"     . org-roam-insert-immediate))
   :config
-  (org-roam-mode +1)
+  ;; (org-roam-mode +1)
   (require 'org-journal)
   (require 'org-roam-protocol)
   (push 'company-capf company-backends)
@@ -2556,9 +2556,10 @@ ${body}
                  "%?%c"
                  :empty-lines-before 1))
   ;; Rebuild every 10 minutes when idle
-  (run-with-idle-timer 600 t 'org-roam-db-build-cache)
+  ;; (run-with-idle-timer 600 t 'org-roam-db-build-cache)
   )
 (use-package org-roam-server
+  :disabled
   :after org-roam
   :defer 15
   :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
@@ -4519,6 +4520,11 @@ In that case, insert the number."
          ("C-s R" . rgrep) ; Recursively grep files in directory tree
          ))
 
+(use-package ag
+  :bind (("C-s C-p" . ag-project)) ;; Dwim in a project
+  :config
+  )
+
 (use-package isearch-light
   :straight (isearch-light :host github :repo "thierryvolpiatto/isearch-light")
   :bind (("C-s i" . isl)))
@@ -4981,6 +4987,7 @@ In that case, insert the number."
   :custom
   (dtk-word-wrap t) ;; Per-verse output
   (dtk-module "ChiNCVt") ;; 新譯本繁體版
+  (dtk-diatheke-output-format :plain)
   (dtk-module-category "Biblical Texts")
   (dtk-compact-view nil)
   ;; Bible reading.
