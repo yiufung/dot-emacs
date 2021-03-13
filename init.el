@@ -1561,17 +1561,22 @@ horizontal mode."
            ("C-S-<return>" . org-insert-heading-respect-content)
            ("s-n"          . org-next-block)
            ("s-p"          . org-previous-block))
-(defun org-fix-keymaps ()
+(defun fix-keymaps ()
   "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
   (interactive)
   (bind-keys :map org-mode-map
              ("C-'" . nil)
              ("C-;" . nil)
              ("C-," . nil))
+  (bind-keys :map ivy-occur-mode-map
+             ("n" . ivy-occur-next-line)
+             ("p" . ivy-occur-previous-line)
+             ("e" . ivy-wgrep)
+             )
   ;; Keep using narrow-or-widen-dwim. See above.
-  (unbind-key (kbd "C-x n") org-mode-map)
-  )
-;; All org directory under Dropbox
+  (unbind-key (kbd "C-x n") org-mode-map))
+
+;; All org directory under Nextcloud
 (setq org-directory (expand-file-name "journals" my-sync-directory))
 ;; Setup diary too
 (setq diary-file (expand-file-name "diary" org-directory))
