@@ -2425,37 +2425,23 @@ This function tries to do what you mean:
 (require 'org-download)
 ;; org-download use buffer-local variables. Set it individually in files. Otherwise, put things flatly in misc
 ;; folder.
-(setq-default org-download-method 'attach ;; Screenshots are stored in data/ directory by ID. Easier to manage
+(setq-default org-download-method 'directory
+              org-download-image-dir "~/Nextcloud/journals/images/"
               org-download-heading-lvl nil
               org-download-delete-image-after-download t
-              org-download-screenshot-method "echo"
-              org-download-screenshot-file "/tmp/screenshot.png"
-              org-download-image-org-width 800
+              org-download-screenshot-method "flameshot gui --raw > %s"
+              org-download-image-org-width 300
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
+(add-hook 'dired-mode-hook 'org-download-enable)
+(global-set-key (kbd "<print>") 'org-download-screenshot)
+;; Use #+ATTR_ORG: :width 300px to customized image display width
+(setq org-image-actual-width nil)
+
 ;; org-attach method
 (setq-default org-attach-method 'mv
               org-attach-auto-tag "attach"
               org-attach-store-link-p 't)
-
-;; My customized org-download to incorporate flameshot gui Workaround to setup flameshot, which enables annotation.
-;; In flameshot, set filename as "screenshot", and the command as "flameshot gui -p /tmp", so that we always ends up
-;; with /tmp/screenshot.png. Nullify org-download-screenshot-method by setting it to `echo', so that essentially we
-;; are only calling (org-download-image org-download-screenshot-file).
-(defun my-org-download-screenshot ()
-  "Capture screenshot and insert the resulting file.
-The screenshot tool is determined by `org-download-screenshot-method'."
-  (interactive)
-  (let ((tmp-file "/tmp/screenshot.png"))
-    (delete-file tmp-file)
-    (call-process-shell-command "flameshot gui -p /tmp/")
-    ;; Because flameshot exit immediately, keep polling to check file existence
-    (while (not (file-exists-p tmp-file))
-      (sleep-for 2))
-    (org-download-image tmp-file)))
-(global-set-key (kbd "<print>") 'my-org-download-screenshot)
-;; Use #+ATTR_ORG: :width 300px to customized image display width
-(setq org-image-actual-width nil)
 
 (use-package org-recent-headings
   :defer 3
