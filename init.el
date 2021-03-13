@@ -359,6 +359,8 @@ behavior added."
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-0") (lambda () (interactive) (find-file (expand-file-name ".emacs.default/init.el"
                                                                               my-emacs-conf-directory))))
+(global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
+(global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
 (global-set-key (kbd "s-f") (lambda () (interactive) (find-file-other-window org-my-beancount-file)))
 (global-set-key (kbd "s-SPC") (lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-9") (lambda () (interactive) (find-file org-my-work-file)))
