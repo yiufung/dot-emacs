@@ -262,6 +262,9 @@ CURRENT-NAME, if it does not already have them:
  comp-async-report-warnings-errors nil
  ;; Ignore 'ad-handle-definition' redefined warnings
  ad-redefinition-action 'accept
+ ;; mouse auto follow
+ mouse-autoselect-window t
+ focus-follow-mouse 'auto-raise
  )
 
 ;; Misc
