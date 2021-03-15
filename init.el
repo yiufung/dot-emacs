@@ -1065,6 +1065,12 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Enable directory collapsing behavior just like GitHub
   ;; (dired-collapse-mode)
 
+  (setq dired-guess-shell-alist-user
+        '(
+          ("\\.mp3\\|mp4\\|m4a\\'" "vlc")
+          ("\\.doc\\|docx\\'" "libreoffice")
+          ("\\.pdf\\|gif\\'" "firefox")))
+
   ;;;;;;; Useful conversion functions
   (defun dired/m4a-to-mp3 ()
     "Used in dired to convert m4a files to mp3. ffmpeg required."
