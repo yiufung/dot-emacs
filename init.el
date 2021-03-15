@@ -1854,18 +1854,11 @@ horizontal mode."
  '((ps-number-of-columns 1)
    (ps-landscape-mode t)
    (org-agenda-add-entry-text-maxlines 5)
-   (org-agenda-prefix-format " [ ] ")
+   ;; (org-agenda-prefix-format " [ ] ")
    (org-agenda-with-colors t)
    (org-agenda-remove-tags t)
    (htmlize-output-type 'inline-css)))
-;; Regenerate task-view periodically. Prefer light theme when export
-;; (defun my-generate-agenda-views ()
-;;   (interactive)
-;;   (progn
-;;     (load-theme 'modus-operandi t)
-;;     (org-store-agenda-views)
-;;     (load-theme 'modus-vivendi t)))
-(run-with-idle-timer 600 t 'org-store-agenda-views)
+(run-with-idle-timer (* 3600 12) t 'org-store-agenda-views)
 
 ;; Auto save org-files, so that we prevent the locking problem between computers
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -5323,9 +5316,6 @@ In that case, insert the number."
 (defalias 'share-code-snippet 'ixio-paste)
 
 ;;; Start Emacs Server
-;; (if (daemonp)
-;;     (add-hook 'server-after-make-frame-hook #'(lambda () (load-theme 'modus-operandi t)))
-;;   (load-theme 'modus-operandi t))
 
 (require 'server)
 (unless (server-running-p)
