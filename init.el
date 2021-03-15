@@ -4730,6 +4730,7 @@ In that case, insert the number."
 (use-package gruvbox-theme)
 (use-package one-themes)
 (use-package naysayer-theme)
+(use-package doom-themes)
 (use-package modus-operandi-theme)
 (use-package modus-vivendi-theme
   :config
@@ -4740,15 +4741,7 @@ In that case, insert the number."
         modus-vivendi-theme-org-blocks t
         modus-vivendi-theme-rainbow-org-src-blocks t
         ))
-(use-package doom-themes)
 
-;; (load-theme 'modus-operandi t)
-;; (load-theme 'modus-vivendi t)
-
-;; (load-theme 'kaolin-light)
-;; (load-theme 'doom-opera-light t)
-
-(message "my-solaire-themes")
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
   ;; slightly different -- often brighter -- background
