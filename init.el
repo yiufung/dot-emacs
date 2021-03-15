@@ -4749,7 +4749,6 @@ In that case, insert the number."
   ((change-major-mode after-revert ediff-prepare-buffer) . turn-on-solaire-mode)
   (minibuffer-setup . solaire-mode-in-minibuffer)
   :config
-  (solaire-mode-swap-bg)
   (solaire-global-mode 1))
 
 ;;;; Fonts
