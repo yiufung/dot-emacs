@@ -4574,7 +4574,6 @@ In that case, insert the number."
 ;; Hyper key for application shortcuts
 (global-set-key (kbd "H-c") 'calc)
 (global-set-key (kbd "H-e") 'mu4e)
-(global-set-key [remap 'load-theme] 'counsel-load-theme)
 (global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (bookmark-jump "inbox")))
 
 ;; <f1> for help-* commands
