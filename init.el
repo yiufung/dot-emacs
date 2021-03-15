@@ -1132,7 +1132,8 @@ output file. %i path(s) are relative, while %o is absolute.")
   (require 'bookmark+)
   ;; Save bookmarks on every change
   (setq bookmark-save-flag 1)
-  (setq-default bookmark-default-file (expand-file-name "bookmarks" my-private-conf-directory))
+  (setq-default bookmark-default-file (expand-file-name "bookmarks" my-private-conf-directory)
+                bmkp-last-as-first-bookmark-file (expand-file-name "bookmarks" my-private-conf-directory))
   )
 
 (use-package deft
