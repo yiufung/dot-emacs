@@ -325,7 +325,7 @@ behavior added."
 
 ;; Don't add custom section directly under init.el.
 ;; https://www.reddit.com/r/emacs/comments/53zpv9/how_do_i_get_emacs_to_stop_adding_custom_fields/
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(setq custom-file (expand-file-name "custom.el" my-private-conf-directory))
 (when (file-exists-p custom-file)
   (load custom-file :noerror))
 
