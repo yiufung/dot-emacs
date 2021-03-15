@@ -1715,6 +1715,8 @@ horizontal mode."
                                (search category-keep))
  ;; user agenda compare function. Pillage from John Wiegley
  org-agenda-cmp-user-defined 'org-compare-todo-age
+ ;; clock mode
+ org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 2 :fileskip0 t :compact t)
  )
 
 (defun org-todo-age-time (&optional pos)
