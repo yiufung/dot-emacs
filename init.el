@@ -4562,8 +4562,8 @@ In that case, insert the number."
 ;; <f1> for help-* commands
 (global-set-key (kbd "<f2>") 'counsel-find-file-extern)
 ;; <f3> <f4> for macro
-(global-set-key (kbd "<f5>") 'org-agenda-list)
-;; <f6> for ivy-resume
+(global-set-key (kbd "<f5>") '(lambda () (interactive) (org-agenda nil "a")))
+(global-set-key (kbd "<f6>") '(lambda () (interactive) (org-agenda nil "o")))
 (global-set-key (kbd "<f7>") 'rot13-mode)
 (global-set-key (kbd "<f8>") 'follow-mode)
 ;; <f9> - <f12> for eyebrowse workspace
