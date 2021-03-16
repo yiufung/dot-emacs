@@ -884,6 +884,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
 
 (use-package counsel
   :demand t
+  :straight t
   :straight ivy-hydra
   :straight ivy-rich
   :straight counsel-projectile
@@ -1582,11 +1583,9 @@ horizontal mode."
              ("C-'" . nil)
              ("C-;" . nil)
              ("C-," . nil))
-  (bind-keys :map ivy-occur-mode-map
-             ("n" . ivy-occur-next-line)
-             ("p" . ivy-occur-previous-line)
-             ("e" . ivy-wgrep)
-             )
+  (with-eval-after-load 'grep
+    (define-key ivy-occur-grep-mode-map (kbd "n") 'next-error)
+    (define-key ivy-occur-grep-mode-map (kbd "p") 'previous-error))
   ;; Keep using narrow-or-widen-dwim. See above.
   (unbind-key (kbd "C-x n") org-mode-map))
 
