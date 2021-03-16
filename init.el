@@ -1248,7 +1248,7 @@ horizontal mode."
     (reusable-frames . visible))
    ;; Same window
    ("*\\(R.*\\|Python\\)"
-    (display-buffer-reuse-window display-buffer-in-previous-window display-buffer-in-side-window)
+    (display-buffer-reuse-mode-window display-buffer-in-previous-window display-buffer-in-side-window)
     (reusable-frames . visible)
     (side . right)
     (window-width . 120))
@@ -1659,6 +1659,8 @@ horizontal mode."
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :level . 1)
                       ;; Recently ongoing tasks
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :todo . "STARTED")
+                      ;; Project milestones are marked with recent tag
+                      ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :tag . "recent")
                       )
  org-reverse-note-order 't
  ;; Show candidates in one go
@@ -1717,6 +1719,9 @@ horizontal mode."
  org-agenda-cmp-user-defined 'org-compare-todo-age
  ;; clock mode
  org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 2 :fileskip0 t :compact t)
+ ;; Show column mode in agenda
+ org-columns-default-format-for-agenda
+ "%7TODO %25ITEM %17Effort(Estimated Effort) %CLOCKSUM(Clock)"
  )
 
 (defun org-todo-age-time (&optional pos)
@@ -1852,6 +1857,11 @@ horizontal mode."
     alltodo ""
     ((org-agenda-overriding-header "All Work tasks")
      (org-agenda-files `(,org-my-work-file))))
+   ("b" "Recent books"
+    tags-todo "book"
+    ((org-agenda-overriding-header "Recent reading")
+     (org-super-agenda-groups '((:name "Ongoing" :todo "STARTED")
+                                (:name "Good ones" :priority "A")))))
    )
  org-agenda-exporter-settings
  '((ps-number-of-columns 1)
@@ -1985,8 +1995,9 @@ horizontal mode."
 
 ;; Enable org-id for globally unique IDs
 (add-to-list 'org-modules 'org-id)
-(setq org-id-locations-file (expand-file-name ".org-id-locations" my-private-conf-directory)
-      org-id-link-to-org-use-id 'create-if-interactive)
+(setq org-id-locations-file (expand-file-name ".org-id-locations" user-emacs-directory)
+      org-id-link-to-org-use-id 'create-if-interactive
+      org-id-track-globally t)
 
 ;; Enable org-habit
 (add-to-list 'org-modules 'org-habit)
@@ -2472,6 +2483,10 @@ This function tries to do what you mean:
   :after company
   :straight t
   :straight org-journal
+  ;; :straight nroam ;; after the page links
+  :straight (nroam :host github
+                   :branch "master"
+                   :repo "NicolasPetton/nroam")
   :custom
   (org-roam-directory (expand-file-name "roam/" org-directory))
   (org-journal-dir (expand-file-name "roam/journal/" org-directory))
@@ -2502,6 +2517,7 @@ This function tries to do what you mean:
   ;; (org-roam-mode +1)
   (require 'org-journal)
   (require 'org-roam-protocol)
+  (add-hook 'org-mode-hook #'nroam-setup-maybe)
   (push 'company-capf company-backends)
   ;; Add org-roam to org-agenda-files
   ;; Don't do this, it's very SLLOW
