@@ -1884,12 +1884,12 @@ horizontal mode."
         ("c" "Add tasks" ;; Capture first, refile daily
          entry
          (file+headline org-my-todo-file "Inbox")
-         "* TODO %?\n" :prepend t)
+         "* TODO %?\nSCHEDULED: %t" :prepend t)
 
         ("m" "Appointment"
          entry
          (file+headline org-my-todo-file "Inbox")
-         "* APPT %?\n" :prepend t)
+         "* APPT %?\nSCHEDULED: %t" :prepend t)
 
         ("j" "working journal"
          plain
