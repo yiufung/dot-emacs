@@ -1322,6 +1322,15 @@ horizontal mode."
         avy-style 'at-full)
   )
 
+(use-package link-hint
+  :defer 10
+  :bind ("C-c C-o" . link-hint-open-link)
+  :config
+  (add-hook 'eww-mode-hook
+            #'(lambda () (bind-key "f" #'link-hint-open-link eww-mode-map)))
+  (add-hook 'w3m-mode-hook
+            #'(lambda () (bind-key "f" #'link-hint-open-link w3m-mode-map))))
+
 (use-package avy-zap
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
@@ -3268,7 +3277,7 @@ Yiufung
   :straight nil
   :defer 3
   :config
-  ;; Open url in EWW by default. If that doesn't look good, open in Firefox
+  ;; Open url in eww by default. If that doesn't look good, open in Firefox
   (setq-default browse-url-browser-function 'eww-browse-url
                 browse-url-secondary-browser-function 'browse-url-firefox))
 
@@ -4878,6 +4887,15 @@ In that case, insert the number."
                 shr-use-colors t
                 shr-discard-aria-hidden t ;; ignore some tags
                 )
+  )
+
+(use-package w3m
+  :commands (w3m w3m-browse-url w3m-find-file)
+  :config
+  (setq w3m-cookie-accept-bad-cookies 'ask
+        w3m-default-display-inline-images t
+        w3m-fill-column 100
+        w3m-use-cookies t)
   )
 
 ;; Viewing Image in Emacs
