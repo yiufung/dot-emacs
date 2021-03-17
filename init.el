@@ -2342,6 +2342,7 @@ This function tries to do what you mean:
 (setq org-use-speed-commands t)
 (add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
 (add-to-list 'org-speed-commands-user (cons "d" 'org-deadline))
+(add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
 ;; Use indirect buffer instead of narrowing, so that visibility of original
 ;; buffer is not changed.
@@ -2584,7 +2585,7 @@ ${body}
                  "%?%c"
                  :empty-lines-before 1))
   ;; Rebuild every 10 minutes when idle
-  ;; (run-with-idle-timer 600 t 'org-roam-db-build-cache)
+  (run-with-idle-timer 600 t 'org-roam-db-build-cache)
   )
 (use-package org-roam-server
   :disabled
@@ -3119,7 +3120,10 @@ Yiufung
    ;; Debug like crazy
    org-caldav-debug-level 2
    ;; Change org-caldav save directory
-   org-caldav-save-directory my-private-calendar-directory)
+   org-caldav-save-directory my-private-calendar-directory
+   ;; Change the backup file
+   org-caldav-backup-file (expand-file-name "org-caldav-backup.org" my-private-calendar-directory)
+   )
 
   (defvar org-caldav-sync-timer nil
     "Timer that `org-caldav-push-timer' used to reschedule itself, or nil.")
