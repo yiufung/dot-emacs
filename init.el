@@ -1703,7 +1703,7 @@ horizontal mode."
  org-extend-today-until 4
  org-use-effective-time t
  ;; Show meetings in org agenda
- org-agenda-include-diary nil
+ org-agenda-include-diary t
  ;; Show customized time
  org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
  org-display-custom-times t
@@ -1955,6 +1955,8 @@ horizontal mode."
  org-export-with-sub-superscripts '{}
  ;; Do not use babel to evaluate code when exporting.
  org-export-use-babel 't
+ ;; When dispatch, show succinct ui
+ org-export-dispatch-use-expert-ui t
  ;; Logging settings: Better verbose than miss
  org-log-into-drawer t
  org-log-done 'time
@@ -3126,7 +3128,7 @@ Yiufung
           (run-with-idle-timer
            (* 60 mins) nil 'org-caldav-sync)))
   ;; Add the delayed save hook with a half-hour idle timer
-  (add-hook 'after-save-hook (lambda () (org-caldav-sync-with-delay 30)))
+  (add-hook 'after-save-hook (lambda () (org-caldav-sync-with-delay 120)))
   )
 
 ;;; Multimedia Mgmt
@@ -3260,8 +3262,9 @@ Yiufung
   :straight nil
   :defer 3
   :config
-  ;; Open url in Firefox by default
-  (setq browse-url-browser-function 'browse-url-firefox))
+  ;; Open url in EWW by default. If that doesn't look good, open in Firefox
+  (setq-default browse-url-browser-function 'eww-browse-url
+                browse-url-secondary-browser-function 'browse-url-firefox))
 
 (use-package doc-view
   ;; Requires unoconv, ghostscript, dvipdf
@@ -3684,7 +3687,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+end_example"   . "¶")
                   ("#+begin_quote"   . "❮")
                   ("#+end_quote"     . "❯")
-                  (":PROPERTIES:"     . "━")
+                  (":PROPERTIES:"    . "━")
+                  (":LOGBOOK:"       . "ᛚ")
                   ))
   (setq prettify-symbols-unprettify-at-point 'right-edge)
   :config
@@ -4760,7 +4764,7 @@ In that case, insert the number."
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
-     :font (font-spec :name "Bookerly"
+     :font (font-spec :name "Nimbus Sans"
                       :weight 'normal
                       :slant 'normal
                       :size 12.0))
@@ -4859,9 +4863,15 @@ In that case, insert the number."
   :bind (:map eww-mode-map
               ("M-n" . nil)
               ("M-p" . nil))
+  :hook (eww-mode . olivetti-mode)
   :config
-  (setq eww-search-prefix "https://www.google.com/search?client=firefox&q="
-        shr-width 80) ;; Too wide is difficult to read
+  (setq-default eww-search-prefix "https://duckduckgo.com/html/?q="
+                eww-bookmarks-directory my-private-conf-directory
+                shr-max-width 100 ;; Too wide makes it difficult to read
+                shr-use-fonts nil ;; Use native fonts from browser
+                shr-use-colors t
+                shr-discard-aria-hidden t ;; ignore some tags
+                )
   )
 
 ;; Viewing Image in Emacs
