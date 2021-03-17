@@ -1129,6 +1129,8 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Bookmark utilities
   :straight (bookmark-plus :type git :host github :repo "emacsmirror/bookmark-plus")
   :defer 3
+  :bind (:map bookmark-bmenu-mode-map
+              ("M-o" . nil))
   :init
   (require 'bookmark+)
   ;; Save bookmarks on every change
