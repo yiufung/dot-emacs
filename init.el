@@ -527,7 +527,7 @@ behavior added."
   :if (equal system-type 'gnu/linux)
   ;; Environment switcher to enable project-base environment variables
   ;; Checks for .envrc file and apply environment variable
-  :disabled
+  :disabled t
   :straight flycheck
   :straight t
   :config
@@ -834,7 +834,7 @@ is already narrowed."
   (global-undo-tree-mode))
 
 (use-package undo-propose
-  :disabled
+  :disabled t
   :bind (("C-c u" . undo-propose))
   )
 
@@ -1450,7 +1450,7 @@ horizontal mode."
   )
 
 (use-package awesome-tab
-  :disabled
+  :disabled t
   :defer 3
   :config
   (global-set-key (kbd "s-1") 'awesome-tab-select-visible-tab)
@@ -2597,7 +2597,7 @@ ${body}
   (run-with-idle-timer 600 t 'org-roam-db-build-cache)
   )
 (use-package org-roam-server
-  :disabled
+  :disabled t
   :after org-roam
   :defer 15
   :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
@@ -2978,7 +2978,7 @@ Yiufung
 
 (use-package notmuch
   ;; Another mail client. It's better at email searching
-  :disabled
+  :disabled t
   :defer 3
   :straight nil
   :straight counsel-notmuch
@@ -3100,6 +3100,7 @@ Yiufung
 
 (use-package org-caldav
   ;; Fastmail Calendar integration
+  :disabled t
   :defer 3
   :config
   (setq
@@ -3131,7 +3132,7 @@ Yiufung
    ;; Change org-caldav save directory
    org-caldav-save-directory my-private-calendar-directory
    ;; Change the backup file
-   org-caldav-backup-file (expand-file-name "org-caldav-backup.org" my-private-calendar-directory)
+   org-caldav-backup-file (expand-file-name "backup/org-caldav-backup.org" my-private-calendar-directory)
    )
 
   (defvar org-caldav-sync-timer nil
@@ -3197,7 +3198,7 @@ Yiufung
 
 (use-package openwith
   :defer 3
-  :disabled
+  :disabled t
   :config
   (setq openwith-associations
         '(
@@ -3479,6 +3480,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; Download from https://github.com/manateelazycat/sdcv (Not pluskid's sdcv-mode.el)
   ;; Dictionaries downloaded from http://download.huzheng.org/zh_CN/
   ;; See also https://wiki.archlinux.org/index.php/Sdcv
+  :defer 3
   :straight (:host github :repo "manateelazycat/sdcv"
                    :fork (:host github :repo "yiufung/sdcv"))
   :straight posframe
@@ -4171,7 +4173,7 @@ In that case, insert the number."
 ;;;; C/C++
 ;; [[https://www.reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/][Reddit post on creating C++ IDE in Emacs]].
 (use-package ccls
-  :disabled
+  :disabled t
   ;; C lsp backend
   ;; Requires binary ccls
   :after projectile
@@ -4200,7 +4202,7 @@ In that case, insert the number."
   ;; when SSH is available, use emacs-jupyter. If only web frontend is
   ;; available, use EIN.
   :if (equal system-type 'gnu/linux)
-  :disabled
+  :disabled t
   :defer 5
   :config
   ;; ob-jupyter integration is added in org settings.
@@ -4253,7 +4255,7 @@ In that case, insert the number."
 
 (use-package elpy
   :hook (python-mode . turn-off-auto-fill)
-  :disabled
+  :disabled t
   :config
   (elpy-enable)
   )
@@ -4420,7 +4422,7 @@ In that case, insert the number."
   )
 
 (use-package polymode
-  :disabled
+  :disabled t
   :straight poly-markdown ; RMarkdown support
   :straight poly-R
   :after markdown-mode
@@ -4470,7 +4472,7 @@ In that case, insert the number."
 (use-package wakatime-mode
   ;; Programming statistics
   :defer 3
-  :disabled
+  :disabled t
   :config
   (setq wakatime-api-key (auth-source-pass-get "api" "wakatime"))
   (global-wakatime-mode)
@@ -4502,7 +4504,7 @@ In that case, insert the number."
 ;;; Code Highlighting/Searching/Replacing
 
 (use-package highlight-indentation
-  :disabled
+  :disabled t
   :init
   (require 'highlight-indentation)
   :custom-face (highlight-indentation-face ((t (:background "#e3e3d3"))))
@@ -4519,7 +4521,7 @@ In that case, insert the number."
 (use-package color-moccur
   ;; :commands (moccur)
   ;; TODO
-  :disabled
+  :disabled t
   :bind (("C-s o" . 'moccur)
          ;; :map isearch-mode-map
          ;; ("C-s o" . isearch-moccur)
@@ -4805,7 +4807,7 @@ In that case, insert the number."
   )
 
 (use-package mixed-pitch
-  :disabled
+  :disabled t
   ;; :hook (org-mode . mixed-pitch-mode)
   :config
   (setq mixed-pitch-variable-pitch-cursor 'nil)
@@ -4918,7 +4920,7 @@ In that case, insert the number."
 ;; Emacs Application Framework
 ;; https://github.com/manateelazycat/emacs-application-framework
 (use-package eaf
-  :disabled
+  :disabled t
   :straight (:host github :repo "manateelazycat/emacs-application-framework"))
 
 (use-package olivetti
@@ -5081,7 +5083,7 @@ In that case, insert the number."
 
 (use-package excorporate
   ;; Sync office365 calendar
-  :disabled
+  :disabled t
   :defer t
   :after (calfw)
   :config
@@ -5111,7 +5113,7 @@ In that case, insert the number."
 
 (use-package elfeed
   ;; RSS Reader
-  :disabled ;; Replaced by gnus
+  :disabled t ;; Replaced by gnus
   :defer 3
   :straight t
   :straight elfeed-org
@@ -5218,7 +5220,7 @@ In that case, insert the number."
 (use-package erc
   ;; Internet Relay Chat (IRC)
   :straight erc-hl-nicks
-  :disabled
+  :disabled t
   :straight erc-image
   :defer 3
   :commands (erc erc-tls)
