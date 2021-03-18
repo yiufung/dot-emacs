@@ -1646,8 +1646,7 @@ horizontal mode."
         ("TODO" ("ARCHIVE" . nil))
         ("NEXT" ("ARCHIVE" . nil))
         ("WAIT" ("ARCHIVE" . nil))
-        ("DONE" ("ARCHIVE" . nil)))
-      )
+        ("DONE" ("ARCHIVE" . nil))))
 
 ;; Org-agenda
 (require 'org-agenda)
@@ -1792,30 +1791,6 @@ horizontal mode."
 
 ;; org-super-agenda
 (setq org-super-agenda-groups
-      '(
-        (:name "Scheduled earlier"
-               :scheduled past
-               ;; :and (:scheduled past
-               ;;                  :not (:todo "DONE") :not (:habit t))
-               )
-        (:name "Due today"
-               :deadline today)
-        ;; TODO Add some priority tasks
-        (:name "Schedule"
-               :time-grid t)
-        (:name "Today"
-               :and (:scheduled today :not (:habit t))) ;; Show habits separately.
-        (:name "Overdue"
-               :and (:deadline past :not (:todo "DONE")))
-        (:name "Habits"
-               :habit t)
-        (:name "Due soon"
-               :deadline future)
-        (:name "Special Dates"
-               :category "holidays & anniversaries")
-
-        ))
-(setq org-super-agenda-groups
       '((:name "Important"
                :priority "A")
         (:name "Ongoing"
@@ -1834,6 +1809,8 @@ horizontal mode."
                :deadline future)
         (:name "Scheduled earlier"
                :scheduled past)
+        (:name "Special Dates"
+               :category "holidays & anniversaries")
         ))
 (org-super-agenda-mode)
 
@@ -4893,6 +4870,7 @@ In that case, insert the number."
 
 (use-package w3m
   :commands (w3m w3m-browse-url w3m-find-file)
+  :hook (w3m-mode . olivetti-mode)
   :config
   (setq w3m-cookie-accept-bad-cookies 'ask
         w3m-default-display-inline-images t
