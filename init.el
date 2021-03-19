@@ -1550,16 +1550,16 @@ horizontal mode."
 (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
 
 ;; Key bindings
-(bind-keys ("C-c a" . org-agenda)
-           ("C-c c" . org-capture)
-           ("C-c l" . org-store-link)
-           ("C-c 0" . org-expiry-insert-created)
-           ("s-`"   . org-clock-goto) ;; Jump to currently clocking headline
-           ;; Rifle through all my org files to identify an item.
-           ;; Use C-s to display results in occur-like style.
-           ("C-S-s" . helm-org-rifle)
-           ("s-e" . ivy-insert-org-entity)
-           ("H-p" . org-pomodoro))
+(bind-keys ("C-c a"   . org-agenda)
+           ("C-c c"   . org-capture)
+           ("C-c l"   . org-store-link)
+           ("C-c 0"   . org-expiry-insert-created)
+           ("s-`"     . org-clock-goto) ;; Jump to currently clocking headline
+           ("s-<tab>" . org-pomodoro)
+           ;; Rifle through all my org files to identify an item
+           ;; Use C-s to display results in occur-like style
+           ("C-S-s"   . helm-org-rifle)
+           ("s-e"     . ivy-insert-org-entity))
 (bind-keys :map org-mode-map
            ("C-x n s" . nil)
            ("C-x n b" . nil)
@@ -2010,10 +2010,13 @@ horizontal mode."
       org-pomodoro-short-break-length 10
       org-pomodoro-long-break-length 30
       org-pomodoro-manual-break t
-      org-pomodoro-format "" ;; shown in polybar instead. See below.
       org-pomodoro-clock-break nil
       org-pomodoro-ask-upon-killing t
-      )
+      ;; Status shown in polybar instead. See below.
+      org-pomodoro-format ""
+      org-pomodoro-short-break-format ""
+      org-pomodoro-long-break-format ""
+      org-pomodoro-overtime-format "")
 ;; Thanks Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
