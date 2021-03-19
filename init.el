@@ -408,7 +408,7 @@ behavior added."
   ;; revert buffers when files on disk change
   :defer 3
   :config
-  (setq
+  (setq-default
    ;; Also auto refresh dired, but be quiet about it
    global-auto-revert-non-file-buffers t
    auto-revert-verbose nil
@@ -831,6 +831,7 @@ is already narrowed."
 (use-package undo-tree
   :defer 3
   :config
+  (setq undo-tree-visualizer-diff t) ;; show diff. wow!
   (global-undo-tree-mode))
 
 (use-package undo-propose
@@ -1039,6 +1040,7 @@ If first character is /, search camelCase."
   (require 'dired-x) ;; extra functionality for dired
   (setq dired-listing-switches "-aBhl --group-directories-first"
         dired-dwim-target t
+        dired-auto-revert-buffer 'dired-directory-changed-p
         dired-no-confirm '(copy)
         dired-du-bind-human-toggle 'nil) ;; C-h is remapped in my config. Map it to M-h.
   (diredfl-global-mode 1)
@@ -2470,13 +2472,14 @@ This function tries to do what you mean:
 ;; org-roam
 (use-package org-roam
   :defer 5
-  :after company
   :straight t
   :straight org-journal
   ;; :straight nroam ;; after the page links
   :straight (nroam :host github
                    :branch "master"
                    :repo "NicolasPetton/nroam")
+  :after org
+  :after company
   :custom
   (org-roam-directory (expand-file-name "roam/" org-directory))
   (org-journal-dir (expand-file-name "roam/journal/" org-directory))
