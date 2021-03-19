@@ -1729,7 +1729,7 @@ horizontal mode."
  ;; user agenda compare function. Pillage from John Wiegley
  org-agenda-cmp-user-defined 'org-compare-todo-age
  ;; clock mode
- org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 2 :fileskip0 t :compact t)
+ org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 4 :fileskip0 t :compact t :emphasize t)
  ;; Show column mode in agenda
  org-columns-default-format-for-agenda
  "%7TODO %25ITEM %17Effort(Estimated Effort) %CLOCKSUM(Clock)"
@@ -2005,6 +2005,7 @@ horizontal mode."
 ;;   (delete 'org-mode-line-string global-mode-string))
 ;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
 
+(require 'org-pomodoro)
 (setq org-pomodoro-length 50 ; adjust some time
       org-pomodoro-long-break-frequency 2
       org-pomodoro-short-break-length 10
@@ -2013,6 +2014,7 @@ horizontal mode."
       org-pomodoro-keep-killed-pomodoro-time t
       org-pomodoro-clock-break nil
       org-pomodoro-ask-upon-killing t
+      org-pomodoro-play-sounds nil
       ;; Status shown in polybar instead. See below.
       org-pomodoro-format ""
       org-pomodoro-short-break-format ""
