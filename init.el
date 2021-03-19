@@ -1698,10 +1698,10 @@ horizontal mode."
  org-deadline-warning-days 14
  ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
  org-agenda-log-mode-items '(closed clock state)
- ;; Make it sticky, so it doesn't get killed upon hitting "q". Use "r" to
- ;; refresh instead. Note that it can still be killed by kill-buffer. To
- ;; avoid this, set the emacs-lock-mode
- org-agenda-sticky t
+ ;; Always rebuild agenda
+ org-agenda-sticky nil
+ ;; Show clock report at start
+ org-agenda-start-with-clockreport-mode t
  ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
  org-agenda-skip-scheduled-if-done t
  org-agenda-skip-deadline-if-done t
@@ -2009,7 +2009,11 @@ horizontal mode."
       org-pomodoro-long-break-frequency 2
       org-pomodoro-short-break-length 10
       org-pomodoro-long-break-length 30
-      org-pomodoro-manual-break t)
+      org-pomodoro-manual-break t
+      org-pomodoro-format "" ;; shown in polybar instead. See below.
+      org-pomodoro-clock-break nil
+      org-pomodoro-ask-upon-killing t
+      )
 ;; Thanks Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
