@@ -2005,6 +2005,26 @@ horizontal mode."
 ;;   (delete 'org-mode-line-string global-mode-string))
 ;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
 
+(setq org-pomodoro-length 50
+      org-pomodoro-long-break-frequency 2
+      org-pomodoro-short-break-length 10
+      org-pomodoro-long-break-length 30
+      org-pomodoro-manual-break t)
+;; Thanks Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
+(defun ruborcalor/org-pomodoro-time ()
+  "Return the remaining pomodoro time"
+  (if (org-pomodoro-active-p)
+      (cl-case org-pomodoro-state
+        (:pomodoro
+         (format "Pomo: %d mins - %s" (/ (org-pomodoro-remaining-seconds) 60) org-clock-heading))
+        (:short-break
+         (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:long-break
+         (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:overtime
+         (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
+    ""))
+
 ;; Update cookie automatically
 (defun myorg-update-parent-cookie ()
   (when (equal major-mode 'org-mode)
