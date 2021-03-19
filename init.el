@@ -2005,11 +2005,12 @@ horizontal mode."
 ;;   (delete 'org-mode-line-string global-mode-string))
 ;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
 
-(setq org-pomodoro-length 50
+(setq org-pomodoro-length 50 ; adjust some time
       org-pomodoro-long-break-frequency 2
       org-pomodoro-short-break-length 10
-      org-pomodoro-long-break-length 30
-      org-pomodoro-manual-break t
+      org-pomodoro-long-break-length 25
+      org-pomodoro-manual-break t ; In case sometimes I need to overrun
+      org-pomodoro-keep-killed-pomodoro-time t
       org-pomodoro-clock-break nil
       org-pomodoro-ask-upon-killing t
       ;; Status shown in polybar instead. See below.
