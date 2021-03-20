@@ -4643,6 +4643,8 @@ In that case, insert the number."
 ;;; Appearance
 ;;;; Modeline
 
+(setq mode-line-compact 'long)
+
 (use-package minions
   :defer 2
   :init
