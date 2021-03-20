@@ -1331,7 +1331,9 @@ horizontal mode."
   (add-hook 'eww-mode-hook
             #'(lambda () (bind-key "f" #'link-hint-open-link eww-mode-map)))
   (add-hook 'w3m-mode-hook
-            #'(lambda () (bind-key "f" #'link-hint-open-link w3m-mode-map))))
+            #'(lambda () (bind-key "f" #'link-hint-open-link w3m-mode-map)))
+  (add-hook 'help-mode-hook
+            #'(lambda () (bind-key "f" #'link-hint-open-link help-mode-map))))
 
 (use-package avy-zap
   :bind (("M-z" . avy-zap-to-char-dwim)
@@ -2057,6 +2059,10 @@ horizontal mode."
                               ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
                               ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
                               ("youtube" . "https://www.youtube.com/results?search_query=%s")))
+
+(add-to-list 'org-file-apps '("\\.x?html\\'" . "firefox %s"))
+(add-to-list 'org-file-apps '("\\(?:xhtml\\|html\\)\\'" . "firefox %s"))
+(add-to-list 'org-file-apps '("\\.epub\\'" . "foliate %s"))
 ;; Enable link to manual pages
 ;; Org-man.el is downloaded from https://orgmode.org/manual/Adding-hyperlink-types.html
 (use-package org-man
@@ -2655,9 +2661,9 @@ ${body}
 ;; Load org-ref, and use ivy for completion
 (use-package org-ref
   :defer 10
-  :after helm
   :after org-roam
   :straight t
+  :straight helm
   :straight ivy-bibtex
   :straight helm-bibtex
   :straight org-noter
@@ -3436,17 +3442,40 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
               ("n" . 'scroll-down-command)
               ("p" . 'scroll-up-command))
   :hook (nov-mode . (lambda () (progn (visual-fill-column-mode) (setq visual-fill-column-width 80)))) ;; Easier to read.
-  :hook (nov-mode . (lambda () (beacon-mode -1))) ;; Don't show beamer.
   :config
   (setq nov-text-width 'nil))
 
 (use-package calibredb
   :straight (calibredb :repo "chenyanming/calibredb.el" :host github)
+  :commands (calibredb-find-counsel calibredb)
+  :after org-ref
+  :bind (("C-s c" . 'calibredb-find-counsel)
+         ("C-s C" . 'calibredb)
+         :map calibredb-search-mode-map
+         ;; ? to show overall keymap. Very handy
+         ("C-x C-j" . 'calibredb-open-dired)
+         ("n"       . 'calibredb-next-entry)
+         ("p"       . 'calibredb-previous-entry)
+         ("j"       . 'calibredb-library-next)
+         ("k"       . 'calibredb-library-previous)
+         ("g"       . 'calibredb-search-refresh-and-clear-filter)
+         ("D"       . 'calibredb-remove-marked-items)
+         ("d"       . 'calibredb-remove)
+         ("E"       . 'calibredb-export-dispatch)
+         ("e"       . 'calibredb-export-dispatch))
   :defer 5
   :config
   (setq calibredb-root-dir (expand-file-name "~/Nextcloud/calibre-library")
         calibredb-db-dir (expand-file-name "metadata.db" calibredb-root-dir)
-        calibredb-program "/usr/bin/calibredb"))
+        calibredb-library-alist '(calibredb-root-dir)
+        )
+  ;; Integration with org-ref
+  (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "catalog.bib"))
+  (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
+  (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
+  ;; Metadata
+  (setq calibredb-fetch-metadata-source-list '("Google" "Amazon.com" "Douban Books"))
+  )
 
 ;;; Spell-checking / Dictionary Lookup / Chinese input
 
