@@ -2021,24 +2021,28 @@ horizontal mode."
       org-pomodoro-short-break-format ""
       org-pomodoro-long-break-format ""
       org-pomodoro-overtime-format "")
-;; Thanks Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
+;; Thanks for inspiration from Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
   (let* ((clock-string (org-clock-get-clock-string))
          (start 0)
          (end (length clock-string)))
     (set-text-properties start end nil clock-string)
-    (if (org-pomodoro-active-p)
-        (cl-case org-pomodoro-state
-          (:pomodoro
-           (format "Pomo: %d mins | %s" (/ (org-pomodoro-remaining-seconds) 60) clock-string))
-          (:short-break
-           (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
-          (:long-break
-           (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
-          (:overtime
-           (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
-      clock-string)))
+    (cond
+     ((org-pomodoro-active-p)
+      (cl-case org-pomodoro-state
+        (:pomodoro
+         (format "Pomo: %d mins | %s"
+                 (/ (org-pomodoro-remaining-seconds) 60)
+                 (if (org-clock-is-active) clock-string "Pomo Idle Running?")))
+        (:short-break
+         (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:long-break
+         (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+        (:overtime
+         (format "Overtime: %d minutes" (/ (org-pomodoro-remaining-seconds) 60)))))
+     ((org-clock-is-active) clock-string)
+     (""))))
 
 ;; Update cookie automatically
 (defun myorg-update-parent-cookie ()
