@@ -2038,7 +2038,7 @@ horizontal mode."
            (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
           (:overtime
            (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
-      "")))
+      clock-string)))
 
 ;; Update cookie automatically
 (defun myorg-update-parent-cookie ()
@@ -2510,7 +2510,7 @@ This function tries to do what you mean:
 
 ;; org-roam
 (use-package org-roam
-  :defer 5
+  :demand t
   :straight t
   :straight org-journal
   ;; :straight nroam ;; after the page links
