@@ -462,7 +462,6 @@ behavior added."
   (super-save-mode +1)
   (run-with-idle-timer 300 t 'org-save-all-org-buffers)
   (auto-save-visited-mode +1)
-  (bind-key (kbd "C-x C-s") 'my-rest-pinky)
   )
 
 (use-package aggressive-indent
@@ -2765,10 +2764,6 @@ ${body}
    ;; Export in background
    org-export-in-background 'nil) ;; TODO: Seems buggy when set to t
 
-  ;; Enable source code fontification
-  (setq-default org-latex-listings 'minted)  ;; Use python minted to fontify
-  (setq org-latex-minted-options '(("frame" "lines") ("fontsize" "\\footnotesize")))
-
   ;; PDF output process with comments
   ;; 1. `--shell-escape' required for minted. See `org-latex-listings'
   ;; 2. "bibtex %b" ensures bibliography (of org-ref) is processed during pdf generation
@@ -2780,6 +2775,21 @@ ${body}
           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
           ))
 
+  ;; Define my customized latex
+  (add-to-list 'org-latex-classes
+               '("org-plain-latex"
+                 "\\documentclass{article}
+           [NO-DEFAULT-PACKAGES]
+           [PACKAGES]
+           [EXTRA]"
+                 ("\\section{%s}" . "\\section*{%s}")
+                 ("\\subsection{%s}" . "\\subsection*{%s}")
+                 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                 ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+  ;; Use minted for code fontification
+  (setq-default org-latex-listings 'minted)  ;; Use python minted to fontify
   )
 
 ;; Add beamer output support
