@@ -4642,9 +4642,6 @@ In that case, insert the number."
 
 ;;; Appearance
 ;;;; Modeline
-;; Show time on mode line, but don't show system load average.
-(setq display-time-default-load-average 'nil)
-(display-time-mode +1)
 
 (use-package minions
   :defer 2
