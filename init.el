@@ -760,23 +760,21 @@ is already narrowed."
 (use-package multiple-cursors
   ;; Read https://github.com/magnars/multiple-cursors.el for common use cases
   :defer 10
-  :commands (mc/mark-next-like-this)
   :bind
   (
+   ;; HOLLLY>>>> Praise Magnars.
+   ;; Useful for org-table-create-or-convert-from-region with some random data from web
+   ("C-<down-mouse-1>" . down-mc/add-cursor-on-click)
    ;; Common use case: er/expand-region, then add curors.
-   ("C-}" . mc/mark-next-like-this)
-   ("C-{" . mc/mark-previous-like-this)
+   ;; ("C-}" . mc/mark-next-like-this)
+   ;; ("C-{" . mc/mark-previous-like-this)
    ;; After selecting all, we may end up with cursors outside of view
    ;; Use C-' to hide/show unselected lines.
-   ("C-*" . mc/mark-all-like-this)
-   ;; HOLLLY>>>> Praise Magnars.
-   ("C-S-<mouse-1>" . mc/add-cursor-on-click)
+   ;; ("C-*" . mc/mark-all-like-this)
    ;; highlighting symbols only
-   ("C->" . mc/mark-next-word-like-this)
-   ("C-<" . mc/mark-previous-word-like-this)
-   ("C-M-*" . mc/mark-all-words-like-this)
-   ;; Region edit.
-   ("C-S-c C-S-c" . mc/edit-lines)
+   ;; ("C->" . mc/mark-next-word-like-this)
+   ;; ("C-<" . mc/mark-previous-word-like-this)
+   ;; ("C-M-*" . mc/mark-all-words-like-this)
    )
   :config
   (define-key mc/keymap (kbd "<return>") nil)
