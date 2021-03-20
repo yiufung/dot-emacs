@@ -2018,6 +2018,7 @@ horizontal mode."
       org-pomodoro-ask-upon-killing t
       org-pomodoro-play-sounds nil
       ;; Status shown in polybar instead. See below.
+      org-clock-clocked-in-display 'nil ;; Don't show in mode line.
       org-pomodoro-format ""
       org-pomodoro-short-break-format ""
       org-pomodoro-long-break-format ""
@@ -2025,17 +2026,21 @@ horizontal mode."
 ;; Thanks Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
-  (if (org-pomodoro-active-p)
-      (cl-case org-pomodoro-state
-        (:pomodoro
-         (format "Pomo: %d mins - %s" (/ (org-pomodoro-remaining-seconds) 60) org-clock-heading))
-        (:short-break
-         (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
-        (:long-break
-         (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
-        (:overtime
-         (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
-    ""))
+  (let* ((clock-string (org-clock-get-clock-string))
+         (start 0)
+         (end (length clock-string)))
+    (set-text-properties start end nil clock-string)
+    (if (org-pomodoro-active-p)
+        (cl-case org-pomodoro-state
+          (:pomodoro
+           (format "Pomo: %d mins | %s" (/ (org-pomodoro-remaining-seconds) 60) clock-string))
+          (:short-break
+           (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+          (:long-break
+           (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+          (:overtime
+           (format "Overtime! %d minutes" (/ (org-pomodoro-remaining-seconds) 60))))
+      "")))
 
 ;; Update cookie automatically
 (defun myorg-update-parent-cookie ()
