@@ -2088,7 +2088,14 @@ horizontal mode."
                 org-html-head-include-default-style nil
                 ;; Don't include the validation link & creation tag
                 org-html-postamble 'nil ;; Don't include validation link and created tags
-                org-html-validation-link 'nil)
+                org-html-validation-link 'nil
+                org-html-text-markup-alist '((bold . "<b>%s</b>")
+                                             (code . "<code>%s</code>")
+                                             (italic . "<i>%s</i>")
+                                             (strike-through . "<del>%s</del>")
+                                             (underline . "<span class=\"underline\">%s</span>")
+                                             (verbatim . "<kbd>%s</kbd>")) ;; Use verbatim for mentioning kbd
+                )
 
   ;; put your css files here
   ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
@@ -2776,7 +2783,7 @@ ${body}
           "%latex -shell-escape -interaction nonstopmode -output-directory %o %f"
           ))
 
-  ;; Define my customized latex
+  ;; Define my customized latex class template
   (add-to-list 'org-latex-classes
                '("org-plain-latex"
                  "\\documentclass{article}
@@ -3304,9 +3311,12 @@ Yiufung
 
 (use-package info
   :straight nil
+  :straight info-colors
   :config
   ;; Run make info to compile info documentation
-  (setq Info-additional-directory-list `(,(expand-file-name "straight/repos/org/doc/" user-emacs-directory))))
+  (setq Info-additional-directory-list `(,(expand-file-name "straight/repos/org/doc/" user-emacs-directory)))
+  (add-hook 'Info-selection-hook 'info-colors-fontify-node)
+  )
 
 (use-package browse-url
   :straight nil
@@ -4823,17 +4833,23 @@ In that case, insert the number."
     ;; Default
     (set-face-attribute
      'default nil
-     :font (font-spec :name "Sarasa Mono TC"
+     :font (font-spec :name "Sarasa Term HC"
                       :weight 'normal
                       :slant 'normal
                       :size 15))
     ;; Fixed-width for programming
     (set-face-attribute
      'fixed-pitch nil
-     :font (font-spec :name "Sarasa Term TC"
+     :font (font-spec :name "Sarasa Term HC"
                       :weight 'normal
                       :slant 'normal
                       :size 15))
+    (set-face-attribute
+     'fixed-pitch-serif nil
+     :font (font-spec :name "Sarasa Term Slab HC"
+                      :weight 'normal
+                      :slant 'normal
+                      :size 13))
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
@@ -4846,7 +4862,7 @@ In that case, insert the number."
       (set-fontset-font
        (frame-parameter nil 'font)
        charset
-       (font-spec :name "Sarasa Mono TC"
+       (font-spec :name "Sarasa Mono HC"
                   :weight 'normal
                   :slant 'normal
                   :size 15)))
