@@ -2037,9 +2037,9 @@ horizontal mode."
                  (/ (org-pomodoro-remaining-seconds) 60)
                  (if (org-clock-is-active) clock-string "Pomo Idle Running?")))
         (:short-break
-         (format "Short break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+         (format "Short break: %d mins | %s" (/ (org-pomodoro-remaining-seconds) 60) clock-string))
         (:long-break
-         (format "Long break: %d mins" (/ (org-pomodoro-remaining-seconds) 60)))
+         (format "Long break: %d mins | %s" (/ (org-pomodoro-remaining-seconds) 60) clock-string))
         (:overtime
          (format "Overtime: %d minutes" (/ (org-pomodoro-remaining-seconds) 60)))))
      ((org-clock-is-active) clock-string)
