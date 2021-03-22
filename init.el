@@ -2024,7 +2024,8 @@ horizontal mode."
 ;; Thanks for inspiration from Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
-  (let* ((clock-string (org-clock-get-clock-string))
+  (let* ((err (ignore-errors (org-clock-get-clock-string)))
+         (clock-string (if err err ""))
          (start 0)
          (end (length clock-string)))
     (set-text-properties start end nil clock-string)
@@ -2627,7 +2628,6 @@ ${body}
   (run-with-idle-timer 600 t 'org-roam-db-build-cache)
   )
 (use-package org-roam-server
-  :disabled t
   :after org-roam
   :defer 15
   :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
