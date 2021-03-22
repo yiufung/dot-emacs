@@ -756,6 +756,9 @@ is already narrowed."
 
 ;;; Text Editing / Substitution / Copy-Pasting
 
+;; Iterate through CamelCase words
+(global-subword-mode +1)
+
 (use-package multiple-cursors
   ;; Read https://github.com/magnars/multiple-cursors.el for common use cases
   :defer 10
@@ -1905,11 +1908,9 @@ horizontal mode."
 (defun make-orgcapture-frame ()
   "Create a new frame and run org-capture."
   (interactive)
-  (switch-to-buffer "*scratch*")
-  (make-frame '((name . "org-capture") (window-system . x)))
+  (make-frame '((name . "org-capture") (window-system . x) (width . 80) (height . 24)))
   (select-frame-by-name "org-capture")
   (org-capture)
-  (delete-other-windows)
   )
 
 ;; Automatically add CREATED property on creation of heading
@@ -4825,21 +4826,21 @@ In that case, insert the number."
      :font (font-spec :name "Sarasa Mono TC"
                       :weight 'normal
                       :slant 'normal
-                      :size 11.5))
+                      :size 15))
     ;; Fixed-width for programming
     (set-face-attribute
      'fixed-pitch nil
-     :font (font-spec :name "Sarasa Mono TC"
+     :font (font-spec :name "Sarasa Term TC"
                       :weight 'normal
                       :slant 'normal
-                      :size 11.5))
+                      :size 15))
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
      :font (font-spec :name "Nimbus Sans"
                       :weight 'normal
                       :slant 'normal
-                      :size 12.0))
+                      :size 15.0))
     ;; For all CJK fonts
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font
@@ -4848,7 +4849,7 @@ In that case, insert the number."
        (font-spec :name "Sarasa Mono TC"
                   :weight 'normal
                   :slant 'normal
-                  :size 11.5)))
+                  :size 15)))
     )
   ;; Set fonts every time a new Window frame is created.
   (add-to-list 'after-make-frame-functions
