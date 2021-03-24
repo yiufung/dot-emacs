@@ -4848,14 +4848,14 @@ In that case, insert the number."
     ;; Default
     (set-face-attribute
      'default nil
-     :font (font-spec :name "Sarasa Term HC"
+     :font (font-spec :name "Sarasa Fixed Slab HC"
                       :weight 'normal
                       :slant 'normal
                       :size 15))
     ;; Fixed-width for programming
     (set-face-attribute
      'fixed-pitch nil
-     :font (font-spec :name "Sarasa Term HC"
+     :font (font-spec :name "Sarasa Term Slab HC"
                       :weight 'normal
                       :slant 'normal
                       :size 15))
@@ -4864,20 +4864,20 @@ In that case, insert the number."
      :font (font-spec :name "Sarasa Term Slab HC"
                       :weight 'normal
                       :slant 'normal
-                      :size 13))
+                      :size 15))
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
-     :font (font-spec :name "Nimbus Sans"
+     :font (font-spec :name "Sarasa Fixed Slab HC"
                       :weight 'normal
                       :slant 'normal
-                      :size 15.0))
+                      :size 15))
     ;; For all CJK fonts
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font
        (frame-parameter nil 'font)
        charset
-       (font-spec :name "Sarasa Mono HC"
+       (font-spec :name "Sarasa Fixed Slab HC"
                   :weight 'normal
                   :slant 'normal
                   :size 15)))
