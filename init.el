@@ -359,19 +359,6 @@ behavior added."
 (unbind-key "C-s") ; Reserve for search related commands
 (unbind-key "C-z") ;; Reserve for hydra related commands
 
-;; Quick access to commonly used files
-(setq my-common-files (list org-my-todo-file org-my-work-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory)))
-(defun cyf-rotate-common-files ()
-  "Rotate through some of my commonly accessed files"
-  (interactive)
-  (let* ((next-file (pop my-common-files)))
-    (push next-file (cdr (last my-common-files)))
-    (find-file next-file)))
-(global-set-key (kbd "s-SPC") 'cyf-rotate-common-files)
-
-(global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
-(global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
-
 (use-package beacon
   ;; Highlight the cursor whenever it scrolls
   :disabled t
@@ -4671,6 +4658,18 @@ In that case, insert the number."
 (global-set-key (kbd "M-J") (lambda ()
                               (interactive)
                               (join-line -1)))
+
+;; Quick access to commonly used files
+(setq my-common-files (list org-my-todo-file org-my-work-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory)))
+(defun cyf-rotate-common-files ()
+  "Rotate through some of my commonly accessed files"
+  (interactive)
+  (let* ((next-file (pop my-common-files)))
+    (push next-file (cdr (last my-common-files)))
+    (find-file next-file)))
+(global-set-key (kbd "s-SPC") 'cyf-rotate-common-files)
+(global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
+(global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
 
 ;;; Appearance
 ;;;; Modeline
