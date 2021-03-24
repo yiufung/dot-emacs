@@ -1542,13 +1542,19 @@ horizontal mode."
 ;; customized export formats
 (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
 
+(defun cyf-org-clock-auto ()
+  (interactive)
+  (if (org-at-heading-p)
+      (org-pomodoro)
+    (org-clock-goto)))
+
 ;; Key bindings
 (bind-keys ("C-c a"   . org-agenda)
            ("C-c c"   . org-capture)
            ("C-c l"   . org-store-link)
            ("C-c 0"   . org-expiry-insert-created)
-           ("s-`"     . org-clock-goto) ;; Jump to currently clocking headline
-           ("s-<tab>" . org-pomodoro)
+           ("s-`"     . cyf-org-clock-auto)
+           ;; ("s-<tab>" . org-pomodoro)
            ;; Rifle through all my org files to identify an item
            ;; Use C-s to display results in occur-like style
            ("C-S-s"   . helm-org-rifle)
@@ -2516,7 +2522,7 @@ This function tries to do what you mean:
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance '("crypt")
-      org-crypt-key "")
+      org-crypt-key "mail@yiufung.net")
 
 ;; org-roam
 (use-package org-roam
@@ -2527,10 +2533,9 @@ This function tries to do what you mean:
   :straight (nroam :host github
                    :branch "master"
                    :repo "NicolasPetton/nroam")
-  :after org
-  :after company
+  :init
+  (setq-default org-roam-directory (expand-file-name "roam/" org-directory))
   :custom
-  (org-roam-directory (expand-file-name "roam/" org-directory))
   (org-journal-dir (expand-file-name "roam/journal/" org-directory))
   (org-journal-date-format "%Y-%m-%d-%a")
   (org-journal-time-format "%H:%M")
