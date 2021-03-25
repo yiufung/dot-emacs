@@ -1517,6 +1517,9 @@ horizontal mode."
 (use-package ob-mermaid :straight (:fork (:host github :repo "yiufung/ob-mermaid")))
 (use-package ob-http)
 (use-package org-bullets)
+(use-package org-roam)
+(use-package org-journal)
+(use-package nroam :straight (:host github :branch "master" :repo "NicolasPetton/nroam"))
 (use-package org-super-agenda)
 (use-package org-pomodoro)
 (use-package org-sidebar)
@@ -1541,8 +1544,6 @@ horizontal mode."
 (add-hook 'org-mode-hook 'auto-fill-mode)
 ;; customized export formats
 (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
-
-
 
 ;; Key bindings
 (bind-keys ("C-c a"   . org-agenda)
@@ -2090,8 +2091,8 @@ horizontal mode."
                               ("omap"      . "http://nominatim.openstreetmap.org/search?q=%s&polygon=1")
                               ("ads"       . "http://adsabs.harvard.edu/cgi-bin/nph-abs_connect?author=%s&db_key=AST")
                               ("openrice"  . "https://www.openrice.com/en/hongkong/restaurants?what=%h")
-                              ("jira"  . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
-                              ("youtube" . "https://www.youtube.com/results?search_query=%s")))
+                              ("jira"      . "https://asw-global-digital-transformation.atlassian.net/browse/%h")
+                              ("youtube"   . "https://www.youtube.com/results?search_query=%s")))
 
 (add-to-list 'org-file-apps '("\\.x?html\\'" . "firefox %s"))
 (add-to-list 'org-file-apps '("\\(?:xhtml\\|html\\)\\'" . "firefox %s"))
@@ -2545,95 +2546,87 @@ This function tries to do what you mean:
 (setq org-tags-exclude-from-inheritance '("crypt")
       org-crypt-key "mail@yiufung.net")
 
-;; org-roam
-(use-package org-roam
-  :demand t
-  :straight t
-  :straight org-journal
-  ;; :straight nroam ;; after the page links
-  :straight (nroam :host github
-                   :branch "master"
-                   :repo "NicolasPetton/nroam")
-  :init
-  (setq-default org-roam-directory (expand-file-name "roam/" org-directory))
-  :custom
-  (org-journal-dir (expand-file-name "roam/journal/" org-directory))
-  (org-journal-date-format "%Y-%m-%d-%a")
-  (org-journal-time-format "%H:%M")
-  (org-journal-enable-agenda-integration t)
-  (org-journal-file-type 'daily)
-  (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
-  (org-journal-time-prefix "** ")
-  (org-journal-encrypt-journal nil)
-  (org-roam-encrypt-files nil)
-  (org-journal-enable-encryption nil)
-  (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
-  :bind (("C-c g SPC" . org-roam)
-         ("C-c g g"   . org-roam-find-file)
-         ;; ("C-c g G"   . org-roam-graph-show)
-         ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
-         ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
-         ("C-c g c"   . org-roam-capture)
-         ("C-c g t"   . org-roam-tag-add)
-         ("C-c g i"   . org-roam-insert-immediate)
-         ("C-c g \\"  . org-roam-jump-to-index)
-         ("C-c J"     . org-journal-new-entry)
-         ("<f12>"     . org-roam-find-file)
-         :map org-roam-mode-map
-         ("<f12>"     . org-roam-tag-add)
-         ("<f11>"     . org-roam-insert-immediate))
-  :config
-  ;; (org-roam-mode +1)
-  (require 'org-journal)
-  (require 'org-roam-protocol)
-  (add-hook 'org-mode-hook #'nroam-setup-maybe)
-  (push 'company-capf company-backends)
-  ;; Add org-roam to org-agenda-files
-  ;; Don't do this, it's very SLLOW
-  ;; (add-to-list 'org-agenda-files org-roam-directory)
-  (setq org-roam-completion-everywhere t
-        org-roam-completion-ignore-case t
-        org-roam-db-update-method 'immediate)
-  (setq-default org-roam-capture-templates
-                '(("d" "default" plain
-                   #'org-roam-capture--get-point "%?"
-                   :file-name "${slug}"
-                   :head "#+title: ${title}
+;; org-roam and org-journal setup
+(require 'org-roam)
+(require 'org-roam-protocol)
+(require 'org-journal)
+(require 'nroam)
+(setq-default org-roam-directory (expand-file-name "roam/" org-directory)
+              org-journal-dir (expand-file-name "roam/journal/" org-directory)
+              (org-journal-date-format "%Y-%m-%d-%a")
+              (org-journal-time-format "%H:%M")
+              (org-journal-enable-agenda-integration t)
+              (org-journal-file-type 'daily)
+              (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
+              (org-journal-time-prefix "** ")
+              (org-journal-encrypt-journal nil)
+              (org-roam-encrypt-files nil)
+              (org-journal-enable-encryption nil)
+              (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n"))
+(bind-keys (("C-c g SPC" . org-roam)
+            ("C-c g g"   . org-roam-find-file)
+            ;; ("C-c g G"   . org-roam-graph-show)
+            ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
+            ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
+            ("C-c g c"   . org-roam-capture)
+            ("C-c g t"   . org-roam-tag-add)
+            ("C-c g i"   . org-roam-insert-immediate)
+            ("C-c g \\"  . org-roam-jump-to-index)
+            ("C-c J"     . org-journal-new-entry)
+            ("<f12>"     . org-roam-find-file)
+            ))
+(bind-keys   :map org-roam-mode-map
+             ("<f12>"     . org-roam-tag-add)
+             ("<f11>"     . org-roam-insert-immediate))
+
+(add-hook 'org-mode-hook #'nroam-setup-maybe)
+(push 'company-capf company-backends)
+;; Add org-roam to org-agenda-files
+;; Don't do this, it's very SLLOW
+;; (add-to-list 'org-agenda-files org-roam-directory)
+(setq org-roam-completion-everywhere t
+      org-roam-completion-ignore-case t
+      org-roam-db-update-method 'immediate)
+(setq-default org-roam-capture-templates
+              '(("d" "default" plain
+                 #'org-roam-capture--get-point "%?"
+                 :file-name "${slug}"
+                 :head "#+title: ${title}
 #+created: %<%Y%m%d-%H%M>
 #+roam_tags:
 #+roam_alias:
 
 - related ::
 "
-                   :unnarrowed t)
-                  ("p" "Permanent notes" plain
-                   #'org-roam-capture--get-point "%?"
-                   :file-name "${slug}"
-                   :head "#+title: ${title}
+                 :unnarrowed t)
+                ("p" "Permanent notes" plain
+                 #'org-roam-capture--get-point "%?"
+                 :file-name "${slug}"
+                 :head "#+title: ${title}
 #+created: %<%Y%m%d-%H%M>
 #+roam_tags: \"permanent note\"
 #+roam_alias:
 
 - related ::
 "
-                   :unnarrowed t))
-                org-roam-capture-immediate-template
-                '("d" "default" plain #'org-roam-capture--get-point "%?"
-                  :file-name "${slug}"
-                  :head "#+title: ${title}
+                 :unnarrowed t))
+              org-roam-capture-immediate-template
+              '("d" "default" plain #'org-roam-capture--get-point "%?"
+                :file-name "${slug}"
+                :head "#+title: ${title}
 #+created: %<%Y%m%d-%H%M>
 #+roam_tags:
 #+roam_alias:
 
 - related ::
 "
-                  :unnarrowed t
-                  :immediate-finish t)
-                org-roam-capture-ref-templates
-                '(("r" "ref" plain
-                   #'org-roam-capture--get-point "%?"
-                   :file-name "${slug}"
-                   :head "#+title: ${title}
+                :unnarrowed t
+                :immediate-finish t)
+              org-roam-capture-ref-templates
+              '(("r" "ref" plain
+                 #'org-roam-capture--get-point "%?"
+                 :file-name "${slug}"
+                 :head "#+title: ${title}
 #+roam_tags:
 #+roam_alias:
 #+roam_key: ${ref}
@@ -2642,16 +2635,16 @@ This function tries to do what you mean:
 
 ${body}
 " :unnarrowed t))
-                )
-  (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
-  (add-to-list 'org-capture-templates
-               '("v" "Vocabulary" plain
-                 (file my-vocabulary-file)
-                 "%?%c"
-                 :empty-lines-before 1))
-  ;; Rebuild every 10 minutes when idle
-  (run-with-idle-timer 600 t 'org-roam-db-build-cache)
-  )
+              )
+(setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
+(add-to-list 'org-capture-templates
+             '("v" "Vocabulary" plain
+               (file my-vocabulary-file)
+               "%?%c"
+               :empty-lines-before 1))
+;; Rebuild every 10 minutes when idle
+(run-with-idle-timer 600 t 'org-roam-db-build-cache)
+
 (use-package org-roam-server
   :after org-roam
   :defer 15
