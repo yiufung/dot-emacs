@@ -1902,8 +1902,8 @@ horizontal mode."
 
         ("r" "Read later"
          entry
-         (file+headline org-my-todo-file "Inbox" )
-         "* TODO %a :later:"
+         (file+olp org-my-todo-file "Reading" "Later")
+         "* TODO %a"
          :prepend t
          :immediate-finish t)
 
@@ -2553,34 +2553,34 @@ This function tries to do what you mean:
 (require 'nroam)
 (setq-default org-roam-directory (expand-file-name "roam/" org-directory)
               org-journal-dir (expand-file-name "roam/journal/" org-directory)
-              (org-journal-date-format "%Y-%m-%d-%a")
-              (org-journal-time-format "%H:%M")
-              (org-journal-enable-agenda-integration t)
-              (org-journal-file-type 'daily)
-              (org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s)))
-              (org-journal-time-prefix "** ")
-              (org-journal-encrypt-journal nil)
-              (org-roam-encrypt-files nil)
-              (org-journal-enable-encryption nil)
-              (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n"))
-(bind-keys (("C-c g SPC" . org-roam)
-            ("C-c g g"   . org-roam-find-file)
-            ;; ("C-c g G"   . org-roam-graph-show)
-            ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
-            ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
-            ("C-c g c"   . org-roam-capture)
-            ("C-c g t"   . org-roam-tag-add)
-            ("C-c g i"   . org-roam-insert-immediate)
-            ("C-c g \\"  . org-roam-jump-to-index)
-            ("C-c J"     . org-journal-new-entry)
-            ("<f12>"     . org-roam-find-file)
-            ))
-(bind-keys   :map org-roam-mode-map
-             ("<f12>"     . org-roam-tag-add)
-             ("<f11>"     . org-roam-insert-immediate))
+              org-journal-date-format "%Y-%m-%d-%a"
+              org-journal-time-format "%H:%M"
+              org-journal-enable-agenda-integration t
+              org-journal-file-type 'daily
+              org-journal-tag-alist '(("idea" . ?i) ("schedule" . ?i) ("spirituality" . ?s))
+              org-journal-time-prefix "** "
+              org-journal-encrypt-journal nil
+              org-roam-encrypt-files nil
+              org-journal-enable-encryption nil
+              org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
+(bind-keys ("C-c g SPC" . org-roam)
+           ("C-c g g"   . org-roam-find-file)
+           ;; ("C-c g G"   . org-roam-graph-show)
+           ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
+           ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
+           ("C-c g c"   . org-roam-capture)
+           ("C-c g t"   . org-roam-tag-add)
+           ("C-c g i"   . org-roam-insert-immediate)
+           ("C-c g \\"  . org-roam-jump-to-index)
+           ("C-c J"     . org-journal-new-entry)
+           ("<f12>"     . org-roam-find-file)
+           )
+(bind-keys :map org-roam-mode-map
+           ("<f12>"     . org-roam-tag-add)
+           ("<f11>"     . org-roam-insert-immediate))
 
 (add-hook 'org-mode-hook #'nroam-setup-maybe)
-(push 'company-capf company-backends)
+;; (push 'company-capf company-backends)
 ;; Add org-roam to org-agenda-files
 ;; Don't do this, it's very SLLOW
 ;; (add-to-list 'org-agenda-files org-roam-directory)
@@ -2900,7 +2900,7 @@ Yiufung
   ;; Easier navigation for source code files
   :defer 3
   :bind (:map outshine-mode-map
-              ("<S-iso-lefttab>" . outshine-cycle-buffer)
+              ("S-<iso-lefttab>" . outshine-cycle-buffer)
               ;; ("<backtab>" . outshine-cycle-buffer) ;; For Windows
               )
   :hook (emacs-lisp-mode . outshine-mode)
@@ -4695,6 +4695,26 @@ In that case, insert the number."
 ;;;; Modeline
 
 (setq mode-line-compact 'long)
+
+(use-package simple-modeline
+  :demand t
+  :config
+  (defun simple-modeline-segment-minions ()
+    "Displays the current major and minor modes with minions-mode in the mode-line."
+    (concat " " (format-mode-line minions-mode-line-modes)))
+  (setq simple-modeline-segments
+        '((simple-modeline-segment-input-method
+           simple-modeline-segment-modified
+           simple-modeline-segment-buffer-name
+           simple-modeline-segment-minions
+           simple-modeline-segment-position
+           simple-modeline-segment-eol
+           simple-modeline-segment-encoding)
+          (;;simple-modeline-segment-misc-info
+           simple-modeline-segment-process
+           simple-modeline-segment-vc
+           )))
+  (simple-modeline-mode +1))
 
 (use-package minions
   :defer 2
