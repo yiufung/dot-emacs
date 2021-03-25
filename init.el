@@ -1542,11 +1542,7 @@ horizontal mode."
 ;; customized export formats
 (straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
 
-(defun cyf-org-clock-auto ()
-  (interactive)
-  (if (org-at-heading-p)
-      (org-pomodoro)
-    (org-clock-goto)))
+
 
 ;; Key bindings
 (bind-keys ("C-c a"   . org-agenda)
@@ -1678,8 +1674,8 @@ horizontal mode."
  ;; Don't split line
  org-M-RET-may-split-line '((default . nil))
  ;; Cache refile targets
- ;; Use ‘C-u C-u C-u C-c C-w’ to clear cache
- org-refile-use-cache t
+ ;; Simple target is used, so no need to cache
+ org-refile-use-cache nil
  ;; Show full paths for refiling
  org-refile-use-outline-path t
  ;; Use current window
@@ -1845,10 +1841,11 @@ horizontal mode."
     alltodo ""
     ((org-agenda-overriding-header "All Work tasks")
      (org-agenda-files `(,org-my-work-file))))
-   ("b" "Recent books"
-    tags-todo "book"
+   ("r" "Readings"
+    tags-todo "later|book"
     ((org-agenda-overriding-header "Recent reading")
-     (org-super-agenda-groups '((:name "Ongoing" :todo "STARTED")
+     (org-super-agenda-groups '((:name "Recent" :tag "later")
+                                (:name "Ongoing" :todo "STARTED")
                                 (:name "Good ones" :priority "A")))))
    )
  org-agenda-exporter-settings
@@ -1901,6 +1898,20 @@ horizontal mode."
          "* %?"
          :tree-type month
          :prepend t)
+
+        ("r" "Read later"
+         entry
+         (file+headline org-my-todo-file "Inbox" )
+         "* TODO %a :later:"
+         :prepend t
+         :immediate-finish t)
+
+        ;; ("w" "Read later"
+        ;;  entry
+        ;;  (file+headline org-my-todo-file "Inbox" )
+        ;;  "* TODO %:annotation :later:\n%i"
+        ;;  :prepend t
+        ;;  :immediate-finish t)
 
         ;; ("b" "finance book-keeping"
         ;;  plain
@@ -2048,6 +2059,16 @@ horizontal mode."
          (format "Overtime: %d minutes" (/ (org-pomodoro-remaining-seconds) 60)))))
      ((org-clock-is-active) clock-string)
      (""))))
+
+(defun cyf-org-clock-auto ()
+  "Jump to current clock in task or start pomodoro."
+  (interactive)
+  (if (org-at-heading-p)
+      (org-pomodoro)
+    (org-clock-goto)))
+
+(setq org-clock-persist 'history)
+(org-clock-persistence-insinuate)
 
 ;; Update cookie automatically
 (defun myorg-update-parent-cookie ()
@@ -2549,9 +2570,10 @@ This function tries to do what you mean:
   (org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
   :bind (("C-c g SPC" . org-roam)
          ("C-c g g"   . org-roam-find-file)
-         ("C-c g j"   . org-roam-dailies-today)
          ;; ("C-c g G"   . org-roam-graph-show)
-         ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
+         ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
+         ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
+         ("C-c g c"   . org-roam-capture)
          ("C-c g t"   . org-roam-tag-add)
          ("C-c g i"   . org-roam-insert-immediate)
          ("C-c g \\"  . org-roam-jump-to-index)
@@ -2589,7 +2611,7 @@ This function tries to do what you mean:
                    :file-name "${slug}"
                    :head "#+title: ${title}
 #+created: %<%Y%m%d-%H%M>
-#+roam_tags: pn
+#+roam_tags: \"permanent note\"
 #+roam_alias:
 
 - related ::
