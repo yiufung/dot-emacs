@@ -434,7 +434,7 @@ behavior added."
 
   ;; Suppress "Cleaning up the recentf...done (0 removed)"
   (advice-add 'recentf-cleanup :around #'suppress-messages)
-  (recentf-mode 1)
+  (recentf-mode +1)
   )
 
 (use-package super-save
@@ -443,7 +443,7 @@ behavior added."
   :config
   ;; Auto save
   (setq auto-save-default t
-        auto-save-interval 20 ;; maximum input characters before auto save
+        auto-save-interval 64 ;; maximum input characters before auto save
         auto-save-timeout 2 ;; save every two seconds
         auto-save-visited-interval 2 ;; every two seconds
         super-save-idle-duration 5 ;; It's okay to set it longer
@@ -1032,11 +1032,13 @@ If first character is /, search camelCase."
          (")"       . dired-git-info-mode))
   :config
   (require 'dired-x) ;; extra functionality for dired
+  (require 'dired-hacks-utils)
   (setq dired-listing-switches "-aBhl --group-directories-first"
         dired-dwim-target t
         dired-auto-revert-buffer 'dired-directory-changed-p
         dired-no-confirm '(copy)
-        dired-du-bind-human-toggle 'nil) ;; C-h is remapped in my config. Map it to M-h.
+        dired-du-bind-human-toggle 'nil  ;; C-h is remapped in my config. Map it to M-h.
+        dired-open-extensions '(("mp3" . "vlc")))
   (diredfl-global-mode 1)
 
   ;; Fix copy error over TRAMP in dired-async-mode. See async-manual.
@@ -3948,6 +3950,15 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   (set-variable 'dirtrack-list '("^.*[^ ]+:\\(.*\\)]" 1 nil))
   (dirtrack-mode +1)
   )
+
+(use-package eshell
+  :straight nil
+  :straight eshell-toggle
+  :straight eshell-bookmark
+  :bind (("C-z C-z" . eshell-toggle)
+         ("C-x C-z" . nil))
+  :config
+  (add-hook 'eshell-mode-hook 'eshell-bookmark-setup))
 
 ;;;; Auto-completion with Company
 
