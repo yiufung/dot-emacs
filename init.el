@@ -2541,7 +2541,8 @@ This function tries to do what you mean:
 (require 'org-crypt)
 (org-crypt-use-before-save-magic)
 (setq org-tags-exclude-from-inheritance '("crypt")
-      org-crypt-key "mail@yiufung.net")
+      org-crypt-key "mail@yiufung.net"
+      org-crypt-disable-auto-save t)
 
 ;; org-roam and org-journal setup
 (require 'org-roam)
