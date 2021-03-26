@@ -4722,13 +4722,6 @@ In that case, insert the number."
 
 ;;;; Defuns for themes customization
 
-;; Add directory for customized themes
-(setq custom-theme-directory (expand-file-name "custom-themes" my-private-conf-directory))
-
-(defadvice load-theme (before clear-previous-themes activate)
-  "Clear existing theme settings instead of layering them"
-  (mapc #'disable-theme custom-enabled-themes))
-
 (defun cyf/theme-type ()
   "Check current theme type by luminance. If luminance is larger than
  0.7, return 'light, else return 'dark."
@@ -4795,44 +4788,16 @@ In that case, insert the number."
 (defun cyf/set-light-theme-background ()
   "White background for some themes hurts. Change it to yellow."
   (interactive)
-  (if (equal (cyf/theme-type) 'light)
-      (progn
-        (message "[cyf] Light theme detected: Setting backgrounds to floral white")
-        (set-background-color "floral white")
-        ))
-  )
+  (when (equal (cyf/theme-type) 'light)
+    (message "[cyf] Light theme detected: Setting backgrounds to floral white")
+    (set-background-color "floral white")))
 
 (defun cyf/set-dark-theme-highlight-region ()
   "In dark themes it's difficult to see where it highlights the
  texts. This fix it. "
   (interactive)
   (if (equal 'dark (cyf/theme-type))
-      (set-face-attribute 'region nil :background "#666" :foreground "#ffffff"))
-  )
-
-(defun cyf/set-theme ()
-  "Apply all settings in one batch."
-  (interactive)
-  (progn
-    (cyf/set-org-todo-keyword-faces)
-    (cyf/set-light-theme-background) ;; Some light themes have good default background
-    (cyf/set-dark-theme-highlight-region)
-    )
-  )
-
-;; Customize load-theme so we have a clean state each time we apply the theme.
-(setq my-cur-theme 'nil)
-(defun my-load-theme-before (THEME &optional NO-CONFIRM NO-ENABLE)
-  (disable-theme my-cur-theme)
-  )
-(defun my-load-theme-after (THEME &optional NO-CONFIRM NO-ENABLE)
-  (progn
-    (cyf/set-theme)
-    (setq my-cur-theme THEME)
-    )
-  )
-(advice-add #'load-theme :before #'my-load-theme-before)
-(advice-add #'load-theme :after #'my-load-theme-after)
+      (set-face-attribute 'region nil :background "#666" :foreground "#ffffff")))
 
 ;;;; Themes
 
@@ -4911,16 +4876,28 @@ In that case, insert the number."
                   :slant 'normal
                   :size 15)))
     )
-  ;; Set fonts every time a new Window frame is created.
-  (add-to-list 'after-make-frame-functions
-               (lambda (new-frame)
-                 (select-frame new-frame)
-                 (if window-system
-                     (cyf/set-fonts))))
-  ;; Immediately run if we start emacs directly without daemon
-  (if window-system
-      (cyf/set-fonts))
   )
+
+(defun cyf/customize-theme-in-new-frame (frame)
+  "Apply all settings in one batch."
+  (select-frame frame)
+  (cyf/set-org-todo-keyword-faces)
+  (cyf/set-light-theme-background) ;; Some light themes have good default background
+  (cyf/set-dark-theme-highlight-region)
+  )
+
+(defun cyf/setup-gui-in-window-once (frame)
+  "Set fonts and main theme once when the first new GUI frame is created."
+  (select-frame frame)
+  (when (display-graphic-p)
+    (cyf/set-fonts)
+    (load-theme 'modus-operandi t)
+    (remove-hook 'after-make-frame-functions 'cyf/setup-gui-in-window-once)
+    ;; Apply customization in first new frame
+    (cyf/customize-theme-in-new-frame frame)))
+(add-hook 'after-make-frame-functions 'cyf/setup-gui-in-window-once)
+;; apply customizations on every subsequent new frames
+(add-hook 'after-make-frame-functions 'cyf/customize-theme-in-new-frame)
 
 (use-package mixed-pitch
   :disabled t
