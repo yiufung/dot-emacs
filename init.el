@@ -1550,12 +1550,11 @@ horizontal mode."
            ("C-c c"   . org-capture)
            ("C-c l"   . org-store-link)
            ("C-c 0"   . org-expiry-insert-created)
-           ("s-`"     . cyf-org-clock-auto)
-           ;; ("s-<tab>" . org-pomodoro)
+           ("s-`"     . org-clock-auto)
+           ("s-<tab>" . org-pomodoro)
            ;; Rifle through all my org files to identify an item
            ;; Use C-s to display results in occur-like style
-           ("C-S-s"   . helm-org-rifle)
-           ("s-e"     . ivy-insert-org-entity))
+           ("C-S-s"   . helm-org-rifle))
 (bind-keys :map org-mode-map
            ("C-x n s" . nil)
            ("C-x n b" . nil)
@@ -1634,7 +1633,7 @@ horizontal mode."
 ;; So actual tags used in Org files are specified using #+SEQ_TODO and #+TYP_TODO instead. Here I keep a complete
 ;; list of tags for font settings
 (setq org-todo-keywords
-      '((sequence "TODO(t!)" "STARTED(s)" "WAIT(w@)" "CANCELED(c@)" "SOMEDAY(y)" "TASK(k)" "EPIC(e)" "DEFERRED(r@)"
+      '((sequence "TODO(t!)" "STARTED(s)" "WAIT(w@)" "CANCELED(c@)" "SOMEDAY(y)" "ASK(k)" "EPIC(e)" "DEFERRED(r@)"
                   "DELEGATED(g@)" "APPT(a)" "DONE(d!)")))
 ;; Setup for ordered tasks. Initiate with C-c C-x o
 (setq org-enforce-todo-dependencies nil)
@@ -1999,6 +1998,7 @@ horizontal mode."
 ;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
 ;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
 (setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
+(org-reload)
 
 ;; Enable org-id for globally unique IDs
 (add-to-list 'org-modules 'org-id)
@@ -2061,14 +2061,8 @@ horizontal mode."
      ((org-clock-is-active) clock-string)
      (""))))
 
-(defun cyf-org-clock-auto ()
-  "Jump to current clock in task or start pomodoro."
-  (interactive)
-  (if (org-at-heading-p)
-      (org-pomodoro)
-    (org-clock-goto)))
-
-(setq org-clock-persist 'history)
+(setq org-clock-persist 'history
+      org-clock-persist-file (expand-file-name "org-clock-history.el" my-private-conf-directory))
 (org-clock-persistence-insinuate)
 
 ;; Update cookie automatically
@@ -2567,7 +2561,7 @@ This function tries to do what you mean:
            ("C-c g g"   . org-roam-find-file)
            ;; ("C-c g G"   . org-roam-graph-show)
            ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
-           ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note"))) ;; find a permanent note
+           ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note "))) ;; find a permanent note
            ("C-c g c"   . org-roam-capture)
            ("C-c g t"   . org-roam-tag-add)
            ("C-c g i"   . org-roam-insert-immediate)
