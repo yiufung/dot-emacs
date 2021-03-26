@@ -441,7 +441,11 @@ behavior added."
   :defer 3
   :after (eyebrowse ace-window)
   :config
+  ;; Auto save
   (setq auto-save-default t
+        auto-save-interval 20 ;; maximum input characters before auto save
+        auto-save-timeout 2 ;; save every two seconds
+        auto-save-visited-interval 2 ;; every two seconds
         super-save-idle-duration 5 ;; It's okay to set it longer
         super-save-auto-save-when-idle t)
   (add-to-list 'super-save-triggers 'eyebrowse-previous-window-config)
@@ -451,7 +455,6 @@ behavior added."
   (add-to-list 'super-save-triggers 'org-caldav-sync)
   (add-to-list 'super-save-triggers 'magit-status)
   (super-save-mode +1)
-  (run-with-idle-timer 300 t 'org-save-all-org-buffers)
   (auto-save-visited-mode +1)
   )
 
@@ -3871,7 +3874,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :defer 3
   :config
   (add-to-list 'whitespace-cleanup-mode-ignore-modes 'python-mode)
-  (global-whitespace-cleanup-mode))
+  (setq whitespace-cleanup-mode-preserve-point t)
+  (global-whitespace-cleanup-mode +1))
 
 (use-package hl-todo
   ;; Highlight all TODO keywords
