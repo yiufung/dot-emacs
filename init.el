@@ -2990,14 +2990,25 @@ Yiufung
 
   (setq gnus-select-method '(nnnil))
   (setq gnus-secondary-select-methods
-        '((nntp "gmane" (nntp-address "news.gmane.io"))
-          (nntp "news.gwene.org")
+        '(;; (nntp "gmane" (nntp-address "news.gmane.io"))
+          ;; (nntp "news.gwene.org")
           ;; Still use mbsync to sync Mail directory
-          (nnmaildir "church"
-                     (directory "~/Maildir/church/"))
+          ;; (nnmaildir "church"
+          ;;            (directory "~/Maildir/church/"))
           (nnmaildir "fastmail"
                      (directory "~/Maildir/fastmail/"))
-          (nnhackernews "")))
+          ;; (nntp "news.gnus.org")
+          ;; (nnreddit "")
+          ))
+
+  ;; Article
+  (setq gnus-treat-date-lapsed 'head
+        gnus-treat-hide-citation-maybe t
+        gnus-treat-strip-cr t
+        gnus-treat-strip-leading-blank-lines t
+        gnus-treat-strip-multiple-blank-lines t
+        gnus-treat-strip-trailing-blank-lines t
+        gnus-treat-unsplit-urls t)
 
   ;; Render HTML content using gnus-w3m
   (setq mm-text-html-renderer 'gnus-w3m)
@@ -3027,26 +3038,39 @@ Yiufung
   (setq gnus-treat-display-smileys nil)
   (setq gnus-article-mode-line-format "%G %S %m")
   (setq gnus-visible-headers
-        '("^From:" "^To:" "^Cc:" "^Newsgroups:" "^Subject:" "^Date:"
-          "Followup-To:" "Reply-To:" "^Organization:" "^X-Newsreader:"
-          "^X-Mailer:"))
+        "^From:\\|^Newsgroups:\\|^Subject:\\|^Date:\\|^Followup-To:\\|^Reply-To:\\|^Organization:\\|^Summary:\\|^Keywords:\\|^To:\\|^[BGF]?Cc:\\|^Posted-To:\\|^Mail-Copies-To:\\|^Mail-Followup-To:\\|^Apparently-To:\\|^Gnus-Warning:\\|^Resent-From:")
   (setq gnus-sorted-header-list gnus-visible-headers)
 
-  ;; Gnus group
-  (setq gnus-level-subscribed 6)
-  (setq gnus-level-unsubscribed 7)
-  (setq gnus-level-zombie 8)
-  (setq gnus-list-groups-with-ticked-articles nil)
-  (setq gnus-group-sort-function
+  ;; group
+  (setq gnus-group-mode-hook '(gnus-topic-mode gnus-agent-mode hl-line-mode))
+  (bind-keys :map gnus-group-mode-map
+             ((kbd "n") . gnus-group-next-group)
+             ((kbd "p") . gnus-group-prev-group)
+             ((kbd "N") . gnus-group-next-unread-group)
+             ((kbd "P") . gnus-group-prev-unread-group))
+  ;; Gnus topic
+  (setq gnus-topic-display-empty-topics nil
+        gnus-level-subscribed 6
+        gnus-level-unsubscribed 7
+        gnus-level-zombie 8
+        gnus-list-groups-with-ticked-articles nil
+        gnus-group-sort-function
         '((gnus-group-sort-by-unread)
           (gnus-group-sort-by-alphabet)
-          (gnus-group-sort-by-rank)))
-  (setq gnus-group-mode-line-format "%%b")
+          (gnus-group-sort-by-rank))
+        gnus-group-mode-line-format "%%b"
+        gnus-group-default-list-level 2
+        gnus-group-line-format "%S%p%P%M%5y: %(%B%G%B%)
+")
 
-  ;; Gnus topic
-  (setq gnus-topic-display-empty-topics nil)
 
-  ;; gnus summary
+  ;; summary
+  (bind-keys :map gnus-summary-mode-map
+             ((kbd "n") . gnus-summary-next-article)
+             ((kbd "p") . gnus-summary-prev-article)
+             ((kbd "N") . gnus-summary-next-unread-article)
+             ((kbd "P") . gnus-summary-prev-unread-article))
+  (add-hook 'gnus-mode-hook 'menu-bar-mode)
   (setq gnus-auto-select-first nil)
   (setq gnus-summary-ignore-duplicates t)
   (setq gnus-suppress-duplicates t)
