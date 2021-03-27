@@ -1658,7 +1658,9 @@ horizontal mode."
 (require 'org-agenda)
 (bind-keys :map org-agenda-mode-map
            ("S" . org-agenda-schedule)
-           ("o" . org-agenda-open-link))
+           ("o" . org-agenda-open-link)
+           ("w" . org-agenda-refile)
+           ("W" . org-agenda-week-view))
 (setq
  ;; All files for agenda
  org-agenda-files (list
@@ -1689,7 +1691,7 @@ horizontal mode."
  org-refile-use-outline-path t
  ;; Use current window
  org-agenda-window-setup 'reorganize-frame
- org-agenda-restore-windows-after-quit t
+ org-agenda-restore-windows-after-quit nil
  ;; It doesn't have to start on weekday
  org-agenda-start-on-weekday nil
  ;; Show day view by default
@@ -1851,7 +1853,7 @@ horizontal mode."
     ((org-agenda-overriding-header "All Work tasks")
      (org-agenda-files `(,org-my-work-file))))
    ("r" "Readings"
-    tags-todo "later|book"
+    tags "later|book"
     ((org-agenda-overriding-header "Recent reading")
      (org-super-agenda-groups '((:name "Recent" :tag "later")
                                 (:name "Ongoing" :todo "STARTED")
