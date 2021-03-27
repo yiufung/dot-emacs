@@ -1521,7 +1521,7 @@ horizontal mode."
 (use-package ob-async)
 (use-package ob-mermaid :straight (:fork (:host github :repo "yiufung/ob-mermaid")))
 (use-package ob-http)
-(use-package org-bullets)
+(use-package org-superstar)
 (use-package org-roam)
 (use-package org-journal)
 (use-package nroam :straight (:host github :branch "master" :repo "NicolasPetton/nroam"))
@@ -1537,25 +1537,24 @@ horizontal mode."
 (use-package org-cliplink)
 (use-package ox-gfm)
 (use-package org-download)
+(use-package org-board)
 (use-package ox-hugo)
 (use-package easy-hugo)
 (use-package gnuplot)
 (use-package helm-org-rifle)
+(use-package ox-ipynb :straight (:host github :repo "jkitchin/ox-ipynb"))
 
 ;; Org mode hooks
-(add-hook 'org-mode-hook 'org-bullets-mode)
-;; :hook (org-mode . org-indent-mode)
+(add-hook 'org-mode-hook 'org-superstar-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
-;; customized export formats
-(straight-use-package '(ox-ipynb :host github :repo "jkitchin/ox-ipynb"))
 
 ;; Key bindings
 (bind-keys ("C-c a"   . org-agenda)
            ("C-c c"   . org-capture)
            ("C-c l"   . org-store-link)
            ("C-c 0"   . org-expiry-insert-created)
-           ("s-`"     . org-clock-auto)
+           ("s-`"     . org-clock-goto)
            ("s-<tab>" . org-pomodoro)
            ;; Rifle through all my org files to identify an item
            ;; Use C-s to display results in occur-like style
@@ -1614,6 +1613,9 @@ horizontal mode."
 (setq org-my-church-file (expand-file-name "church.org" org-directory))
 (setq org-my-beancount-file (expand-file-name "finance/personal.bean" my-sync-directory))
 (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
+;; Using org-roam as PKM, and org-board to archive web contents under roam directory
+(setq-default org-roam-directory (expand-file-name "roam/" org-directory)
+              org-board-capture-file (expand-file-name "read_later.org" org-roam-directory))
 
 ;; Default org-mode startup
 (setq org-startup-folded t
@@ -1649,6 +1651,8 @@ horizontal mode."
         ("NEXT" ("ARCHIVE" . nil))
         ("WAIT" ("ARCHIVE" . nil))
         ("DONE" ("ARCHIVE" . nil))))
+;; superstar bullets
+(setq org-superstar-headline-bullets-list '("◯" "❖" "❇" "❁" "▶" "✱"))
 
 ;; Org-agenda
 (require 'org-agenda)
@@ -1904,19 +1908,20 @@ horizontal mode."
          :tree-type month
          :prepend t)
 
-        ("r" "Read later"
+        ("r" "Read later: Within Emacs"
          entry
          (file+olp org-my-todo-file "Reading" "Later")
          "* TODO %a"
          :prepend t
          :immediate-finish t)
 
-        ;; ("w" "Read later"
-        ;;  entry
-        ;;  (file+headline org-my-todo-file "Inbox" )
-        ;;  "* TODO %:annotation :later:\n%i"
-        ;;  :prepend t
-        ;;  :immediate-finish t)
+        ("w" "Read Later: Archive Web Content to Roam"
+         entry
+         (file org-board-capture-file)
+         "* %?%:description :board:\n:PROPERTIES:\n:URL: %:link\n:END:\n%i"
+         :prepend t
+         :immediate-finish t
+         )
 
         ;; ("b" "finance book-keeping"
         ;;  plain
@@ -1924,6 +1929,37 @@ horizontal mode."
         ;;  "bc%?"  ;; yasnippet template
         ;;  :prepend t)
         ))
+
+
+
+;; Archive when capturing content from webpage
+(defun do-org-board-dl ()
+  (when (equal (buffer-name)
+               (concat "CAPTURE-" (file-name-nondirectory org-board-capture-file)))
+    (org-board-archive)))
+;; Allow org-board to visit different domains referenced by page
+;; Tree specific options are allowed with WGET_OPTIONS
+;; TODO: qpic.cn used by weixin serving webp format.
+(setq-default org-board-wget-switches '("--no-directories" ;; avoid creating hierarchical directories
+                                        "--execute robots=off" ;; ignore robots
+                                        "--page-requisites" ;; download page requisites (images/css)
+                                        "--adjust-extension" ;; add html if needed
+                                        "--convert-links" ;; convert to local links
+                                        "--span-hosts";; allow downloading from other domains
+                                        "-Dqpic.cn" ;; weixin domain allowed
+                                        "--recursive" ;; allow recursive download
+                                        ))
+;; Archive when capture
+(add-hook 'org-capture-before-finalize-hook 'do-org-board-dl)
+;; Show it in agenda too
+(add-to-list 'org-agenda-files org-board-capture-file)
+;; Use system browser by default
+(setq org-board-default-browser 'system)
+(defun org-board-open-other-window ()
+  (interactive)
+  (split-window-right-and-move-there)
+  (call-interactively 'org-board-open)
+  )
 
 (defun make-orgcapture-frame ()
   "Create a new frame and run org-capture."
@@ -2414,6 +2450,8 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
 ;; Mark a subtree
 (add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
+;; Open archive contents in another window
+(add-to-list 'org-speed-commands-user (cons "o" 'org-board-open))
 ;; kill a subtree
 (add-to-list 'org-speed-commands-user (cons "k" (lambda ()
                                                   (org-mark-subtree)
@@ -2452,10 +2490,10 @@ This function tries to do what you mean:
   ;; Turning the whole HTML as Org entry, using pandoc for formatting,
   ;; downloading all pics etc.
   ;; Useful for archiving.
-  (add-to-list 'org-capture-templates
-               '("w" "Web site" entry
-                 (file+olp org-my-todo-file "Inbox")
-                 "* %a %?\n%:initial"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("w" "Web site" entry
+  ;;                (file+olp org-my-todo-file "Inbox")
+  ;;                "* %a %?\n%:initial"))
 
   (defun search-forward-and-org-download-images()
     "Search forward for HTTP Image URLs, replace each using
@@ -2551,8 +2589,10 @@ This function tries to do what you mean:
 (require 'org-roam-protocol)
 (require 'org-journal)
 (require 'nroam)
-(setq-default org-roam-directory (expand-file-name "roam/" org-directory)
-              org-journal-dir (expand-file-name "roam/journal/" org-directory)
+;; Archiving web contents within Org-roam.
+(require 'org-board)
+
+(setq-default org-journal-dir (expand-file-name "roam/journal/" org-directory)
               org-journal-date-format "%Y-%m-%d-%a"
               org-journal-time-format "%H:%M"
               org-journal-enable-agenda-integration t
