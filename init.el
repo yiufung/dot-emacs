@@ -1544,6 +1544,11 @@ horizontal mode."
 (use-package helm-org-rifle)
 (use-package ox-ipynb :straight (:host github :repo "jkitchin/ox-ipynb"))
 
+;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
+;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
+(setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
+(org-reload)
+
 ;; Org mode hooks
 (add-hook 'org-mode-hook 'org-superstar-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
@@ -1652,7 +1657,7 @@ horizontal mode."
         ("WAIT" ("ARCHIVE" . nil))
         ("DONE" ("ARCHIVE" . nil))))
 ;; superstar bullets
-(setq org-superstar-headline-bullets-list '("◯" "❖" "❇" "❁" "▶" "✱"))
+(setq org-superstar-headline-bullets-list '("❖" "◯" "❇" "❁" "▶" "✱"))
 
 ;; Org-agenda
 (require 'org-agenda)
@@ -1917,13 +1922,17 @@ horizontal mode."
          :prepend t
          :immediate-finish t)
 
-        ("w" "Read Later: Archive Web Content to Roam"
+        ("w" "Archive Web Content to Roam"
          entry
          (file org-board-capture-file)
          "* %?%:description :board:\n:PROPERTIES:\n:URL: %:link\n:END:\n%i"
          :prepend t
-         :immediate-finish t
-         )
+         :immediate-finish t)
+        ("s" "Capture selected text from web"
+         entry
+         (file org-board-capture-file)
+         "* %?%:description \n:PROPERTIES:\n:URL: %:link\n:END:\n\n%i%:body"
+         :prepend t)
 
         ;; ("b" "finance book-keeping"
         ;;  plain
@@ -1943,7 +1952,7 @@ horizontal mode."
 ;; Tree specific options are allowed with WGET_OPTIONS
 ;; TODO: qpic.cn used by weixin serving webp format.
 (setq-default org-board-wget-switches '("--no-directories" ;; avoid creating hierarchical directories
-                                        "--execute robots=off" ;; ignore robots
+                                        "--execute" "robots=off" ;; ignore robots
                                         "--page-requisites" ;; download page requisites (images/css)
                                         "--adjust-extension" ;; add html if needed
                                         "--convert-links" ;; convert to local links
@@ -2038,10 +2047,6 @@ horizontal mode."
  org-return-follows-link t
  )
 
-;; org-emphasis: control how markup works in org-mode, e.g: multi-line markup rendering
-;; See https://emacs.stackexchange.com/questions/13820/inline-verbatim-and-code-with-quotes-in-org-mode
-(setcar (nthcdr 4 org-emphasis-regexp-components) 4) ;; maximum 5 lines
-(org-reload)
 
 ;; Enable org-id for globally unique IDs
 (add-to-list 'org-modules 'org-id)
@@ -2992,16 +2997,9 @@ Yiufung
 
   (setq gnus-select-method '(nnnil))
   (setq gnus-secondary-select-methods
-        '(;; (nntp "gmane" (nntp-address "news.gmane.io"))
-          ;; (nntp "news.gwene.org")
-          ;; Still use mbsync to sync Mail directory
-          ;; (nnmaildir "church"
-          ;;            (directory "~/Maildir/church/"))
+        '((nntp "news.gmane.io")
           (nnmaildir "fastmail"
-                     (directory "~/Maildir/fastmail/"))
-          ;; (nntp "news.gnus.org")
-          ;; (nnreddit "")
-          ))
+                     (directory "~/Maildir/fastmail/"))))
 
   ;; Article
   (setq gnus-treat-date-lapsed 'head
