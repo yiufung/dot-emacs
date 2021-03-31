@@ -1620,7 +1620,7 @@ horizontal mode."
 (setq org-my-anki-file (expand-file-name "anki.org" org-directory))
 ;; Using org-roam as PKM, and org-board to archive web contents under roam directory
 (setq-default org-roam-directory (expand-file-name "roam/" org-directory)
-              org-board-capture-file (expand-file-name "read_later.org" org-roam-directory))
+              org-board-capture-file (expand-file-name "reading_slip_box.org" org-roam-directory))
 
 ;; Default org-mode startup
 (setq org-startup-folded t
@@ -1857,6 +1857,11 @@ horizontal mode."
     alltodo ""
     ((org-agenda-overriding-header "All Work tasks")
      (org-agenda-files `(,org-my-work-file))))
+   ("n" "Note Taking"
+    todo"WAIT"
+    ((org-agenda-overriding-header "Literature notes to be cleaned up")
+     (org-agenda-files `(,org-board-capture-file))
+     ))
    ("r" "Readings"
     tags "later|book"
     ((org-agenda-overriding-header "Recent reading")
@@ -2053,6 +2058,9 @@ horizontal mode."
 (setq org-id-locations-file (expand-file-name ".org-id-locations" user-emacs-directory)
       org-id-link-to-org-use-id 'create-if-interactive
       org-id-track-globally t)
+;; IMPORTANT: create ID for everything I capture: be it an entry or a file. As Roam is used as a reference system, it's
+;; crucial to use id as link, instead of file name, which may change in the future.
+(add-hook 'org-capture-before-finalize-hook 'org-id-get-create)
 
 ;; Enable org-habit
 (add-to-list 'org-modules 'org-habit)
@@ -2638,51 +2646,32 @@ This function tries to do what you mean:
               '(("d" "default" plain
                  #'org-roam-capture--get-point "%?"
                  :file-name "${slug}"
-                 :head "#+title: ${title}
-#+created: %<%Y%m%d-%H%M>
-#+roam_tags:
-#+roam_alias:
-
-- related ::
-"
+                 :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n %i \n\nSee also:\n-"
                  :unnarrowed t)
                 ("p" "Permanent notes" plain
                  #'org-roam-capture--get-point "%?"
-                 :file-name "${slug}"
-                 :head "#+title: ${title}
-#+created: %<%Y%m%d-%H%M>
-#+roam_tags: \"permanent note\"
-#+roam_alias:
-
-- related ::
-"
+                 :file-name "zettels/${slug}" ;; Where real permanent notes locate.
+                 :head "#+title: ${title}\n#+roam_tags: \"permanent note\"\n#+roam_alias:\n\n%?\nSee also:\n- "
                  :unnarrowed t))
-              org-roam-capture-immediate-template
-              '("d" "default" plain #'org-roam-capture--get-point "%?"
-                :file-name "${slug}"
-                :head "#+title: ${title}
-#+created: %<%Y%m%d-%H%M>
-#+roam_tags:
-#+roam_alias:
-
-- related ::
-"
+              org-roam-capture-immediate-template ;; When I immediate finish, usually I wish to create permanent note
+              ;; ("d" "default" plain #'org-roam-capture--get-point "%?"
+              ;;  :file-name "${slug}"
+              ;;  :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n\n\nSee also:\n-"
+              ;;  :unnarrowed t
+              ;;  :immediate-finish t)
+              '("p" "Permanent notes" plain
+                #'org-roam-capture--get-point "%?"
+                :file-name "zettels/${slug}" ;; Where real permanent notes locate.
+                :head "#+title: ${title}\n#+roam_tags:\"permanent note\"\n#+roam_alias:\n\n\nSee also:\n-"
                 :unnarrowed t
-                :immediate-finish t)
+                :immedaite-finish t)
               org-roam-capture-ref-templates
               '(("r" "ref" plain
                  #'org-roam-capture--get-point "%?"
                  :file-name "${slug}"
-                 :head "#+title: ${title}
-#+roam_tags:
-#+roam_alias:
-#+roam_key: ${ref}
+                 :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n#+roam_key: ${ref}\n\n${body}\n\nSee also:\n-"
+                 :unnarrowed t)))
 
-- related ::
-
-${body}
-" :unnarrowed t))
-              )
 (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
 (add-to-list 'org-capture-templates
              '("v" "Vocabulary" plain
