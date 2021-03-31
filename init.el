@@ -161,7 +161,6 @@ CURRENT-NAME, if it does not already have them:
 (use-package auth-source
   :straight ivy-pass
   ;; Setup Credentials
-  :bind (("<menu>" . ivy-pass))
   :config
   (defun lookup-password (host user port)
     (require 'auth-source)
@@ -4737,7 +4736,8 @@ In that case, insert the number."
 ;; Hyper key for application shortcuts
 (global-set-key (kbd "H-c") 'calc)
 (global-set-key (kbd "H-e") 'mu4e)
-(global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (bookmark-jump "inbox")))
+(global-set-key (kbd "<menu>") #'(lambda () (interactive) (bookmark-jump "inbox")))
+(global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (find-file org-board-capture-file)))
 
 ;; <f1> for help-* commands
 (global-set-key (kbd "<f2>") 'counsel-find-file-extern)
