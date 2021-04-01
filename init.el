@@ -720,6 +720,7 @@ is already narrowed."
   (add-to-list 'wrap-region-except-modes 'magit-popup-mode)
   (add-to-list 'wrap-region-except-modes 'help-mode)
   (add-to-list 'wrap-region-except-modes 'info-mode)
+  (add-to-list 'wrap-region-except-modes 'ess-r-mode)
   (wrap-region-global-mode +1)
   )
 
@@ -1728,7 +1729,7 @@ horizontal mode."
  org-agenda-include-diary t
  ;; Show customized time
  org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
- org-display-custom-times t
+ org-display-custom-times nil
  ;; org-agenda sorting strategies
  org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
                                (todo ;; user-defined-up
@@ -2630,11 +2631,11 @@ This function tries to do what you mean:
            ("<f12>"     . org-roam-find-file)
            )
 (bind-keys :map org-roam-mode-map
-           ("<f12>"     . org-roam-tag-add)
+           ("<f12>"     . (lambda () (interactive) (org-roam-capture nil "p"))) ;; insert a new permanent note
            ("<f11>"     . org-roam-insert-immediate))
 
-(add-hook 'org-mode-hook #'nroam-setup-maybe)
-;; (push 'company-capf company-backends)
+;; (add-hook 'org-mode-hook #'nroam-setup-maybe)
+
 ;; Add org-roam to org-agenda-files
 ;; Don't do this, it's very SLLOW
 ;; (add-to-list 'org-agenda-files org-roam-directory)
@@ -3940,6 +3941,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :defer 3
   :config
   (add-to-list 'whitespace-cleanup-mode-ignore-modes 'python-mode)
+  (add-to-list 'whitespace-cleanup-mode-ignore-modes 'org-mode)
   (setq whitespace-cleanup-mode-preserve-point t)
   (global-whitespace-cleanup-mode +1))
 
