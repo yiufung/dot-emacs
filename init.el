@@ -727,9 +727,7 @@ is already narrowed."
 (use-package change-inner
   :defer 3
   :bind (("M-I" . copy-inner)
-         ("M-O" . copy-outer)
-         ("s-i" . change-inner)
-         ("s-o" . change-outer))
+         ("M-O" . copy-outer))
   )
 
 (use-package selected
@@ -1563,7 +1561,9 @@ horizontal mode."
            ("s-<tab>" . org-pomodoro)
            ;; Rifle through all my org files to identify an item
            ;; Use C-s to display results in occur-like style
-           ("C-S-s"   . helm-org-rifle))
+           ("C-S-s"   . helm-org-rifle)
+           ("s-o"     . org-clock-out)
+           ("s-i"     . org-clock-in))
 (bind-keys :map org-mode-map
            ("C-x n s" . nil)
            ("C-x n b" . nil)
@@ -2634,12 +2634,7 @@ This function tries to do what you mean:
            ("<f12>"     . (lambda () (interactive) (org-roam-capture nil "p"))) ;; insert a new permanent note
            ("<f11>"     . org-roam-insert-immediate))
 
-;; (add-hook 'org-mode-hook #'nroam-setup-maybe)
-
-;; Add org-roam to org-agenda-files
-;; Don't do this, it's very SLLOW
-;; (add-to-list 'org-agenda-files org-roam-directory)
-(setq org-roam-completion-everywhere t
+(setq org-roam-completion-everywhere nil
       org-roam-completion-ignore-case t
       org-roam-db-update-method 'immediate)
 (setq-default org-roam-capture-templates
@@ -2672,6 +2667,7 @@ This function tries to do what you mean:
                  :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n#+roam_key: ${ref}\n\n${body}\n\nSee also:\n-"
                  :unnarrowed t)))
 
+(setq org-roam-index-file (expand-file-name "roam/zettels/index.org" org-directory))
 (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
 (add-to-list 'org-capture-templates
              '("v" "Vocabulary" plain
@@ -4763,7 +4759,9 @@ In that case, insert the number."
   (let* ((next-file (pop my-common-files)))
     (push next-file (cdr (last my-common-files)))
     (find-file next-file)))
-(global-set-key (kbd "s-SPC") 'cyf-rotate-common-files)
+(global-set-key (kbd "s-SPC") '(lambda () (interactive) (find-file (expand-file-name ".emacs.default/init.el"
+                                                                                 my-emacs-conf-directory))))
+(global-set-key (kbd "s-\\") '(lambda () (interactive) (find-file org-roam-index-file)))
 (global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
 (global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
 
