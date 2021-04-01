@@ -901,8 +901,8 @@ Useful when hard line wraps are unwanted (email/sharing article)."
          ;; C-u prefix to choose search directory
          ;; C-c C-o opens an occur buffer
          ;; e to toggle writable state
-         ("C-s C-s" . counsel-ag)
-         ("C-s r"   . counsel-rg)
+         ("C-s C-s" . counsel-rg)
+         ("C-s a"   . counsel-ag)
          ("C-s f"   . counsel-file-jump) ;; Jump to a file below the current directory.
          ("C-s j"   . counsel-dired-jump);; Jump to directory under current directory
          )
@@ -994,6 +994,7 @@ If first character is /, search camelCase."
         ivy-initial-inputs-alist nil
         ivy-re-builders-alist '((t . re-builder-extended-pattern))
         ivy-count-format "(%d/%d) "
+        swiper-goto-start-of-match t
         ;; Useful settings for long action lists
         ;; See https://github.com/tmalsburg/helm-bibtex/issues/275#issuecomment-452572909
         max-mini-window-height 0.30
@@ -1001,7 +1002,18 @@ If first character is /, search camelCase."
         ivy-rich-parse-remote-buffer 'nil)
 
   ;; display at `ivy-posframe-style'
-  (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-point)))
+  (setq ivy-posframe-display-functions-alist '(;; (swiper          . ivy-posframe-display-at-point)
+                                               ;; (complete-symbol . ivy-posframe-display-at-point)
+                                               ;; (swiper          . ivy-display-function-fallback)
+                                               (complete-symbol . ivy-posframe-display-at-point)
+                                               ;; (counsel-M-x     . ivy-posframe-display-at-window-bottom-left)
+                                               (t . ivy-posframe-display-at-frame-center))
+        ivy-posframe-height-alist '((swiper . 15)
+                                    (t      . 15))
+        ivy-posframe-parameters
+        '((left-fringe . 8)
+          (right-fringe . 8))
+        ivy-posframe-width 120)
   )
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
@@ -1657,7 +1669,7 @@ horizontal mode."
         ("WAIT" ("ARCHIVE" . nil))
         ("DONE" ("ARCHIVE" . nil))))
 ;; superstar bullets
-(setq org-superstar-headline-bullets-list '("❖" "◯" "❇" "❁" "▶" "✱"))
+(setq org-superstar-headline-bullets-list '("❖" "◯" "▶" "✱" "❇" "❁" ))
 
 ;; Org-agenda
 (require 'org-agenda)
@@ -2646,7 +2658,7 @@ This function tries to do what you mean:
                 ("p" "Permanent notes" plain
                  #'org-roam-capture--get-point "%?"
                  :file-name "zettels/${slug}" ;; Where real permanent notes locate.
-                 :head "#+title: ${title}\n#+roam_tags: \"permanent note\"\n#+roam_alias:\n\n%?\nSee also:\n- "
+                 :head "#+title: ${title}\n#+roam_tags: \"permanent note\"\n#+roam_alias:\n\n\nSee also:\n- "
                  :unnarrowed t))
               org-roam-capture-immediate-template ;; When I immediate finish, usually I wish to create permanent note
               ;; ("d" "default" plain #'org-roam-capture--get-point "%?"
@@ -4762,6 +4774,8 @@ In that case, insert the number."
 (global-set-key (kbd "s-SPC") '(lambda () (interactive) (find-file (expand-file-name ".emacs.default/init.el"
                                                                                  my-emacs-conf-directory))))
 (global-set-key (kbd "s-\\") '(lambda () (interactive) (find-file org-roam-index-file)))
+(global-set-key (kbd "s-<XF86Open>") '(lambda () (interactive) (find-file org-my-work-file)))
+(global-set-key (kbd "s-<menu>") '(lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
 (global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
 
@@ -4776,6 +4790,10 @@ In that case, insert the number."
   (defun simple-modeline-segment-minions ()
     "Displays the current major and minor modes with minions-mode in the mode-line."
     (concat " " (format-mode-line minions-mode-line-modes)))
+  (defun simple-modeline-eyebrowse ()
+    "Displays eyebrowse."
+    (concat " " (eyebrowse-mode-line-indicator)))
+
   (setq simple-modeline-segments
         '((simple-modeline-segment-input-method
            simple-modeline-segment-modified
@@ -4784,10 +4802,10 @@ In that case, insert the number."
            simple-modeline-segment-position
            simple-modeline-segment-eol
            simple-modeline-segment-encoding)
-          (;;simple-modeline-segment-misc-info
+          (;; simple-modeline-segment-misc-info
            simple-modeline-segment-process
            simple-modeline-segment-vc
-           )))
+           simple-modeline-eyebrowse)))
   (simple-modeline-mode +1))
 
 (use-package minions
@@ -4820,50 +4838,34 @@ In that case, insert the number."
    on value of (cyf/theme-type). "
   (interactive)
   (cond ((equal 'dark (cyf/theme-type))
-         (progn
-           ;; (setq org-todo-keyword-faces
-           ;;       '(("TODO" . "darkkhaki")
-           ;;         ("NEXT" . "darksalmon")
-           ;;         ("WAIT" . "darkgoldenrod")
-           ;;         ("CANCELLED" . "darkgrey")
-           ;;         ("DONE" . "darkseagreen")))
-           (setq org-todo-keyword-faces
-                 '(("TODO" :foreground "medium blue" :weight bold)
-                   ("EPIC" :foreground "deep sky blue" :weight bold)
-                   ("STORY" :foreground "royal blue" :weight bold)
-                   ("RECUR" :foreground "cornflowerblue" :weight bold)
-                   ("APPT" :foreground "medium blue" :weight bold)
-                   ("STARTED" :foreground "dark orange" :weight bold)
-                   ("WAITING" :foreground "red" :weight bold)
-                   ("DELEGATED" :foreground "dark violet" :weight bold)
-                   ("DEFERRED" :foreground "dark blue" :weight bold)
-                   ("SOMEDAY" :foreground "dark blue" :weight bold)
-                   ("PROJECT" :foreground "#088e8e" :weight bold)
-                   ("DONE" :foreground "darkseagreen" :weight bold)
-                   )))
-         (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE"))
+         (setq org-todo-keyword-faces
+               '(("TODO" :foreground "cadetblue" :weight bold)
+                 ("EPIC" :foreground "deep sky blue" :weight bold)
+                 ("STORY" :foreground "royal blue" :weight bold)
+                 ("DELEGATED" :foreground "cornflowerblue" :weight bold)
+                 ("APPT" :foreground "darkkhaki" :weight bold)
+                 ("STARTED" :foreground "dark orange" :weight bold)
+                 ("WAIT" :foreground "sienna" :weight bold)
+                 ("DEFERRED" :foreground "dark violet" :weight bold)
+                 ("SOMEDAY" :foreground "dark blue" :weight bold)
+                 ("PROJECT" :foreground "#088e8e" :weight bold)
+                 ("DONE" :foreground "darkseagreen" :weight bold)
+                 )
+               (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE")))
         ((equal 'light (cyf/theme-type))
-         (progn
-           (setq org-todo-keyword-faces
-                 '(("TODO" :foreground "medium blue" :weight bold)
-                   ("EPIC" :foreground "deep sky blue" :weight bold)
-                   ("STORY" :foreground "royal blue" :weight bold)
-                   ("RECUR" :foreground "cornflowerblue" :weight bold)
-                   ("APPT" :foreground "medium blue" :weight bold)
-                   ("STARTED" :foreground "dark orange" :weight bold)
-                   ("WAITING" :foreground "red" :weight bold)
-                   ("DELEGATED" :foreground "dark violet" :weight bold)
-                   ("DEFERRED" :foreground "dark blue" :weight bold)
-                   ("SOMEDAY" :foreground "dark blue" :weight bold)
-                   ("PROJECT" :foreground "#088e8e" :weight bold)
-                   ("DONE" :foreground "darkseagreen" :weight bold)))
-           ;; (setq org-todo-keyword-faces
-           ;;       '(("TODO" . "black")
-           ;;         ("NEXT" . "rosybrown")
-           ;;         ("WAIT" . "sienna")
-           ;;         ("CANCELLED" . "dimgrey")
-           ;;         ("DONE" . "mediumseagreen")))
-           (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE")))))
+         (setq org-todo-keyword-faces
+               '(("TODO" :foreground "cadetblue" :weight bold)
+                 ("EPIC" :foreground "deep sky blue" :weight bold)
+                 ("STORY" :foreground "royal blue" :weight bold)
+                 ("DELEGATED" :foreground "cornflowerblue" :weight bold)
+                 ("APPT" :foreground "darkkhaki" :weight bold)
+                 ("STARTED" :foreground "dark orange" :weight bold)
+                 ("WAIT" :foreground "sienna" :weight bold)
+                 ("DEFERRED" :foreground "dark violet" :weight bold)
+                 ("SOMEDAY" :foreground "dark blue" :weight bold)
+                 ("PROJECT" :foreground "#088e8e" :weight bold)
+                 ("DONE" :foreground "darkseagreen" :weight bold)))
+         (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
 (defun cyf/set-light-theme-background ()
   "White background for some themes hurts. Change it to yellow."
