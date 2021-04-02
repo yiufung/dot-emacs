@@ -1595,6 +1595,9 @@ horizontal mode."
            ;; Unbinding org-cycle-agenda-files
            ("C-'"          . nil)
            ("C-,"          . nil)
+           ;; Move between links
+           ("M-]"      . org-next-link)
+           ("M-["      . org-previous-link)
            ("C-c C-v C-g"  . org-babel-goto-named-src-block)
            ;; Unbinding org-force-cycle-archived
            ("<C-tab>"      . nil)
@@ -1925,9 +1928,9 @@ horizontal mode."
          "%?\n"
          :prepend t)
 
-        ("d" "Devotional"
+        ("p" "Providence"
          entry
-         (file+olp+datetree org-my-todo-file "Habits" "Devotional")
+         (file+olp+datetree org-my-todo-file "Providence")
          "* %?"
          :tree-type month
          :prepend t)
@@ -2507,12 +2510,12 @@ This function tries to do what you mean:
     (concat
      (mapcar #'(lambda (c) (if (equal c ?\[) ?\( (if (equal c ?\]) ?\) c))) string-to-transform))
     )
-  (add-to-list 'org-capture-templates
-               '("p" "Protocol" entry (file+headline org-my-todo-file "Inbox")
-                 "* %?[[%:link][%:description]]\n%i"))
-  (add-to-list 'org-capture-templates
-               '("L" "Protocol Link" entry (file+headline org-my-todo-file "Inbox")
-                 "* %?[[%:link][%:description]]"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("p" "Protocol" entry (file+headline org-my-todo-file "Inbox")
+  ;;                "* %?[[%:link][%:description]]\n%i"))
+  ;; (add-to-list 'org-capture-templates
+  ;;              '("L" "Protocol Link" entry (file+headline org-my-todo-file "Inbox")
+  ;;                "* %?[[%:link][%:description]]"))
   ;; org-procotol-capture-html
   ;; Turning the whole HTML as Org entry, using pandoc for formatting,
   ;; downloading all pics etc.
@@ -4494,9 +4497,6 @@ In that case, insert the number."
 (use-package smartparens
   :defer 5
   :bind (:map smartparens-mode-map
-              ("M-("           . sp-wrap-round)
-              ("M-["           . sp-wrap-square)
-              ("M-{"           . sp-wrap-curly)
               ("M-<backspace>" . sp-backward-unwrap-sexp)
               ("M-<del>"       . sp-unwrap-sexp)
               ("C-<right>"     . sp-forward-slurp-sexp)
@@ -5091,6 +5091,7 @@ In that case, insert the number."
 ;; Use pandoc to convert files
 (use-package pandoc-mode
   :defer 10
+  :bind (:map pandoc-mode-map (("C-c /" . nil)))
   :hook (text-mode . pandoc-mode))
 
 (use-package keycast)
