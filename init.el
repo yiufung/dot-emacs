@@ -1692,12 +1692,15 @@ horizontal mode."
 
 (setq-default
  ;; Refile candidates
+ org-refile-use-outline-path 'file ;; allow using file name as path
  org-refile-targets `(
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :level . 1)
                       ;; Recently ongoing tasks
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :todo . "STARTED")
                       ;; Project milestones are marked with recent tag
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :tag . "recent")
+                      ;; Refile for note writing
+                      ((,org-board-capture-file) :level . 0)
                       )
  org-reverse-note-order 't
  ;; Show candidates in one go
@@ -1707,8 +1710,6 @@ horizontal mode."
  ;; Cache refile targets
  ;; Simple target is used, so no need to cache
  org-refile-use-cache nil
- ;; Show full paths for refiling
- org-refile-use-outline-path t
  ;; Use current window
  org-agenda-window-setup 'reorganize-frame
  org-agenda-restore-windows-after-quit nil
