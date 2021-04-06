@@ -243,7 +243,6 @@ CURRENT-NAME, if it does not already have them:
  ;; Remember my location when the file is last opened
  ;; activate it for all buffers
  save-place-file (expand-file-name "saveplace" user-emacs-directory)
- save-place t
  ;; smooth scrolling
  scroll-conservatively 101
  ;; Reserve one line when scrolling
@@ -269,6 +268,7 @@ CURRENT-NAME, if it does not already have them:
 ;; Misc
 (set-frame-name "emacs")
 (fringe-mode '(1 . 3))
+(save-place-mode t)
 (delete-selection-mode 1)
 ;; enable y/n answers
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -1321,7 +1321,7 @@ horizontal mode."
 (global-set-key (kbd "M-n") 'forward-paragraph)
 
 (use-package avy
-  :bind  (("C-,"   . avy-goto-char-2)
+  :bind  (("C-,"   . avy-goto-word-1)
           ("C-M-," . avy-goto-line))
   :commands (avy-with)
   :config
