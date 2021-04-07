@@ -227,8 +227,6 @@ CURRENT-NAME, if it does not already have them:
  message-log-max 16384
  ;; Don't prompt up file dialog when click with mouse
  use-file-dialog nil
- ;; No electric indent
- electric-indent-mode nil
  ;; Place all auto-save files in one directory.
  backup-directory-alist `(("." . ,(concat user-emacs-directory "backups")))
  ;; more useful frame title, that show either a file or a
@@ -4851,7 +4849,7 @@ In that case, insert the number."
                  ("SOMEDAY" :foreground "dark blue" :weight bold)
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
-                 ("DONE" :foreground "limegreen" :weight bold)
+                 ("DONE" :foreground "#005f33" :weight bold)
                  ))
          (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE"))
         ((equal 'light (cyf/theme-type))
@@ -4867,7 +4865,7 @@ In that case, insert the number."
                  ("SOMEDAY" :foreground "dark blue" :weight bold)
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
-                 ("DONE" :foreground "limegreen" :weight bold)))
+                 ("DONE" :foreground "#005f33" :weight bold)))
          (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
 (defun cyf/set-light-theme-background ()
