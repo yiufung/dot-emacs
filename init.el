@@ -1788,16 +1788,20 @@ horizontal mode."
 (defun my-org-agenda-should-skip-p ()
   "Skip all but the first non-done entry."
   (let (should-skip-entry)
+    ;; If it's not a todo item, skip it
     (unless (org-current-is-todo)
       (setq should-skip-entry t))
+    ;; If it's already schedule or have a deadline, skip it
     (when (or (org-get-scheduled-time (point))
               (org-get-deadline-time (point)))
       (setq should-skip-entry t))
+    ;; If it doesn't have a child, skip it
     (when (/= (point)
               (save-excursion
                 (org-goto-first-child)
                 (point)))
       (setq should-skip-entry t))
+    ;; Go through all subtrees, keep only the first none-done and none-scheduled/deadlined task
     (save-excursion
       (while (and (not should-skip-entry) (org-goto-sibling t))
         (when (and (org-current-is-todo)
@@ -1812,9 +1816,15 @@ horizontal mode."
     (or (outline-next-heading)
         (goto-char (point-max)))))
 
-(defun org-current-is-todo ()
-  (member (org-get-todo-state) '("TODO" "EPIC" "STORY" "STARTED")))
+(defun my-org-agenda-skip-all-siblings-but-first-recent ()
+  "Skip all but the first non-done entry for trees tagged with :recent:."
+  (when (or (my-org-agenda-should-skip-p)
+            (not (member "recent" (org-get-tags))))
+    (or (outline-next-heading)
+        (goto-char (point-max)))))
 
+(defun org-current-is-todo ()
+  (member (org-get-todo-state) '("TODO" "STARTED")))
 
 ;; org-super-agenda
 (setq org-super-agenda-groups
@@ -1860,17 +1870,23 @@ horizontal mode."
      (alltodo ""))
     ((org-agenda-overriding-header "Church Agenda & Tasks")  ;; Church-only tasks
      (org-agenda-files `(,org-my-church-file))))
-   ("o" "Work Agenda Today"
+   ("o" . "Office-related")
+   ("oa" "Work Agenda Today"
     agenda ""
     ;; Common setting for above commands
     ((org-agenda-overriding-header "Work Agenda Today")
      (org-agenda-files `(,org-my-work-file)))
     ;; Export with org-store-agenda-views
     ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
-   ("O" "Office Tasks"
+   ("oo" "Office Tasks"
     alltodo ""
     ((org-agenda-overriding-header "All Work tasks")
      (org-agenda-files `(,org-my-work-file))))
+   ("oh" "Recent tasks" alltodo ""
+    ((org-agenda-overriding-header "Recent tasks")
+     (org-agenda-files `(,org-my-work-file))
+     (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first-recent)
+     ))
    ("n" "Note Taking"
     todo"WAIT"
     ((org-agenda-overriding-header "Literature notes to be cleaned up")
