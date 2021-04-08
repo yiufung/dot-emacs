@@ -2494,7 +2494,7 @@ This function tries to do what you mean:
 ;; Use indirect buffer instead of narrowing, so that visibility of original
 ;; buffer is not changed.
 ;; Widen is replace as toggle too.
-(add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
+(add-to-list 'org-speed-commands-user (cons "B" 'org-tree-to-indirect-buffer))
 ;; Mark a subtree
 (add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
 ;; Open archive contents in another window
