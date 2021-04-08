@@ -1373,6 +1373,8 @@ horizontal mode."
          ("C-x v n" . 'diff-hl-next-hunk)
          ("C-x v p" . 'diff-hl-previous-hunk))
   :bind (("C-x M-g" . 'magit-dispatch-popup)
+         ("H-g" . magit-status)
+         ("H-f" . magit-file-dispatch)
          ("C-x g" . magit-status)
          ("C-x G" . magit-dispatch))
   :config
@@ -3627,12 +3629,11 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :hook (flyspell-mode . auto-correct-mode)
   :init
   (setq flyspell-correct-interface #'flyspell-correct-ivy)
-  :bind (("H-s" . flyspell-buffer)
-         :map flyspell-mode-map
-         ("C-;" . nil)                  ; unbind the key, reserved for iedit
-         ("C-," . nil)                  ; unbind the key, reserved for avy-jump
-         ("C-." . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
-         )
+  :bind (:map flyspell-mode-map
+              ("C-;" . nil)                  ; unbind the key, reserved for iedit
+              ("C-," . nil)                  ; unbind the key, reserved for avy-jump
+              ("C-." . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
+              )
   :config
   ;; Requires aspell support.
   ;; Dictionaries to be downloaded via OS package manager
@@ -4202,7 +4203,7 @@ In that case, insert the number."
   )
 
 (use-package ggtags
-  :bind (("H-g" . ggtags-mode))
+  ;; :bind (("H-g" . ggtags-mode))
   :config
   ;; Support languages: See https://www.gnu.org/software/global/
   ;; R is not supported (use dumb-jump)
@@ -4429,6 +4430,13 @@ In that case, insert the number."
 (use-package python
   :straight nil
   :straight pydoc ;; view documentation
+  :hook (python-mode . electric-indent-local-mode)
+  :bind (("C-z C-p" . create-or-switch-to-python)
+         :map python-mode-map
+         ("M-n" . python-nav-forward-statement)
+         ("M-p" . python-nav-backward-statement)
+         ("C-M-n" . python-nav-forward-sexp-safe)
+         ("C-M-p" . python-nav-backward-sexp-safe))
   :preface
   (defun create-or-switch-to-python ()
     "Switch to default `python' buffer.
@@ -4437,7 +4445,7 @@ In that case, insert the number."
     (pop-to-buffer "*Python*" nil t)
     (if (not (equal major-mode 'inferior-python-mode))
         (run-python)))
-  :bind ("C-z C-p" . create-or-switch-to-python))
+  )
 
 (use-package elpy
   :hook (python-mode . turn-off-auto-fill)
@@ -4511,15 +4519,16 @@ In that case, insert the number."
 ;; And this tutorial: https://ebzzry.io/en/emacs-pairs/
 (use-package smartparens
   :defer 5
-  :bind (:map smartparens-mode-map
-              ("M-<backspace>" . sp-backward-unwrap-sexp)
-              ("M-<del>"       . sp-unwrap-sexp)
-              ("C-<right>"     . sp-forward-slurp-sexp)
-              ("C-<left>"      . sp-backward-slurp-sexp)
-              ("C-M-<right>"   . sp-forward-barf-sexp)
-              ("C-M-<left>"    . sp-backward-barf-sexp)
-              ("C-M-a"         . sp-beginning-of-sexp)
-              ("C-M-e"         . sp-end-of-sexp))
+  :bind (("H-s" . smartparens-mode)
+         :map smartparens-mode-map
+         ("M-<backspace>" . sp-backward-unwrap-sexp)
+         ("M-<del>"       . sp-unwrap-sexp)
+         ("C-<right>"     . sp-forward-slurp-sexp)
+         ("C-<left>"      . sp-backward-slurp-sexp)
+         ("C-M-<right>"   . sp-forward-barf-sexp)
+         ("C-M-<left>"    . sp-backward-barf-sexp)
+         ("C-M-a"         . sp-beginning-of-sexp)
+         ("C-M-e"         . sp-end-of-sexp))
   :config
   (require 'smartparens-config)
   ;; Strict modes
@@ -5120,6 +5129,10 @@ In that case, insert the number."
 (use-package olivetti
   ;; Center text for nicer writing and reading
   :defer 3
+  :bind (("H-o" . olivetti-mode)
+         :map olivetti-mode-map
+         ("s-]" . olivetti-expand)
+         ("s-[" . olivetti-shrink))
   :hook (org-mode . olivetti-mode)
   :hook (sdcv-mode . olivetti-mode)
   :hook (Info-mode . olivetti-mode)
