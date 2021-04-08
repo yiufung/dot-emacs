@@ -1797,12 +1797,13 @@ horizontal mode."
     (when (or (org-get-scheduled-time (point))
               (org-get-deadline-time (point)))
       (setq should-skip-entry t))
-    ;; If it doesn't have a child, skip it
-    (when (/= (point)
-              (save-excursion
-                (org-goto-first-child)
-                (point)))
-      (setq should-skip-entry t))
+    ;; If it is todo item and not yet scheduled/deadline, but has children
+    ;; skip it. This is probably NOT what I want.
+    ;; (when (/= (point)
+    ;;           (save-excursion
+    ;;             (org-goto-first-child)
+    ;;             (point)))
+    ;;   (setq should-skip-entry t))
     ;; Go through all subtrees, keep only the first none-done and none-scheduled/deadlined task
     (save-excursion
       (while (and (not should-skip-entry) (org-goto-sibling t))
