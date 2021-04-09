@@ -161,6 +161,7 @@ CURRENT-NAME, if it does not already have them:
 (use-package auth-source
   :straight ivy-pass
   ;; Setup Credentials
+  :bind ("H-p" . ivy-pass)
   :config
   (defun lookup-password (host user port)
     (require 'auth-source)
@@ -536,6 +537,8 @@ behavior added."
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>"            . (lambda () (interactive) (progn (visual-line-mode) (follow-mode))))
+         ("H-v"            . visual-line-mode)
+         ("H-V"            . visual-fill-column-mode)
          ("M-u"             . upcase-char)
          ("M-l"             . downcase-char)
          ("M-SPC"           . cycle-spacing)
@@ -697,6 +700,7 @@ is already narrowed."
 (use-package wrap-region
   ;; Wrap selected region
   :defer 3
+  :bind ("H-w" . wrap-region-mode)
   :config
   (wrap-region-add-wrappers
    '(
@@ -1607,7 +1611,8 @@ horizontal mode."
            ("s-n"          . org-next-block)
            ("s-p"          . org-previous-block)
            ("s-<return>"   . org-insert-quote-under-item)
-           ("S-s-<return>" . org-insert-verse-under-item))
+           ("S-s-<return>" . org-insert-verse-under-item)
+           ("s-t" . (lambda () (interactive) (org-toggle-checkbox t))))
 (defun fix-keymaps ()
   "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
   (interactive)
@@ -1695,8 +1700,6 @@ horizontal mode."
  org-refile-use-outline-path 'file ;; allow using file name as path
  org-refile-targets `(
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :level . 1)
-                      ;; Recently ongoing tasks
-                      ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :todo . "STARTED")
                       ;; Project milestones are marked with recent tag
                       ((,org-my-todo-file ,org-my-work-file ,org-my-church-file) :tag . "recent")
                       ;; Refile for note writing
@@ -1881,17 +1884,23 @@ horizontal mode."
      (org-agenda-files `(,org-my-work-file)))
     ;; Export with org-store-agenda-views
     ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
-   ("oo" "Office Tasks"
+   ("oo" "All actions"
     alltodo ""
-    ((org-agenda-overriding-header "All Work tasks")
+    ((org-agenda-overriding-header "All work actions")
      (org-agenda-files `(,org-my-work-file))))
-   ("oh" "Recent tasks" alltodo ""
-    ((org-agenda-overriding-header "Recent tasks")
+   ("oh" "Recent actions" alltodo ""
+    ((org-agenda-overriding-header "Recent actions")
      (org-agenda-files `(,org-my-work-file))
      (org-agenda-skip-function #'my-org-agenda-skip-all-siblings-but-first-recent)
      ))
+   ("ow" "Waiting/delegated tasks" tags "-TODO=\"DONE\"|TODO={WAITING\\|DELEGATED}"
+    ((org-agenda-overriding-header "Waiting/delegated tasks:")
+     (org-agenda-skip-function
+      '(org-agenda-skip-entry-if 'scheduled))
+     (org-agenda-sorting-strategy
+      '(todo-state-up priority-down category-up))))
    ("n" "Note Taking"
-    todo"WAIT"
+    todo "WAIT"
     ((org-agenda-overriding-header "Literature notes to be cleaned up")
      (org-agenda-files `(,org-board-capture-file))
      ))
@@ -2071,8 +2080,8 @@ horizontal mode."
                          (clock-out   . ""))
  ;; All entries in the subtree are considered todo items
  org-hierarchical-todo-statistics 'nil
- ;; Remove the markup characters, i.e., "/text/" becomes (italized) "text"
- org-hide-emphasis-markers t
+ ;; Show the markup characters
+ org-hide-emphasis-markers nil
  ;; Hide leading stars
  org-hide-leading-stars t
  ;; resepect heading.
@@ -2083,6 +2092,8 @@ horizontal mode."
  org-ctrl-k-protect-subtree t
  ;; Use C-c C-o to open links, but this should be handier.
  org-return-follows-link t
+ ;; Use archived tree when constructing sparse tree
+ org-sparse-tree-open-archived-trees t
  )
 
 
@@ -2492,6 +2503,13 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "d" 'org-deadline))
 (add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
+(add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
+;; Find tasks that require alignment with teammates
+(add-to-list 'org-speed-commands-user (cons "a" (lambda () (org-match-sparse-tree t "TODO=\"ASK\""))))
+;; Find important subtrees
+(add-to-list 'org-speed-commands-user (cons "i" (lambda () (org-match-sparse-tree nil "PRIORITY=\"A\""))))
+;; Find subtrees involving decision making
+(add-to-list 'org-speed-commands-user (cons "D" (lambda () (org-match-sparse-tree nil "alignment"))))
 ;; Use indirect buffer instead of narrowing, so that visibility of original
 ;; buffer is not changed.
 ;; Widen is replace as toggle too.
@@ -3434,8 +3452,8 @@ Yiufung
   :defer 3
   :config
   ;; Open url in eww by default. If that doesn't look good, open in Firefox
-  (setq-default browse-url-browser-function 'eww-browse-url
-                browse-url-secondary-browser-function 'browse-url-firefox))
+  (setq-default browse-url-browser-function 'browse-url-firefox
+                browse-url-secondary-browser-function 'eww-browse-url))
 
 (use-package doc-view
   ;; Requires unoconv, ghostscript, dvipdf
@@ -4543,10 +4561,7 @@ In that case, insert the number."
             markdown-mode
             groovy-mode
             scala-mode)
-    (add-hook it 'turn-on-smartparens-strict-mode))
-  ;; Non strict modes
-  (smartparens-global-mode +1)
-  )
+    (add-hook it 'turn-on-smartparens-strict-mode)))
 
 ;;;; HTML
 
