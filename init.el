@@ -537,8 +537,8 @@ behavior added."
   :defer 5
   :hook ((prog-mode) . auto-fill-mode)
   :bind (("<f8>"            . (lambda () (interactive) (progn (visual-line-mode) (follow-mode))))
-         ("H-v"            . visual-line-mode)
-         ("H-V"            . visual-fill-column-mode)
+         ("H-v"             . visual-line-mode)
+         ("H-V"             . visual-fill-column-mode)
          ("M-u"             . upcase-char)
          ("M-l"             . downcase-char)
          ("M-SPC"           . cycle-spacing)
@@ -546,8 +546,8 @@ behavior added."
          ("M-S-<backspace>" . backward-kill-sentence)
          ("M-C-<backspace>" . backward-kill-paragraph)
          ("C-x C-o"         . remove-extra-blank-lines)
-         ;; ("<up>"            . scroll-down-line)
-         ;; ("<down>"          . scroll-up-line)
+         ;; ("<up>"         . scroll-down-line)
+         ;; ("<down>"       . scroll-up-line)
          )
   :init
   ;; Move more quickly
@@ -1759,7 +1759,7 @@ horizontal mode."
  ;; user agenda compare function. Pillage from John Wiegley
  org-agenda-cmp-user-defined 'org-compare-todo-age
  ;; clock mode
- org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 4 :fileskip0 t :compact t :emphasize t)
+ org-agenda-clockreport-parameter-plist '(:hidefiles t :link t :maxlevel 4 :fileskip0 t :compact t :emphasize t :formula %)
  ;; Show column mode in agenda
  org-columns-default-format-for-agenda
  "%7TODO %25ITEM %17Effort(Estimated Effort) %CLOCKSUM(Clock)"
@@ -4090,7 +4090,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         company-tooltip-flip-when-above t
         company-minimum-prefix-length 1
         company-idle-delay 0.5
-        company-tooltip-idle-delay 0)
+        company-tooltip-idle-delay 0
+        company-format-margin-function #'company-vscode-light-icons-margin)
 
   ;; Directly press [1..9] to insert candidates
   ;; See http://oremacs.com/2017/12/27/company-numbers/
