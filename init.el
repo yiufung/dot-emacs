@@ -1683,6 +1683,8 @@ horizontal mode."
 (require 'org-agenda)
 (bind-keys :map org-agenda-mode-map
            ("S" . org-agenda-schedule)
+           ("J" . org-agenda-goto-date)
+           ("j" . avy-goto-word-1)
            ("o" . org-agenda-open-link)
            ("w" . org-agenda-refile)
            ("W" . org-agenda-week-view))
@@ -1736,6 +1738,7 @@ horizontal mode."
  org-agenda-skip-scheduled-if-done t
  org-agenda-skip-deadline-if-done t
  org-agenda-skip-timestamp-if-done t
+ org-agenda-skip-scheduled-if-deadline-is-shown t
  ;; Don't show scheduled/deadlines/timestamp items on todo list if it's upcoming (future)
  org-agenda-todo-ignore-scheduled 'future
  org-agenda-todo-ignore-deadlines 'far
@@ -1749,6 +1752,7 @@ horizontal mode."
  ;; Show customized time
  org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
  org-display-custom-times nil
+ org-agenda-timegrid-use-ampm t
  ;; org-agenda sorting strategies
  org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
                                (todo ;; user-defined-up
@@ -1877,14 +1881,14 @@ horizontal mode."
     ((org-agenda-overriding-header "Church Agenda & Tasks")  ;; Church-only tasks
      (org-agenda-files `(,org-my-church-file))))
    ("o" . "Office-related")
-   ("oa" "Work Agenda Today"
+   ("oo" "Work Agenda Today"
     agenda ""
     ;; Common setting for above commands
     ((org-agenda-overriding-header "Work Agenda Today")
      (org-agenda-files `(,org-my-work-file)))
     ;; Export with org-store-agenda-views
     ("/tmp/work.html" "/tmp/work.txt" "/tmp/work.pdf" "/tmp/work.ps"))
-   ("oo" "All actions"
+   ("ot" "All actions"
     alltodo ""
     ((org-agenda-overriding-header "All work actions")
      (org-agenda-files `(,org-my-work-file))))
@@ -1895,6 +1899,7 @@ horizontal mode."
      ))
    ("ow" "Waiting/delegated tasks" tags "-TODO=\"DONE\"|TODO={WAITING\\|DELEGATED}"
     ((org-agenda-overriding-header "Waiting/delegated tasks:")
+     (org-agenda-files `(,org-my-work-file))
      (org-agenda-skip-function
       '(org-agenda-skip-entry-if 'scheduled))
      (org-agenda-sorting-strategy
@@ -2137,6 +2142,7 @@ horizontal mode."
       org-pomodoro-short-break-format ""
       org-pomodoro-long-break-format ""
       org-pomodoro-overtime-format "")
+(add-to-list 'org-clock-in-hook 'org-pomodoro)
 ;; Thanks for inspiration from Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
@@ -3773,7 +3779,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :custom
   (default-input-method "rime")
   (rime-show-candidate 'posframe)
-  (rime-posframe-style 'horizontal)
+  (rime-show-preedit 'inline)
+  (rime-posframe-style 'vertical)
   :config
   (defun rime-predicate-org-speed-commands ()
     "If the current point is at org heading."
@@ -4077,6 +4084,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :defer 3
   :straight company-quickhelp ; Show short documentation at point
   :bind (
+         ("H-c" . company-mode)
          :map company-active-map
          ("C-c ?" . company-quickhelp-manual-begin)
          ("C-n" . company-select-next)
@@ -4785,7 +4793,7 @@ In that case, insert the number."
 (global-set-key (kbd "M-H") 'mark-paragraph)
 
 ;; Hyper key for application shortcuts
-(global-set-key (kbd "H-c") 'calc)
+(global-set-key (kbd "H-C") 'calc)
 (global-set-key (kbd "H-e") 'mu4e)
 (global-set-key (kbd "<menu>") #'(lambda () (interactive) (bookmark-jump "inbox")))
 (global-set-key (kbd "<XF86Open>") #'(lambda () (interactive) (find-file org-board-capture-file)))
