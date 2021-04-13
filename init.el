@@ -2127,11 +2127,6 @@ horizontal mode."
 ;;   (delete 'org-mode-line-string global-mode-string))
 ;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
 
-(use-package default-text-scale
-  :defer 3
-  :config
-  (default-text-scale-mode +1))
-
 (require 'org-pomodoro)
 (setq org-pomodoro-length 50 ; adjust some time
       org-pomodoro-long-break-frequency 2
