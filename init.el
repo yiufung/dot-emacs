@@ -5012,6 +5012,23 @@ In that case, insert the number."
     )
   )
 
+(use-package default-text-scale
+  :defer 3
+  :bind (:map default-text-scale-mode-map
+              ("C-M-0" . cyf/set-fonts))
+  :config
+  (default-text-scale-mode +1)
+  (defun cyf/customize-theme-in-current-frame ()
+    "Apply all settings in one batch."
+    (cyf/set-org-todo-keyword-faces)
+    (cyf/set-light-theme-background) ;; Some light themes have good default background
+    (cyf/set-dark-theme-highlight-region)
+    )
+  (advice-add 'default-text-scale-increase :after 'cyf/customize-theme-in-current-frame)
+  (advice-add 'default-text-scale-decrease :after 'cyf/customize-theme-in-current-frame)
+  )
+
+
 (defun cyf/customize-theme-in-new-frame (frame)
   "Apply all settings in one batch."
   (select-frame frame)
