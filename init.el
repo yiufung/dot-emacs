@@ -1548,6 +1548,7 @@ horizontal mode."
 (use-package ox-clip)
 (use-package ox-twbs)
 (use-package ox-tufte)
+(use-package ox-twbs)
 (use-package org-cliplink)
 (use-package ox-gfm)
 (use-package org-download)
@@ -2126,12 +2127,17 @@ horizontal mode."
 ;;   (delete 'org-mode-line-string global-mode-string))
 ;; (add-hook 'org-clock-in-hook 'myorg-remove-clock-in-string)
 
+(use-package default-text-scale
+  :defer 3
+  :config
+  (default-text-scale-mode +1))
+
 (require 'org-pomodoro)
 (setq org-pomodoro-length 50 ; adjust some time
       org-pomodoro-long-break-frequency 2
       org-pomodoro-short-break-length 10
       org-pomodoro-long-break-length 25
-      org-pomodoro-manual-break t ; In case sometimes I need to overrun
+      org-pomodoro-manual-break t
       org-pomodoro-keep-killed-pomodoro-time t
       org-pomodoro-clock-break nil
       org-pomodoro-ask-upon-killing t
@@ -2142,7 +2148,8 @@ horizontal mode."
       org-pomodoro-short-break-format ""
       org-pomodoro-long-break-format ""
       org-pomodoro-overtime-format "")
-(add-to-list 'org-clock-in-hook 'org-pomodoro)
+;; When clock in a task, start pomodoro automatically
+(add-to-list 'org-clock-in-hook '(lambda () (if (eq org-pomodoro-state ':none) (org-pomodoro))))
 ;; Thanks for inspiration from Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
@@ -2202,71 +2209,65 @@ horizontal mode."
 (use-package org-man
   :straight nil)
 
-(use-package org-my-html-export-style
-  ;; My personal HTML export settings
-  :no-require
-  :straight ox-twbs
-  :demand t
-  :init (require 'ox)
-  :config
-  ;; let Org/Htmlize assign classes only, and to use a style file to
-  ;; define the look of these classes. See docs for more info.
-  (setq-default org-html-htmlize-output-type 'css
-                org-html-head-include-default-style nil
-                ;; Don't include the validation link & creation tag
-                org-html-postamble 'nil ;; Don't include validation link and created tags
-                org-html-validation-link 'nil
-                org-html-text-markup-alist '((bold . "<b>%s</b>")
-                                             (code . "<code>%s</code>")
-                                             (italic . "<i>%s</i>")
-                                             (strike-through . "<del>%s</del>")
-                                             (underline . "<span class=\"underline\">%s</span>")
-                                             (verbatim . "<kbd>%s</kbd>")) ;; Use verbatim for mentioning kbd
-                )
+;; My personal HTML export settings
+(require 'ox)
+;; let Org/Htmlize assign classes only, and to use a style file to
+;; define the look of these classes. See docs for more info.
+(setq-default org-html-htmlize-output-type 'css
+              org-html-head-include-default-style nil
+              ;; Don't include the validation link & creation tag
+              org-html-postamble 'nil ;; Don't include validation link and created tags
+              org-html-validation-link 'nil
+              org-html-text-markup-alist '((bold . "<b>%s</b>")
+                                           (code . "<code>%s</code>")
+                                           (italic . "<i>%s</i>")
+                                           (strike-through . "<del>%s</del>")
+                                           (underline . "<span class=\"underline\">%s</span>")
+                                           (verbatim . "<kbd>%s</kbd>")) ;; Use verbatim for mentioning kbd
+              )
 
-  ;; put your css files here
-  ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
-  (setq org-theme-css-dir (expand-file-name "static/" my-emacs-conf-directory))
+;; put your css files here
+;; default css: http://sriramkswamy.github.io/dotemacs/org.css
+(setq org-theme-css-dir (expand-file-name "static/" my-emacs-conf-directory))
 
-  ;; Use this function to allow exporting using css file. No need to define html_head
-  (defun toggle-org-custom-inline-style ()
-    (interactive)
-    (let ((hook 'org-export-before-parsing-hook)
-          (fun 'set-org-html-style))
-      (if (memq fun (eval hook))
+;; Use this function to allow exporting using css file. No need to define html_head
+(defun toggle-org-custom-inline-style ()
+  (interactive)
+  (let ((hook 'org-export-before-parsing-hook)
+        (fun 'set-org-html-style))
+    (if (memq fun (eval hook))
+        (progn
+          (remove-hook hook fun 'buffer-local)
+          (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
+      (add-hook hook fun nil 'buffer-local)
+      (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
+;; By default toggle to true
+(toggle-org-custom-inline-style)
+
+(defun org-theme ()
+  (let* ((cssdir org-theme-css-dir)
+         (css-choices (directory-files cssdir nil ".css$"))
+         (css (completing-read "theme: " css-choices nil t)))
+    (concat cssdir css)))
+
+(defun set-org-html-style (&optional backend)
+  (interactive)
+  (when (or (null backend) (eq backend 'html))
+    (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
+      (if (file-exists-p f)
           (progn
-            (remove-hook hook fun 'buffer-local)
-            (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
-        (add-hook hook fun nil 'buffer-local)
-        (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
-  ;; By default toggle to true
-  (toggle-org-custom-inline-style)
-
-  (defun org-theme ()
-    (let* ((cssdir org-theme-css-dir)
-           (css-choices (directory-files cssdir nil ".css$"))
-           (css (completing-read "theme: " css-choices nil t)))
-      (concat cssdir css)))
-
-  (defun set-org-html-style (&optional backend)
-    (interactive)
-    (when (or (null backend) (eq backend 'html))
-      (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
-        (if (file-exists-p f)
-            (progn
-              (set (make-local-variable 'org-theme-css) f)
-              (set (make-local-variable 'org-html-head)
-                   (with-temp-buffer
-                     (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
-                     (insert-file-contents f)
-                     (goto-char (point-max))
-                     (insert "\n/*]]>*/-->\n</style>\n")
-                     (buffer-string)))
-              (set (make-local-variable 'org-html-head-include-default-style)
-                   nil)
-              (message "Set custom style from %s" f))
-          (message "Custom header file %s doesnt exist")))))
-  )
+            (set (make-local-variable 'org-theme-css) f)
+            (set (make-local-variable 'org-html-head)
+                 (with-temp-buffer
+                   (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
+                   (insert-file-contents f)
+                   (goto-char (point-max))
+                   (insert "\n/*]]>*/-->\n</style>\n")
+                   (buffer-string)))
+            (set (make-local-variable 'org-html-head-include-default-style)
+                 nil)
+            (message "Set custom style from %s" f))
+        (message "Custom header file %s doesnt exist")))))
 
 ;; org-babel
 (org-babel-do-load-languages
