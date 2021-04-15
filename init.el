@@ -2114,6 +2114,55 @@ horizontal mode."
 ;; crucial to use id as link, instead of file name, which may change in the future.
 (add-hook 'org-capture-before-finalize-hook 'org-id-get-create)
 
+;; Hide drawers when cycling org mode. This redefined the function in org.el.
+;; See https://stackoverflow.com/questions/17478260/completely-hide-the-properties-drawer-in-org-mode
+;; https://www.reddit.com/r/emacs/comments/9htd0r/how_to_completely_hide_the_properties_drawer_in/
+(defun org-cycle-hide-drawers (state)
+  "Re-hide all drawers after a visibility state change."
+  (when (and (derived-mode-p 'org-mode)
+             (not (memq state '(overview folded contents))))
+    (save-excursion
+      (let* ((globalp (memq state '(contents all)))
+             (beg (if globalp
+                      (point-min)
+                    (point)))
+             (end (if globalp
+                      (point-max)
+                    (if (eq state 'children)
+                        (save-excursion
+                          (outline-next-heading)
+                          (point))
+                      (org-end-of-subtree t)))))
+        (goto-char beg)
+        (while (re-search-forward org-drawer-regexp end t)
+          (save-excursion
+            (beginning-of-line 1)
+            (when (looking-at org-drawer-regexp)
+              (let* ((start (1- (match-beginning 0)))
+                     (limit
+                      (save-excursion
+                        (outline-next-heading)
+                        (point)))
+                     (msg (format
+                           (concat
+                            "org-cycle-hide-drawers:  "
+                            "`:END:`"
+                            " line missing at position %s")
+                           (1+ start))))
+                (if (re-search-forward "^[ \t]*:END:" limit t)
+                    (outline-flag-region start (point-at-eol) t)
+                  (user-error msg))))))))))
+
+;; Fix Me
+(setq org-roam-notes-targets `(((,org-roam-directory)) :maxlevel . 3))
+(defun org-id-complete-link (&optional arg)
+  "Create an id: link using completion"
+  (concat "id:"
+          (org-id-get-with-outline-path-completion org-roam-notes-targets)))
+(org-link-set-parameters "id"
+                         :complete 'org-id-complete-link)
+
+
 ;; Enable org-habit
 (add-to-list 'org-modules 'org-habit)
 (require 'org-habit)
@@ -2525,6 +2574,16 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
 (add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
+;; Show hidden properties. Use in conjunction with org-cycle-hide-drawers.
+(add-to-list 'org-speed-commands-user
+             (cons "c" (lambda ()
+                         (if (get 'cyf-toggle-display-properties'state)
+                             (progn
+                               (org-show-subtree)
+                               (put 'cyf-toggle-display-properties 'state nil))
+                           (progn
+                             (org-show-entry)
+                             (put 'cyf-toggle-display-properties 'state t))))))
 ;; Find tasks that require alignment with teammates
 (add-to-list 'org-speed-commands-user (cons "a" (lambda () (org-match-sparse-tree t "TODO=\"ASK\""))))
 ;; Find important subtrees
@@ -2539,12 +2598,8 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
 ;; Open archive contents in another window
 (add-to-list 'org-speed-commands-user (cons "o" 'org-board-open))
-;; kill a subtree
-(add-to-list 'org-speed-commands-user (cons "k" (lambda ()
-                                                  (org-mark-subtree)
-                                                  (kill-region
-                                                   (region-beginning)
-                                                   (region-end)))))
+;; Show a subtree
+(add-to-list 'org-speed-commands-user (cons "k" 'org-kill-note-or-show-branches))
 ;; Jump to headline
 (add-to-list 'org-speed-commands-user (cons "j" (lambda ()
                                                   (avy-with avy-goto-line
@@ -3921,8 +3976,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+end_example"   . "¶")
                   ("#+begin_quote"   . "❮")
                   ("#+end_quote"     . "❯")
-                  (":PROPERTIES:"    . "━")
-                  (":LOGBOOK:"       . "ᛚ")
+                  ;; (":PROPERTIES:"    . "━")
+                  ;; (":LOGBOOK:"       . "ᛚ")
                   ))
   (setq prettify-symbols-unprettify-at-point 'right-edge)
   :config
