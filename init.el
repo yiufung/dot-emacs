@@ -157,6 +157,8 @@ CURRENT-NAME, if it does not already have them:
       my-private-conf-directory (expand-file-name "private/" my-emacs-conf-directory))
 ;; For packages not available through MELPA, save it locally and put under load-path
 (add-to-list 'load-path (expand-file-name "elisp" my-emacs-conf-directory))
+;; Here I also copied core-lib from Doom-Emacs, for some handy macros such as defadvice!
+(require 'doom-core-lib)
 
 (use-package auth-source
   :straight ivy-pass
@@ -2206,38 +2208,55 @@ horizontal mode."
 
 ;; My personal HTML export settings
 (require 'ox)
-;; let Org/Htmlize assign classes only, and to use a style file to
-;; define the look of these classes. See docs for more info.
-(setq-default org-html-htmlize-output-type 'css
-              org-html-head-include-default-style nil
-              ;; Don't include the validation link & creation tag
-              org-html-postamble 'nil ;; Don't include validation link and created tags
-              org-html-validation-link 'nil
-              org-html-text-markup-alist '((bold . "<b>%s</b>")
-                                           (code . "<code>%s</code>")
-                                           (italic . "<i>%s</i>")
-                                           (strike-through . "<del>%s</del>")
-                                           (underline . "<span class=\"underline\">%s</span>")
-                                           (verbatim . "<kbd>%s</kbd>")) ;; Use verbatim for mentioning kbd
-              )
+(require 'ox-extra)
+;; Use :ignore: tag to headings. In export, the heading will be ignored, but the content is retained.
+;; Useful to provide structure in writing but not in the export document
+(ox-extras-activate '(ignore-headlines))
 
-;; put your css files here
+;; put my css files here
 ;; default css: http://sriramkswamy.github.io/dotemacs/org.css
 (setq org-theme-css-dir (expand-file-name "static/" my-emacs-conf-directory))
 
-;; Use this function to allow exporting using css file. No need to define html_head
-(defun toggle-org-custom-inline-style ()
-  (interactive)
-  (let ((hook 'org-export-before-parsing-hook)
-        (fun 'set-org-html-style))
-    (if (memq fun (eval hook))
-        (progn
-          (remove-hook hook fun 'buffer-local)
-          (message "Removed %s from %s" (symbol-name fun) (symbol-name hook)))
-      (add-hook hook fun nil 'buffer-local)
-      (message "Added %s to %s" (symbol-name fun) (symbol-name hook)))))
-;; By default toggle to true
-(toggle-org-custom-inline-style)
+;; let Org/Htmlize assign classes only, and to use a style file to
+;; define the look of these classes. See docs for more info.
+(setq-default org-html-style-plain org-html-style-default
+              org-html-htmlize-output-type 'css
+              org-html-head-include-default-style t
+              ;; Use html5
+              org-html-doctype "html5"
+              org-html-html5-fancy t
+              ;; Don't include the validation link & creation tag
+              org-html-postamble 'nil ;; Don't include validation link and created tags
+              org-html-validation-link 'nil)
+
+;; Pillage a lot of code from tecosaur and adapt to my taste.
+;; Consult https://tecosaur.github.io/emacs-config/config.html#html-export
+(add-to-list 'load-path (expand-file-name "static/tecosaur" my-emacs-conf-directory))
+(require 'tecosaur-html)
+
+(define-minor-mode org-fancy-html-export-mode
+  "Toggle my fabulous org export tweaks. While this mode itself does a little bit,
+the vast majority of the change in behaviour comes from switch statements in:
+ - `org-html-template-fancier'
+ - `org-html--build-meta-info-extended'
+ - `org-html-src-block-collapsable'
+ - `org-html-block-collapsable'
+ - `org-html-table-wrapped'
+ - `org-html--format-toc-headline-colapseable'
+ - `org-html--toc-text-stripped-leaves'
+ - `org-export-html-headline-anchor'"
+  :global t
+  :init-value t
+  (if org-fancy-html-export-mode
+      (progn
+        (setq org-html-style-default org-html-style-fancy
+              org-html-meta-tags #'org-html-meta-tags-fancy
+              org-html-checkbox-type 'html)
+        (remove-hook 'org-export-before-parsing-hook 'set-org-html-style))
+    (setq org-html-style-default org-html-style-plain
+          org-html-meta-tags #'org-html-meta-tags-default
+          org-html-checkbox-type 'html)
+    (add-hook 'org-export-before-parsing-hook 'set-org-html-style)))
 
 (defun org-theme ()
   (let* ((cssdir org-theme-css-dir)
