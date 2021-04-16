@@ -2522,7 +2522,7 @@ This function tries to do what you mean:
 ;; Org Speed commands
 (setq org-use-speed-commands t)
 (add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
-(add-to-list 'org-speed-commands-user (cons "d" 'org-deadline))
+(add-to-list 'org-speed-commands-user (cons "d" 'org-cut-special))
 (add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
 (add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
@@ -4922,6 +4922,7 @@ In that case, insert the number."
                  ("SOMEDAY" :foreground "dark blue" :weight bold)
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
+                 ("ASK" :foreground "#a0132f" :weight bold)
                  ("DONE" :foreground "#005f33" :weight bold)
                  ))
          (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE"))
@@ -4938,6 +4939,7 @@ In that case, insert the number."
                  ("SOMEDAY" :foreground "dark blue" :weight bold)
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
+                 ("ASK" :foreground "#a0132f" :weight bold)
                  ("DONE" :foreground "#005f33" :weight bold)))
          (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
@@ -4965,7 +4967,27 @@ In that case, insert the number."
 (use-package one-themes)
 (use-package naysayer-theme)
 (use-package doom-themes)
-(use-package modus-operandi-theme)
+(use-package modus-operandi-theme
+  :init
+  (setq
+   modus-operandi-theme-distinct-org-blocks t
+   modus-operandi-theme-proportional-fonts t
+   modus-operandi-theme-slanted-constructs t
+   modus-operandi-theme-bold-constructs t
+   modus-operandi-theme-faint-syntax t
+   modus-operandi-theme-prompts 'subtle
+   modus-operandi-theme-fringes 'subtle
+   modus-operandi-theme-visible-fringes t
+   modus-operandi-theme-variable-pitch-headings t
+   modus-operandi-theme-scale-headings t
+   modus-operandi-theme-section-headings t
+   modus-operandi-theme-rainbow-headings nil
+   modus-operandi-theme-3d-modeline t
+   modus-operandi-theme-org-blocks t
+   modus-operandi-theme-rainbow-org-src-blocks t
+   modus-operandi-theme-completions 'opinionated
+   )
+  )
 (use-package modus-vivendi-theme
   :config
   (setq modus-vivendi-theme-variable-pitch-headings nil
