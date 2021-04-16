@@ -1755,6 +1755,7 @@ horizontal mode."
  ;; Show customized time
  org-time-stamp-custom-formats '("<%a %b %e %Y>" . "<%a %b %e %Y %H:%M>")
  org-display-custom-times nil
+ org-agenda-use-time-grid nil
  org-agenda-timegrid-use-ampm t
  ;; org-agenda sorting strategies
  org-agenda-sorting-strategy '((agenda habit-down time-up priority-down category-keep)
@@ -2283,55 +2284,6 @@ horizontal mode."
 (add-to-list 'load-path (expand-file-name "static/tecosaur" my-emacs-conf-directory))
 (require 'tecosaur-html)
 
-(define-minor-mode org-fancy-html-export-mode
-  "Toggle my fabulous org export tweaks. While this mode itself does a little bit,
-the vast majority of the change in behaviour comes from switch statements in:
- - `org-html-template-fancier'
- - `org-html--build-meta-info-extended'
- - `org-html-src-block-collapsable'
- - `org-html-block-collapsable'
- - `org-html-table-wrapped'
- - `org-html--format-toc-headline-colapseable'
- - `org-html--toc-text-stripped-leaves'
- - `org-export-html-headline-anchor'"
-  :global t
-  :init-value t
-  (if org-fancy-html-export-mode
-      (progn
-        (setq org-html-style-default org-html-style-fancy
-              org-html-meta-tags #'org-html-meta-tags-fancy
-              org-html-checkbox-type 'html)
-        (remove-hook 'org-export-before-parsing-hook 'set-org-html-style))
-    (setq org-html-style-default org-html-style-plain
-          org-html-meta-tags #'org-html-meta-tags-default
-          org-html-checkbox-type 'html)
-    (add-hook 'org-export-before-parsing-hook 'set-org-html-style)))
-
-(defun org-theme ()
-  (let* ((cssdir org-theme-css-dir)
-         (css-choices (directory-files cssdir nil ".css$"))
-         (css (completing-read "theme: " css-choices nil t)))
-    (concat cssdir css)))
-
-(defun set-org-html-style (&optional backend)
-  (interactive)
-  (when (or (null backend) (eq backend 'html))
-    (let ((f (or (and (boundp 'org-theme-css) org-theme-css) (org-theme))))
-      (if (file-exists-p f)
-          (progn
-            (set (make-local-variable 'org-theme-css) f)
-            (set (make-local-variable 'org-html-head)
-                 (with-temp-buffer
-                   (insert "<style type=\"text/css\">\n<!--/*--><![CDATA[/*><!--*/\n")
-                   (insert-file-contents f)
-                   (goto-char (point-max))
-                   (insert "\n/*]]>*/-->\n</style>\n")
-                   (buffer-string)))
-            (set (make-local-variable 'org-html-head-include-default-style)
-                 nil)
-            (message "Set custom style from %s" f))
-        (message "Custom header file %s doesnt exist")))))
-
 ;; org-babel
 (org-babel-do-load-languages
  'org-babel-load-languages
@@ -2745,6 +2697,7 @@ This function tries to do what you mean:
               org-roam-encrypt-files nil
               org-journal-enable-encryption nil
               org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
+(add-hook 'org-journal-mode-hook #'(lambda() (company-mode -1)))
 (bind-keys ("C-c g SPC" . org-roam)
            ("C-c g g"   . org-roam-find-file)
            ;; ("C-c g G"   . org-roam-graph-show)
@@ -4871,8 +4824,8 @@ In that case, insert the number."
 ;; <f1> for help-* commands
 (global-set-key (kbd "<f2>") 'counsel-find-file-extern)
 ;; <f3> <f4> for macro
-(global-set-key (kbd "<f5>") '(lambda () (interactive) (org-agenda nil "a")))
-(global-set-key (kbd "<f6>") '(lambda () (interactive) (org-agenda nil "o")))
+(global-set-key (kbd "<f5>") '(lambda () (interactive) (org-agenda nil "h")))
+(global-set-key (kbd "<f6>") '(lambda () (interactive) (org-agenda nil "oo")))
 (global-set-key (kbd "<f7>") 'rot13-mode)
 (global-set-key (kbd "<f8>") 'follow-mode)
 ;; <f9> - <f12> for eyebrowse workspace
