@@ -4909,6 +4909,7 @@ In that case, insert the number."
    provided: \"dark\" or \"light\". It will be automatically set based
    on value of (cyf/theme-type). "
   (interactive)
+  (set-face-attribute 'org-headline-done nil :strike-through t)
   (cond ((equal 'dark (cyf/theme-type))
          (setq org-todo-keyword-faces
                '(("TODO" :foreground "teal" :weight bold)
@@ -4978,7 +4979,7 @@ In that case, insert the number."
    modus-operandi-theme-prompts 'subtle
    modus-operandi-theme-fringes 'subtle
    modus-operandi-theme-visible-fringes t
-   modus-operandi-theme-variable-pitch-headings t
+   modus-operandi-theme-variable-pitch-headings nil
    modus-operandi-theme-scale-headings t
    modus-operandi-theme-section-headings t
    modus-operandi-theme-rainbow-headings nil
