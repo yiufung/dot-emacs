@@ -3031,7 +3031,9 @@ Yiufung
               )
   :hook (emacs-lisp-mode . outshine-mode)
   :config
-  (setq outshine-cycle-emulate-tab t)
+  (setq outshine-cycle-emulate-tab t
+        outshine-use-speed-commands t)
+
   )
 
 ;;; Mail
@@ -4409,7 +4411,8 @@ In that case, insert the number."
 (use-package dap-mode
   :defer 3
   :config
-  (require 'dap-python))
+  (require 'dap-python)
+  )
 
 ;;;; C/C++
 ;; [[https://www.reddit.com/r/emacs/comments/audffp/tip_how_to_use_a_stable_and_fast_environment_to/][Reddit post on creating C++ IDE in Emacs]].
@@ -4986,7 +4989,7 @@ Change to light yellow for all frames."
    modus-operandi-theme-fringes 'nil
    modus-operandi-theme-variable-pitch-headings nil
    modus-operandi-theme-scale-headings nil
-   modus-operandi-theme-section-headings t
+   modus-operandi-theme-section-headings nil
    modus-operandi-theme-rainbow-headings nil
    modus-operandi-theme-3d-modeline nil
    modus-operandi-theme-org-blocks t
