@@ -1038,7 +1038,7 @@ If first character is /, search camelCase."
   :straight diredfl ;; Colorful columns
   :straight dired-hacks ;; some utilities function
   :straight dired-rsync ;; Large file synchronization
-  :hook ((dired-mode . dired-hide-details-mode) ;; Hide change times etc
+  :hook (;; (dired-mode . dired-hide-details-mode) ;; Hide change times etc
          (dired-mode . dired-omit-mode)) ;; Hide dot files
   :bind (("C-x C-d" . dired)  ;; Original list-directory is not useful.
          :map dired-mode-map
@@ -1394,7 +1394,7 @@ horizontal mode."
     :defer 3
     :commands (diff-hl-mode diff-hl-dired-mode)
     :hook (magit-post-refresh . diff-hl-magit-post-refresh)
-    :hook (dired-mode . diff-hl-dired-mode)
+    ;; :hook (dired-mode . diff-hl-dired-mode)
     )
 
   ;; Provides stage hunk at buffer, more useful
@@ -1953,12 +1953,12 @@ horizontal mode."
         ("c" "Add tasks" ;; Capture first, refile daily
          entry
          (file+headline org-my-todo-file "Inbox")
-         "* TODO %?\nSCHEDULED: %t" :prepend t)
+         "* TODO %?\n" :prepend t)
 
         ("m" "Appointment"
          entry
          (file+headline org-my-todo-file "Inbox")
-         "* APPT %?\nSCHEDULED: %t" :prepend t)
+         "* APPT %?\n" :prepend t)
 
         ("j" "working journal"
          plain
@@ -4842,18 +4842,14 @@ In that case, insert the number."
                               (join-line -1)))
 
 ;; Quick access to commonly used files
-(setq my-common-files (list org-my-todo-file org-my-work-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory)))
-(defun cyf-rotate-common-files ()
-  "Rotate through some of my commonly accessed files."
-  (interactive)
-  (let* ((next-file (pop my-common-files)))
-    (push next-file (cdr (last my-common-files)))
-    (find-file next-file)))
-(global-set-key (kbd "s-SPC") '(lambda () (interactive) (find-file (expand-file-name ".emacs.default/init.el"
-                                                                                 my-emacs-conf-directory))))
+(global-set-key (kbd "s-1") '(lambda () (interactive) (find-file org-my-todo-file)))
+(global-set-key (kbd "s-2") '(lambda () (interactive) (find-file org-my-work-file)))
+(global-set-key (kbd "s-3") '(lambda () (interactive) (find-file org-my-church-file)))
+(global-set-key (kbd "s-4") '(lambda () (interactive) (find-file (expand-file-name "mobile-inbox.org" org-directory))))
+(global-set-key (kbd "s-5") '(lambda () (interactive) (find-file org-board-capture-file)))
 (global-set-key (kbd "s-\\") '(lambda () (interactive) (find-file org-roam-index-file)))
-(global-set-key (kbd "s-<XF86Open>") '(lambda () (interactive) (find-file org-my-work-file)))
-(global-set-key (kbd "s-<menu>") '(lambda () (interactive) (find-file org-my-todo-file)))
+
+;; Test ground
 (global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
 (global-set-key (kbd "C-s-)") (lambda () (interactive) (async-shell-command "emacs --with-profile test")))
 
@@ -4931,7 +4927,7 @@ If luminance is larger than 0.7, return 'light, else return
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
                  ("ASK" :foreground "#a0132f" :weight bold)
-                 ("DONE" :foreground "#005f33" :weight bold)
+                 ("DONE" :foreground "#005f33" :weight bold :strike-through t)
                  ))
          (message "[cyf] Setting org-todo-keyword-faces to dark theme.. DONE"))
         ((equal 'light (cyf/theme-type))
@@ -4948,7 +4944,7 @@ If luminance is larger than 0.7, return 'light, else return
                  ("CANCELED" :foreground "dark grey" :weight bold)
                  ("PROJECT" :foreground "#088e8e" :weight bold)
                  ("ASK" :foreground "#a0132f" :weight bold)
-                 ("DONE" :foreground "#005f33" :weight bold)))
+                 ("DONE" :foreground "#005f33" :weight bold :strike-through t)))
          (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
 (defun cyf/set-light-theme-background ()
