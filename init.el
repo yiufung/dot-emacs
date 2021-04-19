@@ -4989,7 +4989,7 @@ Change to light yellow for all frames."
    modus-operandi-theme-scale-headings t
    modus-operandi-theme-section-headings t
    modus-operandi-theme-rainbow-headings nil
-   modus-operandi-theme-3d-modeline t
+   modus-operandi-theme-3d-modeline nil
    modus-operandi-theme-org-blocks t
    modus-operandi-theme-rainbow-org-src-blocks t
    modus-operandi-theme-completions 'opinionated
