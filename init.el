@@ -133,6 +133,8 @@ CURRENT-NAME, if it does not already have them:
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+;; Avoid checking for modifications on startup
+(setq straight-check-for-modifications '(check-on-save find-when-checking))
 
 ;; Bootstrap `use-package'
 (setq-default
@@ -1928,7 +1930,7 @@ horizontal mode."
    (org-agenda-with-colors t)
    (org-agenda-remove-tags t)
    (htmlize-output-type 'inline-css)))
-(run-with-idle-timer (* 3600 12) t 'org-store-agenda-views)
+;; (run-with-idle-timer (* 3600 12) t 'org-store-agenda-views)
 
 ;; Auto save org-files, so that we prevent the locking problem between computers
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -4838,7 +4840,7 @@ In that case, insert the number."
 ;; Quick access to commonly used files
 (setq my-common-files (list org-my-todo-file org-my-work-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory)))
 (defun cyf-rotate-common-files ()
-  "Rotate through some of my commonly accessed files"
+  "Rotate through some of my commonly accessed files."
   (interactive)
   (let* ((next-file (pop my-common-files)))
     (push next-file (cdr (last my-common-files)))
@@ -4893,8 +4895,9 @@ In that case, insert the number."
 ;;;; Defuns for themes customization
 
 (defun cyf/theme-type ()
-  "Check current theme type by luminance. If luminance is larger than
- 0.7, return 'light, else return 'dark."
+  "Check current theme type by luminance.
+If luminance is larger than 0.7, return 'light, else return
+'dark."
   (let* (
          (bg-rgb (color-name-to-rgb (frame-parameter nil 'background-color)))
          (hsl (apply 'color-rgb-to-hsl bg-rgb))
@@ -4905,9 +4908,10 @@ In that case, insert the number."
       'dark)))
 
 (defun cyf/set-org-todo-keyword-faces ()
-  "Set org-todo keyword faces for themes. Two sets of faces are
-   provided: \"dark\" or \"light\". It will be automatically set based
-   on value of (cyf/theme-type). "
+  "Set org-todo keyword faces for themes.
+
+   Two sets of faces are provided: \"dark\" or \"light\". It will be
+   automatically set based on value of (cyf/theme-type)."
   (interactive)
   (set-face-attribute 'org-headline-done nil :strike-through t)
   (cond ((equal 'dark (cyf/theme-type))
@@ -4945,15 +4949,18 @@ In that case, insert the number."
          (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
 (defun cyf/set-light-theme-background ()
-  "White background for some themes hurts. Change it to yellow."
+  "My eyes hurt with white background.
+Change to light yellow for all frames."
   (interactive)
   (when (equal (cyf/theme-type) 'light)
-    (message "[cyf] Light theme detected: Setting backgrounds to floral white")
-    (set-background-color "floral white")))
+    (message "[cyf] Light theme detected: Setting backgrounds to light yellow")
+    (dolist (frame (frame-list))
+      (select-frame frame)
+      ;; (set-background-color "LightGoldenrodYellow")
+      (set-background-color "LightYellow2"))))
 
 (defun cyf/set-dark-theme-highlight-region ()
-  "In dark themes it's difficult to see where it highlights the
- texts. This fix it. "
+  "Highlight text in dark themes."
   (interactive)
   (if (equal 'dark (cyf/theme-type))
       (set-face-attribute 'region nil :background "#666" :foreground "#ffffff")))
@@ -4972,13 +4979,11 @@ In that case, insert the number."
   :init
   (setq
    modus-operandi-theme-distinct-org-blocks t
-   modus-operandi-theme-proportional-fonts t
    modus-operandi-theme-slanted-constructs t
    modus-operandi-theme-bold-constructs t
    modus-operandi-theme-faint-syntax t
    modus-operandi-theme-prompts 'subtle
    modus-operandi-theme-fringes 'subtle
-   modus-operandi-theme-visible-fringes t
    modus-operandi-theme-variable-pitch-headings nil
    modus-operandi-theme-scale-headings t
    modus-operandi-theme-section-headings t
