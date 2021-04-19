@@ -270,7 +270,7 @@ CURRENT-NAME, if it does not already have them:
 
 ;; Misc
 (set-frame-name "emacs")
-(fringe-mode '(1 . 3))
+(fringe-mode 'nil) ;; default (8 . 8) fringe
 (save-place-mode t)
 (delete-selection-mode 1)
 ;; enable y/n answers
@@ -2512,6 +2512,7 @@ This function tries to do what you mean:
       org-odt-fontify-srcblocks t)
 ;; Export Org table to xlsx
 (defun org-table-export-to-xlsx ()
+  "Export Org table to xlsx."
   (interactive)
   (let* ((file-name (nth 4 (org-heading-components))
                     ;; (file-name-sans-extension (buffer-file-name
@@ -4983,7 +4984,7 @@ Change to light yellow for all frames."
    modus-operandi-theme-bold-constructs t
    modus-operandi-theme-faint-syntax t
    modus-operandi-theme-prompts 'subtle
-   modus-operandi-theme-fringes 'subtle
+   modus-operandi-theme-fringes 'nil
    modus-operandi-theme-variable-pitch-headings nil
    modus-operandi-theme-scale-headings t
    modus-operandi-theme-section-headings t
