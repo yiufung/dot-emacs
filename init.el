@@ -2198,7 +2198,7 @@ horizontal mode."
       org-pomodoro-long-break-format ""
       org-pomodoro-overtime-format "")
 ;; When clock in a task, start pomodoro automatically
-(add-to-list 'org-clock-in-hook '(lambda () (if (eq org-pomodoro-state ':none) (org-pomodoro))))
+;; (add-to-list 'org-clock-in-hook '(lambda () (if (eq org-pomodoro-state ':none) (org-pomodoro))))
 ;; Thanks for inspiration from Cole: https://colekillian.com/posts/org-pomodoro-and-polybar/
 (defun ruborcalor/org-pomodoro-time ()
   "Return the remaining pomodoro time"
@@ -3180,7 +3180,7 @@ Yiufung
 
 (use-package notmuch
   ;; Another mail client. It's better at email searching
-  :disabled t
+  ;; :disabled t
   :defer 3
   :straight nil
   :straight counsel-notmuch
@@ -4914,7 +4914,6 @@ If luminance is larger than 0.7, return 'light, else return
    Two sets of faces are provided: \"dark\" or \"light\". It will be
    automatically set based on value of (cyf/theme-type)."
   (interactive)
-  (set-face-attribute 'org-headline-done nil :strike-through t)
   (cond ((equal 'dark (cyf/theme-type))
          (setq org-todo-keyword-faces
                '(("TODO" :foreground "teal" :weight bold)
@@ -4986,15 +4985,13 @@ Change to light yellow for all frames."
    modus-operandi-theme-prompts 'subtle
    modus-operandi-theme-fringes 'nil
    modus-operandi-theme-variable-pitch-headings nil
-   modus-operandi-theme-scale-headings t
+   modus-operandi-theme-scale-headings nil
    modus-operandi-theme-section-headings t
    modus-operandi-theme-rainbow-headings nil
    modus-operandi-theme-3d-modeline nil
    modus-operandi-theme-org-blocks t
    modus-operandi-theme-rainbow-org-src-blocks t
-   modus-operandi-theme-completions 'opinionated
-   )
-  )
+   modus-operandi-theme-completions 'opinionated))
 (use-package modus-vivendi-theme
   :config
   (setq modus-vivendi-theme-variable-pitch-headings nil
