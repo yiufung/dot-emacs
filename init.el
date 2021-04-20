@@ -4842,6 +4842,8 @@ In that case, insert the number."
                               (join-line -1)))
 
 ;; Quick access to commonly used files
+(global-set-key (kbd "s-SPC") (lambda () (interactive)
+                                (find-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory))))
 (global-set-key (kbd "s-1") '(lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-2") '(lambda () (interactive) (find-file org-my-work-file)))
 (global-set-key (kbd "s-3") '(lambda () (interactive) (find-file org-my-church-file)))
