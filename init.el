@@ -1045,7 +1045,8 @@ If first character is /, search camelCase."
          ("C-x M-h" . dired-du--toggle-human-readable)
          ("C-c C-r" . dired-rsync)
          ("M-k"     . dired-kill-subdir)
-         (")"       . dired-git-info-mode))
+         (")"       . dired-git-info-mode)
+         ("/"       . dired-narrow-regexp))
   :config
   (require 'dired-x) ;; extra functionality for dired
   (require 'dired-hacks-utils)
@@ -5225,10 +5226,11 @@ Change to light yellow for all frames."
          :map olivetti-mode-map
          ("s-]" . olivetti-expand)
          ("s-[" . olivetti-shrink))
-  :hook (org-mode . olivetti-mode)
-  :hook (sdcv-mode . olivetti-mode)
-  :hook (Info-mode . olivetti-mode)
+  :hook (org-mode   . olivetti-mode)
+  :hook (sdcv-mode  . olivetti-mode)
+  :hook (Info-mode  . olivetti-mode)
   :hook (dired-mode . olivetti-mode)
+  :hook (prog-mode  . olivetti-mode)
   ;; :hook (org-agenda-mode . olivetti-mode)
   :config
   (setq-default olivetti-body-width 120
