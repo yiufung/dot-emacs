@@ -4488,7 +4488,9 @@ In that case, insert the number."
 (use-package python
   :straight nil
   :straight pydoc ;; view documentation
+  :straight sphinx-doc ;; Generate docstring in sphinx style
   :hook (python-mode . electric-indent-local-mode)
+  :hook (python-mode . sphinx-doc-mode)
   :bind (("C-z C-p" . create-or-switch-to-python)
          :map python-mode-map
          ("M-n" . python-nav-forward-statement)
@@ -4503,6 +4505,8 @@ In that case, insert the number."
     (pop-to-buffer "*Python*" nil t)
     (if (not (equal major-mode 'inferior-python-mode))
         (run-python)))
+
+  (setq sphinx-doc-include-types t)
   )
 
 (use-package elpy
