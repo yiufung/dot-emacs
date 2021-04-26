@@ -516,6 +516,8 @@ behavior added."
   :config
   ;; Retain indentation in these modes.
   (add-to-list 'crux-indent-sensitive-modes 'markdown-mode)
+  ;; Automatically asked to open as root if can't write to it.
+  (crux-reopen-as-root-mode +1)
   )
 
 (use-package direnv
@@ -1332,6 +1334,7 @@ output file. %i path(s) are relative, while %o is absolute.")
          ("M-O"               . (lambda () (interactive) (other-window -1))) ;; Cycle backward
          ("M-<tab>"           . 'other-frame)
          ("<M-S-iso-lefttab>" . (lambda () (interactive) (other-frame -1))) ;; Cycle backwards
+         ("H-q"               . window-toggle-side-windows)
          )
   :init
   ;; Functions for easier navigation
@@ -1387,6 +1390,8 @@ horizontal mode."
 (use-package winner
   ;; Enable window restoration
   :defer 1
+  :bind (("C-M-<left>"  . winner-undo)
+         ("C-M-<right>" . winner-redo))
   :config
   (winner-mode 1))
 
@@ -1471,8 +1476,9 @@ horizontal mode."
 (global-set-key (kbd "M-n") 'forward-paragraph)
 
 (use-package avy
-  :bind  (("C-,"   . avy-goto-word-1)
-          ("C-M-," . avy-goto-line))
+  :bind  (("C-M-,"   . avy-goto-word-1)
+          ;; ("C-M-," . avy-goto-line)
+          )
   :commands (avy-with)
   :config
   (setq avy-timeout-seconds 0.3
