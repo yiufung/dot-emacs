@@ -516,8 +516,6 @@ behavior added."
   :config
   ;; Retain indentation in these modes.
   (add-to-list 'crux-indent-sensitive-modes 'markdown-mode)
-  ;; Automatically asked to open as root if can't write to it.
-  (crux-reopen-as-root-mode +1)
   )
 
 (use-package direnv
@@ -5394,7 +5392,6 @@ Change to light yellow for all frames."
   :hook (Info-mode  . olivetti-mode)
   :hook (dired-mode . olivetti-mode)
   :hook (prog-mode  . olivetti-mode)
-  ;; :hook (org-agenda-mode . olivetti-mode)
   :config
   (setq-default olivetti-body-width 120
                 fill-column 90)
