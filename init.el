@@ -1101,8 +1101,6 @@ If first character is /, search camelCase."
          :map embark-symbol-map
          ("d" . my-sdcv-search-input)
          )
-  :bind (:map flycheck-command-map
-              ("!" . consult-flycheck))
   :init
   ;; Optionally replace the key help with a completing-read interface
   (setq prefix-help-command #'embark-prefix-help-command)
@@ -1113,6 +1111,7 @@ If first character is /, search camelCase."
         xref-show-definitions-function #'consult-xref)
 
   :config
+  (require 'embark)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -1927,6 +1926,8 @@ horizontal mode."
  ;; Show column mode in agenda
  org-columns-default-format-for-agenda
  "%7TODO %25ITEM %17Effort(Estimated Effort) %CLOCKSUM(Clock)"
+ ;; Show remote images
+ org-display-remote-inline-images 'cache
  )
 
 (defun org-todo-age-time (&optional pos)
@@ -4486,12 +4487,15 @@ In that case, insert the number."
 
 (use-package flycheck
   :defer 5
+  :after selectrum
   :straight hydra
   :straight posframe
   :straight flycheck-posframe
   :bind ("C-z !" . hydra-flycheck/body)
   :hook ((text-mode prog-mode) . flycheck-mode) ;; Auto enable flycheck on programming modes
   :hook (flycheck-mode . flycheck-posframe-mode) ;; Show error on posframe
+  :bind (:map flycheck-command-map
+              ("!" . consult-flycheck))
   :config
   ;; Adjust flycheck eagerness
   (defun magnars/adjust-flycheck-automatic-syntax-eagerness ()
@@ -5048,7 +5052,7 @@ In that case, insert the number."
   (simple-modeline-mode +1))
 
 (use-package minions
-  :defer 2
+  :demand t
   :init
   (setq-default minions-mode-line-lighter ";") ;; A better smile :)
   :config
