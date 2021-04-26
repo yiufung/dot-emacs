@@ -1832,7 +1832,11 @@ horizontal mode."
         ("WAIT" ("ARCHIVE" . nil))
         ("DONE" ("ARCHIVE" . nil))))
 ;; superstar bullets
-(setq org-superstar-headline-bullets-list '("❖" "◯" "▶" "✱" "❇" "❁" ))
+;; (setq org-superstar-headline-bullets-list '("❖" "◯" "▶" "✱" "❇" "❁" ))
+(setq org-superstar-headline-bullets-list '(" ")
+      org-ellipsis "  "
+      org-pretty-entities t
+      org-hide-emphasis-markers t)
 
 ;; Org-agenda
 (require 'org-agenda)
