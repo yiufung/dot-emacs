@@ -2713,6 +2713,11 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "j" (lambda ()
                                                   (avy-with avy-goto-line
                                                     (avy--generic-jump "^\\*+" nil)))))
+(global-set-key (kbd "M-j") '(lambda ()
+                               (interactive)
+                               (avy-with avy-goto-line
+                                 (avy--generic-jump "^\\*+" nil))))
+
 
 ;; Capturing pages from web. Integrates org-protocol-capture-html,
 ;; org-capture-extensions and org-protocol
@@ -3834,13 +3839,13 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :hook (prog-mode . flyspell-prog-mode)
   ;; any future corrections made with flyspell will be automatically corrected as I type.
   :hook (flyspell-mode . auto-correct-mode)
-  :init
-  (setq flyspell-correct-interface #'flyspell-correct-ivy)
   :bind (:map flyspell-mode-map
               ("C-;" . nil)                  ; unbind the key, reserved for iedit
               ("C-," . nil)                  ; unbind the key, reserved for avy-jump
               ("C-." . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
               )
+  :init
+  (setq flyspell-correct-interface #'flyspell-correct-dummy) ;; use selectrum interfa
   :config
   ;; Requires aspell support.
   ;; Dictionaries to be downloaded via OS package manager
@@ -4740,8 +4745,8 @@ In that case, insert the number."
          ("M-<del>"       . sp-unwrap-sexp)
          ("C-<right>"     . sp-forward-slurp-sexp)
          ("C-<left>"      . sp-backward-slurp-sexp)
-         ("C-M-<right>"   . sp-forward-barf-sexp)
-         ("C-M-<left>"    . sp-backward-barf-sexp)
+         ("C-S-<right>"   . sp-forward-barf-sexp)
+         ("C-S-<left>"    . sp-backward-barf-sexp)
          ("C-M-a"         . sp-beginning-of-sexp)
          ("C-M-e"         . sp-end-of-sexp))
   :config
@@ -5143,8 +5148,9 @@ Change to light yellow for all frames."
    modus-operandi-theme-faint-syntax t
    modus-operandi-theme-prompts 'subtle
    modus-operandi-theme-fringes 'nil
-   modus-operandi-theme-variable-pitch-headings nil
-   modus-operandi-theme-scale-headings nil
+   ;; modus-operandi-theme-variable-pitch-headings nil
+   modus-operandi-theme-proportional-fonts t
+   modus-operandi-theme-scale-headings t
    modus-operandi-theme-section-headings nil
    modus-operandi-theme-rainbow-headings nil
    modus-operandi-theme-3d-modeline nil
