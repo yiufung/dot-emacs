@@ -1148,8 +1148,6 @@ If first character is /, search camelCase."
   ;;     (pyim-cregexp-build result)))
   ;; (advice-remove 'orderless-regexp #'eh-orderless-regexp)
 
-  ;; selectrum
-  (selectrum-mode +1)
   (savehist-mode)
   ;; Use orderless style
   (setq orderless-skip-highlighting (lambda () selectrum-is-active))
@@ -1158,7 +1156,10 @@ If first character is /, search camelCase."
   ;; Use prescient on top of orderless
   (selectrum-prescient-mode +1)
   (setq prescient-save-file (expand-file-name "prescient-save.el" my-private-conf-directory))
-  (prescient-persist-mode +1))
+  (prescient-persist-mode +1)
+
+  ;; Put to last to enable
+  (selectrum-mode +1))
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
 
