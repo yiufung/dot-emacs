@@ -882,7 +882,7 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   :custom (completion-styles '(orderless)))
 
 (use-package counsel
-  :demand t
+  :disabled t
   :straight t
   :straight ivy-hydra
   :straight ivy-rich
@@ -1021,6 +1021,149 @@ If first character is /, search camelCase."
           (right-fringe . 8))
         ivy-posframe-width 120)
   )
+
+
+;;; Embark / Consult / Selectrum
+
+(use-package selectrum
+  ;; selection framework
+  :demand t
+  :straight t
+  :straight consult ;; counsel equivalent for plectrum
+  :straight consult-flycheck
+  :straight consult-notmuch
+  :straight embark ;; minibuffer actions + occur/export
+  :straight embark-consult
+  :straight marginalia ;; ivy-rich-like annotations for candidates
+  :straight prescient ;; filtering and frecency-based sorting
+  :straight selectrum-prescient
+  :straight vertico ;; needed by some nevertheless
+  :hook (embark-collect-mode . embark-consult-preview-minor-mode)
+  :bind (
+         ;; consult bindings
+         ;; C-c bindings (mode-specific-map)
+         ;; ("C-c m" . consult-mode-command)
+         ;; C-x bindings (ctl-x-map)
+         ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complet-command
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+         ;; Custom M-# bindings for fast register access
+         ;; ("M-#" . consult-register-load)
+         ;; ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+         ;; ("C-M-#" . consult-register)
+         ;; Other custom bindings
+         ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+         ("<help> a" . consult-apropos)            ;; orig. apropos-command
+         ;; M-g bindings (goto-map)
+         ("M-g e" . consult-compile-error)
+         ("M-g g" . consult-goto-line)             ;; orig. goto-line
+         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+         ("M-g o" . consult-outline)
+         ("M-g m" . consult-mark)
+         ("M-g k" . consult-global-mark)
+         ("M-g i" . consult-imenu)
+         ("M-g I" . consult-project-imenu)
+         ("M-g M-f" . consult-flycheck)
+         ;; M-s bindings (search-map)
+         ("C-s f" . consult-find)
+         ("C-s L" . consult-locate)
+         ("C-x l" . consult-locate)
+         ("C-s g" . consult-grep)
+         ("C-s G" . consult-git-grep)
+         ("C-s C-s" . consult-ripgrep)
+         ("C-s l" . consult-line)
+         ("C-s m" . consult-multi-occur)
+         ("C-s k" . consult-keep-lines)
+         ("C-s u" . consult-focus-lines)
+         ;; Isearch integration
+         ("C-s e" . consult-isearch)
+         ("C-x j j" . consult-bookmark)
+         ("M-s" . consult-line)
+         ("C-x b" . consult-buffer)
+         ("C-s C-s" . consult-ripgrep)
+         ("C-c i" . consult-project-imenu)
+         ("C-y" . yank)
+         ("M-y" . consult-yank-pop)
+         ("<help> a" . consult-apropos)
+         ("C-x M-:" . consult-complex-command)
+         ("C-x 4 b" . consult-buffer-other-window)
+         ("C-x 5 b" . consult-buffer-other-frame)
+         ("M-g g" . consult-goto-line)
+         ("C-h V" . set-variable)
+         ("C-h l" . find-library)
+         ;; selectrum
+         ("C-c C-r" . selectrum-repeat)
+         ("C-," . embark-act)       ;; pick some comfortable binding
+         ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
+         :map embark-symbol-map
+         ("d" . my-sdcv-search-input)
+         )
+  :bind (:map flycheck-command-map
+              ("!" . consult-flycheck))
+  :init
+  ;; Optionally replace the key help with a completing-read interface
+  (setq prefix-help-command #'embark-prefix-help-command)
+
+  ;; Consult
+  ;; Use Consult to select xref locations with preview
+  (setq xref-show-xrefs-function #'consult-xref
+        xref-show-definitions-function #'consult-xref)
+
+  :config
+  ;; Hide the mode line of the Embark live/completions buffers
+  (add-to-list 'display-buffer-alist
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none))))
+
+  (setq embark-collect-initial-view-alist
+        '((file . list)
+          (buffer . list)
+          (symbol . list)
+          (line . list)
+          (xref-location . list)
+          (kill-ring . zebra)
+          (t . list))
+        embark-quit-after-action t
+        embark-collect-live-update-delay 0.5
+        embark-collect-live-initial-delay 0.8)
+
+  ;; Consult
+  ;; Optionally configure the narrowing key.
+  ;; Both < and C-+ work reasonably well.
+  (setq consult-narrow-key "<")
+
+  ;; Show which-key hints for embark
+  (setq embark-action-indicator
+        (lambda (map _target)
+          (which-key--show-keymap "Embark" map nil nil 'no-paging)
+          #'which-key--hide-popup-ignore-command)
+        embark-become-indicator embark-action-indicator)
+
+  ;; Marginalia: provides annotations to completion candidates.
+  (setq marginalia-annotators
+        '(marginalia-annotators-heavy
+          marginalia-annotators-light))
+  (marginalia-mode)
+
+  ;; orderless: pinyin support, pyim required
+  ;; (defun eh-orderless-regexp (orig_func component)
+  ;;   (let ((result (funcall orig_func component)))
+  ;;     (pyim-cregexp-build result)))
+  ;; (advice-remove 'orderless-regexp #'eh-orderless-regexp)
+
+  ;; selectrum
+  (selectrum-mode +1)
+  (savehist-mode)
+  ;; Use orderless style
+  (setq orderless-skip-highlighting (lambda () selectrum-is-active))
+  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
+  (setq selectrum-prescient-enable-filtering nil)
+  ;; Use prescient on top of orderless
+  (selectrum-prescient-mode +1)
+  (setq prescient-save-file (expand-file-name "prescient-save.el" my-private-conf-directory))
+  (prescient-persist-mode +1))
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
 
