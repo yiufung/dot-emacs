@@ -501,7 +501,7 @@ behavior added."
   :defer 1
   :bind (
          ("C-c b"      . 'crux-create-scratch-buffer)
-         ("C-x o"      . 'crux-open-with)
+         ;; ("C-x o"      . 'crux-open-with)
          ("C-x f"      . 'crux-recentf-find-file)
          ("C-x 4 t"    . 'crux-transpose-windows)
          ("C-x C-k"    . 'crux-delete-buffer-and-file)
@@ -1082,16 +1082,10 @@ If first character is /, search camelCase."
          ("C-s e" . consult-isearch)
          ("C-x j j" . consult-bookmark)
          ("M-s" . consult-line)
-         ("C-x b" . consult-buffer)
-         ("C-s C-s" . consult-ripgrep)
          ("C-c i" . consult-project-imenu)
          ("C-y" . yank)
          ("M-y" . consult-yank-pop)
-         ("<help> a" . consult-apropos)
          ("C-x M-:" . consult-complex-command)
-         ("C-x 4 b" . consult-buffer-other-window)
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ("M-g g" . consult-goto-line)
          ("C-h V" . set-variable)
          ("C-h l" . find-library)
          ;; selectrum
@@ -1329,6 +1323,7 @@ output file. %i path(s) are relative, while %o is absolute.")
          ("C-1"               . delete-other-windows)
          ("C-2"               . split-window-below-and-move-there)
          ("C-3"               . split-window-right-and-move-there)
+         ("C-x o"             . 'other-window)
          ("M-o"               . 'other-window)
          ("M-O"               . (lambda () (interactive) (other-window -1))) ;; Cycle backward
          ("M-<tab>"           . 'other-frame)
