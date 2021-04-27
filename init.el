@@ -1139,7 +1139,7 @@ If first character is /, search camelCase."
   (setq marginalia-annotators
         '(marginalia-annotators-heavy
           marginalia-annotators-light))
-  (marginalia-mode)
+  (marginalia-mode +1)
 
   ;; orderless: pinyin support, pyim required
   ;; (defun eh-orderless-regexp (orig_func component)
@@ -1147,7 +1147,7 @@ If first character is /, search camelCase."
   ;;     (pyim-cregexp-build result)))
   ;; (advice-remove 'orderless-regexp #'eh-orderless-regexp)
 
-  (savehist-mode)
+  (savehist-mode +1)
   ;; Use orderless style
   (setq orderless-skip-highlighting (lambda () selectrum-is-active))
   (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
@@ -3341,7 +3341,7 @@ Yiufung
   :defer 3
   :straight nil
   :straight counsel-notmuch
-  :straight nm
+  ;; :straight nm
   :bind (("C-c m" . 'notmuch)
          :map notmuch-hello-mode-map
          ("m" . nil)
@@ -3419,7 +3419,7 @@ Yiufung
   (define-key 'notmuch-show-part-map "d" 'my-notmuch-show-view-as-patch)
 
   ;; Experimental front end Nevermore
-  (require 'nm-company)
+  ;; (require 'nm-company)
   )
 
 (use-package outlook
@@ -4246,7 +4246,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :straight ssh
   :defer 3
   :bind ("C-z C-j" . shell) ;; Bind to j to mimic "jump to"
-  :hook (shell-mode-hook . visual-line-mode)
+  :hook (shell-mode . visual-line-mode)
   :config
   (set-variable 'dirtrack-list '("^.*[^ ]+:\\(.*\\)]" 1 nil))
   (dirtrack-mode +1)
@@ -4312,7 +4312,7 @@ In that case, insert the number."
                           (self-insert-command 1)))
     (define-key map (kbd "<return>") nil))
 
-  (global-company-mode t)
+  ;; (global-company-mode t)
   (company-quickhelp-mode +1)
   )
 
@@ -4722,6 +4722,7 @@ In that case, insert the number."
 
 (use-package elisp-mode
   :straight nil
+  :hook ((emacs-lisp-mode ielm-mode) . company-mode)
   :bind (("C-z C-l" . ielm) ;; Lisp
          :map emacs-lisp-mode-map
          ("C-c C-c" . eval-defun)
@@ -4730,7 +4731,7 @@ In that case, insert the number."
 (use-package elisp-slime-nav
   ;; Convenient navigation to symbol at point
   ;; Try M-. and M-,
-  :hook ((emacs-lisp-mode-hook ielm-mode-hook) . elisp-slime-nav-mode)
+  :hook ((emacs-lisp-mode ielm-mode) . elisp-slime-nav-mode)
   )
 
 ;; Check the great gist at
@@ -4760,7 +4761,8 @@ In that case, insert the number."
             ruby-mode
             markdown-mode
             groovy-mode
-            scala-mode)
+            scala-mode
+            minibuffer-setup-hook)
     (add-hook it 'turn-on-smartparens-strict-mode)))
 
 ;;;; HTML
