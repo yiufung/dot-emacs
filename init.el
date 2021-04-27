@@ -1104,6 +1104,7 @@ If first character is /, search camelCase."
 
   :config
   (require 'embark)
+  (require 'embark-consult)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
