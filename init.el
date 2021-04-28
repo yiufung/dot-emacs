@@ -2255,6 +2255,11 @@ horizontal mode."
  org-return-follows-link t
  ;; Use archived tree when constructing sparse tree
  org-sparse-tree-open-archived-trees t
+ ;; ancestors-full shows current subtree and its direct ancestors
+ org-show-context-detail '((agenda . local)
+                           (bookmark-jump . lineage)
+                           (isearch . lineage)
+                           (default . ancestors-full))
  )
 
 
