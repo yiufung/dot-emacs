@@ -1282,8 +1282,9 @@ output file. %i path(s) are relative, while %o is absolute.")
   ;; Bookmark utilities
   :straight (bookmark-plus :type git :host github :repo "emacsmirror/bookmark-plus")
   :defer 3
-  :bind (:map bookmark-bmenu-mode-map
-              ("M-o" . nil))
+  :bind (("C-x j j" . consult-bookmark)
+         :map bookmark-bmenu-mode-map
+         ("M-o" . nil))
   :init
   (require 'bookmark+)
   ;; Save bookmarks on every change
@@ -2813,7 +2814,7 @@ This function tries to do what you mean:
               org-download-heading-lvl nil
               org-download-delete-image-after-download t
               org-download-screenshot-method "flameshot gui --raw > %s"
-              org-download-image-org-width 300
+              org-download-image-org-width 600
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
 (add-hook 'dired-mode-hook 'org-download-enable)
