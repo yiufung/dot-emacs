@@ -1088,7 +1088,7 @@ If first character is /, search camelCase."
          ("C-h l" . find-library)
          ;; selectrum
          ("C-c C-r" . selectrum-repeat)
-         ("C-," . embark-act)       ;; pick some comfortable binding
+         ("C-M-," . embark-act)       ;; pick some comfortable binding
          ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
          :map embark-symbol-map
          ("d" . my-sdcv-search-input)
@@ -1105,6 +1105,9 @@ If first character is /, search camelCase."
   :config
   (require 'embark)
   (require 'embark-consult)
+  (require 'selectrum)
+  (require 'marginalia)
+  (require 'consult)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -1327,7 +1330,7 @@ output file. %i path(s) are relative, while %o is absolute.")
          ("C-x o"             . 'other-window)
          ("M-o"               . 'other-window)
          ("M-O"               . (lambda () (interactive) (other-window -1))) ;; Cycle backward
-         ("M-<tab>"           . 'other-frame)
+         ("M-<tab>"           . nil)
          ("<M-S-iso-lefttab>" . (lambda () (interactive) (other-frame -1))) ;; Cycle backwards
          ("H-q"               . window-toggle-side-windows)
          )
@@ -1471,7 +1474,7 @@ horizontal mode."
 (global-set-key (kbd "M-n") 'forward-paragraph)
 
 (use-package avy
-  :bind  (("C-M-,"   . avy-goto-word-1)
+  :bind  (("C-,"   . avy-goto-word-1)
           ;; ("C-M-," . avy-goto-line)
           )
   :commands (avy-with)
@@ -1865,7 +1868,8 @@ horizontal mode."
  ;; Show candidates in one go
  org-outline-path-complete-in-steps nil
  ;; Don't split line
- org-M-RET-may-split-line '((default . nil))
+ org-M-RET-may-split-line '((default . nil)
+                            (item . t))
  ;; Cache refile targets
  ;; Simple target is used, so no need to cache
  org-refile-use-cache nil
@@ -2226,10 +2230,8 @@ horizontal mode."
  ;; Logging settings: Better verbose than miss
  org-log-into-drawer t
  org-log-done 'time
- org-log-reschedule 'note
- org-log-redeadline 'note
- org-log-delschedule 'note
- org-log-deldeadline 'note
+ org-log-reschedule 'nil
+ org-log-redeadline 'nil
  ;; Setup log note templates. Add "to [new date]" in reschedule and redeadline
  org-log-note-headings '((done        . "CLOSING NOTE %t")
                          (state       . "State %-12s from %-12S %t")
@@ -4874,7 +4876,7 @@ In that case, insert the number."
 (use-package graphviz-dot-mode
   :config
   ;; https://stackoverflow.com/questions/16770868/org-babel-doesnt-load-graphviz-editing-mode-for-dot-sources
-  (add-to-list 'org-src-lang-modes (quote ("dot" . graphviz-dot)))
+  (add-to-list 'org-src-lang-modes '("dot" . graphviz-dot))
   )
 
 (use-package plantuml-mode
