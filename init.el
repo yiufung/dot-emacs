@@ -1690,6 +1690,7 @@ horizontal mode."
 (use-package org-superstar)
 (use-package org-roam)
 (use-package org-journal)
+(use-package ox-reveal)
 (use-package nroam :straight (:host github :branch "master" :repo "NicolasPetton/nroam"))
 (use-package org-super-agenda)
 (use-package org-pomodoro)
@@ -2680,12 +2681,17 @@ This function tries to do what you mean:
     (org-table-export csv-file "orgtbl-to-csv")
     (org-odt-convert csv-file "xlsx")))
 
+;; Reveal slides
+(require 'ox-reveal)
+(setq org-reveal-root (concat "file://" (expand-file-name "static/reveal.js" my-emacs-conf-directory)))
+
 ;; Org Speed commands
 (setq org-use-speed-commands t)
 (add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
 (add-to-list 'org-speed-commands-user (cons "d" 'org-cut-special))
 (add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
+(add-to-list 'org-speed-commands-user (cons "N" 'narrow-or-widen-dwim))
 (add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
 ;; Show hidden properties. Use in conjunction with org-cycle-hide-drawers.
 (add-to-list 'org-speed-commands-user
