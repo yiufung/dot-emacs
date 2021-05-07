@@ -2709,10 +2709,6 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "i" (lambda () (org-match-sparse-tree nil "PRIORITY=\"A\""))))
 ;; Find subtrees involving decision making
 (add-to-list 'org-speed-commands-user (cons "D" (lambda () (org-match-sparse-tree nil "alignment"))))
-;; Use indirect buffer instead of narrowing, so that visibility of original
-;; buffer is not changed.
-;; Widen is replace as toggle too.
-(add-to-list 'org-speed-commands-user (cons "B" 'org-tree-to-indirect-buffer))
 ;; Mark a subtree
 (add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
 ;; Open archive contents in another window
@@ -4478,7 +4474,6 @@ In that case, insert the number."
 (use-package yasnippet
   :straight yasnippet-snippets
   :defer 3
-  :bind (("C-c y" . 'yas-insert-snippet))
   :config
   (add-to-list 'yas-snippet-dirs
                (expand-file-name "yasnippets" my-private-conf-directory))
@@ -5010,7 +5005,6 @@ In that case, insert the number."
 ;; <f3> <f4> for macro
 (global-set-key (kbd "<f5>") '(lambda () (interactive) (org-agenda nil "h")))
 (global-set-key (kbd "<f6>") '(lambda () (interactive) (org-agenda nil "oo")))
-(global-set-key (kbd "<f7>") 'rot13-mode)
 (global-set-key (kbd "<f8>") 'follow-mode)
 ;; <f9> - <f12> for eyebrowse workspace
 
@@ -5224,10 +5218,10 @@ Change to light yellow for all frames."
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
-     :font (font-spec :name "Sarasa Fixed Slab HC"
+     :font (font-spec :name "Alegreya"
                       :weight 'normal
                       :slant 'normal
-                      :size 15))
+                      :size 17))
     ;; For all CJK fonts
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font
@@ -5692,16 +5686,14 @@ Change to light yellow for all frames."
         google-translate-pop-up-buffer-set-focus t
         google-translate-output-destination 'echo-area
         google-translate-show-phonetic t
-        google-translate-translation-directions-alist '(("cn" . "en")))
-  )
+        google-translate-translation-directions-alist '(("cn" . "en"))))
 
 (use-package erc
   ;; Internet Relay Chat (IRC)
   :straight erc-hl-nicks
-  :disabled t
   :straight erc-image
   :defer 3
-  :commands (erc erc-tls)
+  :commands (erc erc-tls irc)
   :custom-face (erc-timestamp-face ((t (:foreground "DarkSlateGrey")))) ; Don't know why it's green everywhere
   :hook (erc-mode . visual-line-mode)
   :config
