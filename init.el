@@ -4487,6 +4487,18 @@ In that case, insert the number."
   (yasnippet-snippets-initialize)
   )
 
+(use-package yankpad
+  :defer 3
+  :after yasnippet
+  :bind (("<f7>" . yankpad-map)
+         ("C-c y" . 'yankpad-insert)
+         ("C-c Y" . 'yankpad-set-category))
+  :config
+  (setq yankpad-file (expand-file-name "yankpad.org" org-directory))
+  (add-to-list 'hippie-expand-try-functions-list #'yankpad-expand)
+  )
+
+
 ;;;; Syntax Checking: Flycheck
 
 (use-package flycheck
