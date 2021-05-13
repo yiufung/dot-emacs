@@ -4596,7 +4596,7 @@ In that case, insert the number."
   :straight lsp-treemacs
   :defer 3
   :after company
-  :hook (python-mode . lsp) ;; Start LSP server in python-mode
+  ;; :hook (python-mode . lsp) ;; Start LSP server in python-mode
   :config
   (setq lsp-enable-snippet t
         ;; Ignore duplicates when there is a same symbol with the same contents.
@@ -4605,6 +4605,11 @@ In that case, insert the number."
         lsp-ui-peek-enable t
         lsp-ui-doc-enable t)
   )
+
+(use-package eglot
+  ;; More light-weight language server protocol
+  :config
+  :defer 3)
 
 ;;;; Debugging
 
@@ -4903,6 +4908,14 @@ In that case, insert the number."
    '((restclient . t)))
 
   (add-to-list 'company-backends 'company-restclient)
+  )
+
+(use-package verb
+  ;; Organize and send HTTP requests from Emacs
+  )
+
+(use-package walkman
+  ;; Write HTTP requests in Org mode and replay them at will using cURL
   )
 
 ;;;; Drawing Graphs: Graphviz + PlantUML
