@@ -1721,6 +1721,7 @@ horizontal mode."
 (add-hook 'org-mode-hook 'org-superstar-mode)
 (add-hook 'org-mode-hook 'visual-line-mode)
 (add-hook 'org-mode-hook 'auto-fill-mode)
+(add-hook 'org-agenda-mode-hook 'olivetti-mode)
 
 ;; Key bindings
 (bind-keys ("C-c a"   . org-agenda)
@@ -2502,7 +2503,7 @@ horizontal mode."
         ))
 ;; Keyword expansion also changed in 9.2
 (setq my-tempo-keywords-alist
-      '(("n" . "NAME")
+      '(("N" . "NAME")
         ("cap" . "CAPTION")))
 
 ;; In org-version >= 9.2, structure template is changed.
@@ -2683,7 +2684,13 @@ This function tries to do what you mean:
 
 ;; Reveal slides
 (require 'ox-reveal)
+;; Good themes: white, solarized, serif, simple
 (setq org-reveal-root (concat "file://" (expand-file-name "static/reveal.js" my-emacs-conf-directory)))
+
+;; Emacs reveal
+;; (add-to-list 'load-path (expand-file-name "static/emacs-reveal" my-emacs-conf-directory))
+;; (require 'emacs-reveal)
+;; (setq org-re-reveal-root (concat "file://" (expand-file-name "static/reveal.js" my-emacs-conf-directory)))
 
 ;; Org Speed commands
 (setq org-use-speed-commands t)
@@ -2691,6 +2698,7 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands-user (cons "d" 'org-cut-special))
 (add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
 (add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
+(add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
 (add-to-list 'org-speed-commands-user (cons "N" 'narrow-or-widen-dwim))
 (add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
 ;; Show hidden properties. Use in conjunction with org-cycle-hide-drawers.
@@ -3664,7 +3672,7 @@ Yiufung
   :straight (web-server :type git :flavor melpa :host github :repo "eschulte/emacs-web-server" :local-repo "web-server"))
 
 (use-package pdf-tools
-  :defer t
+  :defer 3
   ;; :pin manual ;; manually update
   :after web-server
   :straight t
@@ -4090,6 +4098,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
                   ("#+END_EXAMPLE"   . "¶")
                   ("#+BEGIN_QUOTE"   . "❮")
                   ("#+END_QUOTE"     . "❯")
+                  ("#+BEGIN_NOTES"   . ">")
+                  ("#+END_NOTES"     . ">")
                   ("#+begin_src"     . "λ")
                   ("#+end_src"       . "λ")
                   ("#+begin_verse"   . "؎") ;; Arabic poetic verse sign
