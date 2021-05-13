@@ -4380,14 +4380,25 @@ In that case, insert the number."
 
 (use-package hideshow
   :hook (prog-mode . hs-minor-mode)
-  :init
-  (defun toggle-fold ()
+  :bind (("C-c h a"    . 'hs-show-all)
+         ("C-c h H"    . 'hs-hide-all)
+         ("C-c h s"    . 'hs-show-block)
+         ("C-c h h"    . 'hs-toggle-hiding)
+         ("C-c h l"    . 'hs-hide-level)
+         :map hs-minor-mode-map
+         ("<backtab>"  . 'cyf-toggle-hs-all)
+         )
+  :config
+  (defun cyf-toggle-hs-all ()
+    "Toggle hideshow for all blocks."
     (interactive)
-    (save-excursion
-      (end-of-line)
-      (hs-toggle-hiding)))
-  :bind (:map prog-mode-map
-              ("C-c h" . toggle-fold)))
+    (if (get 'cyf-toggle-hs-all 'state)
+        (progn
+          (hs-show-all)
+          (put 'cyf-toggle-hs-all 'state nil))
+      (progn
+        (hs-hide-all)
+        (put 'cyf-toggle-hs-all 'state t)))))
 
 (use-package origami
   ;; Code folding
