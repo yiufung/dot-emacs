@@ -1869,9 +1869,11 @@ horizontal mode."
  org-reverse-note-order 't
  ;; Show candidates in one go
  org-outline-path-complete-in-steps nil
- ;; Don't split line
+ ;; Split line with item. Use along with `org-insert-heading-respect-content'
  org-M-RET-may-split-line '((default . nil)
                             (item . t))
+ ;; Don't respect heading. Use along with `org-M-RET-may-split-line'
+ org-insert-heading-respect-content nil
  ;; Cache refile targets
  ;; Simple target is used, so no need to cache
  org-refile-use-cache nil
@@ -2250,8 +2252,6 @@ horizontal mode."
  org-hide-emphasis-markers nil
  ;; Hide leading stars
  org-hide-leading-stars t
- ;; resepect heading.
- org-insert-heading-respect-content nil
  ;; Warn when editing invisible area
  org-catch-invisible-edits 'show-and-error
  ;; Protect subtree
