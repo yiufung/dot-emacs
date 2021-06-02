@@ -1767,7 +1767,10 @@ horizontal mode."
            ("s-p"          . org-previous-block)
            ("s-<return>"   . org-insert-quote-under-item)
            ("S-s-<return>" . org-insert-verse-under-item)
-           ("s-t" . (lambda () (interactive) (org-toggle-checkbox t))))
+           ("s-t" . (lambda () (interactive) (org-toggle-checkbox t)))
+           ;; Easy zero-width spaces with Org
+           ("M-SPC M-SPC" . (lambda () (interactive) (insert "\u200b")))
+           )
 (defun fix-keymaps ()
   "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
   (interactive)
@@ -2119,10 +2122,10 @@ horizontal mode."
          (file+headline org-my-todo-file "Inbox")
          "* APPT %?\n" :prepend t)
 
-        ("j" "working journal"
+        ("j" "Decision Log"
          plain
-         (file+olp+datetree org-my-work-file "Working Journal")
-         "%?\n"
+         (file+olp+datetree org-my-work-file "Decision Log")
+         ""
          :prepend t)
 
         ("p" "Providence"
@@ -2830,7 +2833,7 @@ This function tries to do what you mean:
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
 (add-hook 'dired-mode-hook 'org-download-enable)
-(global-set-key (kbd "<print>") 'org-download-screenshot)
+(global-set-key (kbd "<print>") 'org-download-clipboard) ;; crop in X11 first, and paste within here later
 ;; Use #+ATTR_ORG: :width 300px to customized image display width
 (setq org-image-actual-width nil)
 
