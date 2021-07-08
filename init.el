@@ -5283,10 +5283,10 @@ Change to light yellow for all frames."
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
-     :font (font-spec :name "Alegreya"
+     :font (font-spec :name "Sarasa Term Slab HC" ;; Alegreya
                       :weight 'normal
                       :slant 'normal
-                      :size 17))
+                      :size 15))
     ;; For all CJK fonts
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font
