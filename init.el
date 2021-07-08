@@ -146,8 +146,8 @@ CURRENT-NAME, if it does not already have them:
 ;; Integration with use-package
 (straight-use-package 'use-package)
 (setq straight-use-package-by-default t)
-;; Early load Org from Git version instead of Emacs built-in version
-(straight-use-package 'org-plus-contrib)
+;; Early load org-contrib (from 9.4.6+)
+(straight-use-package 'org-contrib)
 
 ;;; Basic Setup
 ;;;; Emacs folder setup
@@ -1692,6 +1692,7 @@ horizontal mode."
 ;; Directly load org
 ;; Since using use-package may introduce overhead, and org is part of my life, load it directly here.
 (require 'org)
+(require 'org-contrib)
 
 (defun my-org-startup ()
   (org-agenda-list)
@@ -2712,15 +2713,15 @@ This function tries to do what you mean:
 
 ;; Org Speed commands
 (setq org-use-speed-commands t)
-(add-to-list 'org-speed-commands-user (cons "P" 'org-set-property))
-(add-to-list 'org-speed-commands-user (cons "d" 'org-cut-special))
-(add-to-list 'org-speed-commands-user (cons "q" 'org-set-tags-command))
-(add-to-list 'org-speed-commands-user (cons "S" 'org-schedule))
-(add-to-list 'org-speed-commands-user (cons "s" 'org-tree-to-indirect-buffer))
-(add-to-list 'org-speed-commands-user (cons "N" 'narrow-or-widen-dwim))
-(add-to-list 'org-speed-commands-user (cons "A" 'org-archive-to-archive-sibling))
+(add-to-list 'org-speed-commands (cons "P" 'org-set-property))
+(add-to-list 'org-speed-commands (cons "d" 'org-cut-special))
+(add-to-list 'org-speed-commands (cons "q" 'org-set-tags-command))
+(add-to-list 'org-speed-commands (cons "S" 'org-schedule))
+(add-to-list 'org-speed-commands (cons "s" 'org-tree-to-indirect-buffer))
+(add-to-list 'org-speed-commands (cons "N" 'narrow-or-widen-dwim))
+(add-to-list 'org-speed-commands (cons "A" 'org-archive-to-archive-sibling))
 ;; Show hidden properties. Use in conjunction with org-cycle-hide-drawers.
-(add-to-list 'org-speed-commands-user
+(add-to-list 'org-speed-commands
              (cons "c" (lambda ()
                          (if (get 'cyf-toggle-display-properties'state)
                              (progn
@@ -2730,19 +2731,19 @@ This function tries to do what you mean:
                              (org-show-entry)
                              (put 'cyf-toggle-display-properties 'state t))))))
 ;; Find tasks that require alignment with teammates
-(add-to-list 'org-speed-commands-user (cons "a" (lambda () (org-match-sparse-tree t "TODO=\"ASK\""))))
+(add-to-list 'org-speed-commands (cons "a" (lambda () (org-match-sparse-tree t "TODO=\"ASK\""))))
 ;; Find important subtrees
-(add-to-list 'org-speed-commands-user (cons "i" (lambda () (org-match-sparse-tree nil "PRIORITY=\"A\""))))
+(add-to-list 'org-speed-commands (cons "i" (lambda () (org-match-sparse-tree nil "PRIORITY=\"A\""))))
 ;; Find subtrees involving decision making
-(add-to-list 'org-speed-commands-user (cons "D" (lambda () (org-match-sparse-tree nil "alignment"))))
+(add-to-list 'org-speed-commands (cons "D" (lambda () (org-match-sparse-tree nil "alignment"))))
 ;; Mark a subtree
-(add-to-list 'org-speed-commands-user (cons "m" 'org-mark-subtree))
+(add-to-list 'org-speed-commands (cons "m" 'org-mark-subtree))
 ;; Open archive contents in another window
-(add-to-list 'org-speed-commands-user (cons "o" 'org-board-open))
+(add-to-list 'org-speed-commands (cons "o" 'org-board-open))
 ;; Show a subtree
-(add-to-list 'org-speed-commands-user (cons "k" 'org-kill-note-or-show-branches))
+(add-to-list 'org-speed-commands (cons "k" 'org-kill-note-or-show-branches))
 ;; Jump to headline
-(add-to-list 'org-speed-commands-user (cons "j" (lambda ()
+(add-to-list 'org-speed-commands (cons "j" (lambda ()
                                                   (avy-with avy-goto-line
                                                     (avy--generic-jump "^\\*+" nil)))))
 (global-set-key (kbd "M-j") '(lambda ()
