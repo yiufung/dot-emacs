@@ -2900,7 +2900,6 @@ This function tries to do what you mean:
            ("C-c g p"   . (lambda () (interactive) (org-roam-node-find t "permanent")))
            ("C-c g \\"  . (lambda () (interactive) (find-file org-roam-index-file)))
            ("C-c J"     . org-journal-new-entry))
-;; find a permanent note
 
 (setq-default org-roam-capture-templates
               '(
