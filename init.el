@@ -2892,14 +2892,15 @@ This function tries to do what you mean:
 (add-hook 'org-journal-mode-hook #'(lambda() (company-mode -1)))
 ;; v2 Setup
 (org-roam-setup)
-(bind-keys ("C-c g g" . org-roam-node-find)
-           ("C-c g v" . org-roam-node-visit)
+(bind-keys ("C-c g g"   . org-roam-node-find)
+           ("C-c g v"   . org-roam-node-visit)
            ("C-c g SPC" . org-roam-buffer-toggle)
-           ("C-c g c" . org-roam-capture)
-           ("C-c g i" . org-roam-node-insert)
+           ("C-c g c"   . org-roam-capture)
+           ("C-c g i"   . org-roam-node-insert)
+           ("C-c g p"   . (lambda () (interactive) (org-roam-node-find t "permanent")))
            ("C-c g \\"  . (lambda () (interactive) (find-file org-roam-index-file)))
            ("C-c J"     . org-journal-new-entry))
-;;            ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note "))) ;; find a permanent note
+;; find a permanent note
 
 (setq-default org-roam-capture-templates
               '(
