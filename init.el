@@ -1704,7 +1704,7 @@ horizontal mode."
 (use-package ob-mermaid :straight (:fork (:host github :repo "yiufung/ob-mermaid")))
 (use-package ob-http)
 (use-package org-superstar)
-(use-package org-roam)
+(use-package org-roam :straight (:host github :repo "org-roam/org-roam" :branch "v2"))
 (use-package org-journal)
 (use-package ox-reveal)
 (use-package nroam :straight (:host github :branch "master" :repo "NicolasPetton/nroam"))
@@ -2893,54 +2893,49 @@ This function tries to do what you mean:
               org-journal-enable-encryption nil
               org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
 (add-hook 'org-journal-mode-hook #'(lambda() (company-mode -1)))
-(bind-keys ("C-c g SPC" . org-roam)
-           ("C-c g g"   . org-roam-find-file)
-           ;; ("C-c g G"   . org-roam-graph-show)
-           ;; ("C-c g p"   . (lambda () (interactive) (org-roam-capture nil "p"))) ;; Create permanent note
-           ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note "))) ;; find a permanent note
-           ("C-c g c"   . org-roam-capture)
-           ("C-c g t"   . org-roam-tag-add)
-           ("C-c g i"   . org-roam-insert-immediate)
-           ("C-c g \\"  . org-roam-jump-to-index)
-           ("C-c J"     . org-journal-new-entry)
-           ("<f12>"     . org-roam-find-file)
-           )
-(bind-keys :map org-roam-mode-map
-           ("<f12>"     . (lambda () (interactive) (org-roam-capture nil "p"))) ;; insert a new permanent note
-           ("<f11>"     . org-roam-insert-immediate))
+;; v2 Setup
+(org-roam-setup)
+(bind-keys ("C-c g g" . org-roam-node-find)
+           ("C-c g v" . org-roam-node-visit)
+           ("C-c g SPC" . org-roam-buffer-toggle)
+           ("C-c g c" . org-roam-capture)
+           ("C-c g i" . org-roam-node-insert)
+           ("C-c g \\"  . (lambda () (interactive) (find-file org-roam-index-file)))
+           ("C-c J"     . org-journal-new-entry))
+;;            ("C-c g p"   . (lambda () (interactive) (org-roam-find-file "permanent note "))) ;; find a permanent note
 
-(setq org-roam-completion-everywhere nil
-      org-roam-completion-ignore-case t
-      org-roam-db-update-method 'immediate)
 (setq-default org-roam-capture-templates
-              '(("d" "default" plain
-                 #'org-roam-capture--get-point "%?"
-                 :file-name "${slug}"
-                 :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n %i \n\nSee also:\n-"
+              '(
+                ("d" "default" plain "%?" :if-new
+                 (file+head "${slug}.org" "#+title: ${title}")
                  :unnarrowed t)
-                ("p" "Permanent notes" plain
-                 #'org-roam-capture--get-point "%?"
-                 :file-name "zettels/${slug}" ;; Where real permanent notes locate.
-                 :head "#+title: ${title}\n#+roam_tags: \"permanent note\"\n#+roam_alias:\n\n\nSee also:\n- "
-                 :unnarrowed t))
-              org-roam-capture-immediate-template ;; When I immediate finish, usually I wish to create permanent note
-              ;; ("d" "default" plain #'org-roam-capture--get-point "%?"
-              ;;  :file-name "${slug}"
-              ;;  :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n\n\nSee also:\n-"
-              ;;  :unnarrowed t
-              ;;  :immediate-finish t)
-              '("p" "Permanent notes" plain
-                #'org-roam-capture--get-point "%?"
-                :file-name "zettels/${slug}" ;; Where real permanent notes locate.
-                :head "#+title: ${title}\n#+roam_tags:\"permanent note\"\n#+roam_alias:\n\n\nSee also:\n-"
-                :unnarrowed t
-                :immedaite-finish t)
-              org-roam-capture-ref-templates
-              '(("r" "ref" plain
-                 #'org-roam-capture--get-point "%?"
-                 :file-name "${slug}"
-                 :head "#+title: ${title}\n#+roam_tags:\n#+roam_alias:\n#+roam_key: ${ref}\n\n${body}\n\nSee also:\n-"
-                 :unnarrowed t)))
+                ("p" "Permanent notes" plain "%?" :if-new
+                 (file "zettels/${slug}.org") ;; Where real permanent notes locate.
+                 :unnarrowed t)
+                )
+              org-roam-node-display-template
+              "${filetitle} > ${olp} > ${title:80} ${tags:*}")
+
+(cl-defmethod org-roam-node-filetitle ((node org-roam-node))
+  "Return the file TITLE for the node."
+  (org-roam-get-keyword "TITLE" (org-roam-node-file node)))
+(defun my/org-roam-node--format-entry (node width)
+  (let ((display (org-roam-node-title node))
+        (olp (org-roam-node-olp node))
+        (level (org-roam-node-level node))
+        (tags (org-roam--tags-to-str (org-roam-node-tags node)))
+        (filetitle (org-roam-node-filetitle node)))
+    (when (> level 1) (setq display (concat (string-join olp " > ") " > " display)))
+    (when (> level 0) (setq display (concat filetitle " > " display)))
+    (setq display (concat display "  " tags))
+    display))
+(advice-add 'org-roam-node--format-entry :override #'my/org-roam-node--format-entry)
+
+(defun my/org-id-update-org-roam-files ()
+  "Update Org-ID locations for all Org-roam files."
+  (interactive)
+  (org-id-update-id-locations (org-roam--list-all-files)))
+(my/org-id-update-org-roam-files)
 
 (setq org-roam-index-file (expand-file-name "roam/zettels/index.org" org-directory))
 (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
@@ -2949,8 +2944,6 @@ This function tries to do what you mean:
                (file my-vocabulary-file)
                "%?%c"
                :empty-lines-before 1))
-;; Rebuild every 10 minutes when idle
-(run-with-idle-timer 600 t 'org-roam-db-build-cache)
 
 (use-package org-roam-server
   :after org-roam
