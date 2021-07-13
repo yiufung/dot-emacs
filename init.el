@@ -2693,10 +2693,7 @@ This function tries to do what you mean:
 (defun org-table-export-to-xlsx ()
   "Export Org table to xlsx."
   (interactive)
-  (let* ((file-name (nth 4 (org-heading-components))
-                    ;; (file-name-sans-extension (buffer-file-name
-                    ;;                            (current-buffer)))
-                    )
+  (let* ((file-name (nth 4 (org-heading-components)))
          (csv-file (concat file-name ".csv")))
     (org-table-export csv-file "orgtbl-to-csv")
     (org-odt-convert csv-file "xlsx")))
@@ -3846,8 +3843,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         calibredb-library-alist '(calibredb-root-dir)
         )
   ;; Integration with org-ref
-  (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "catalog.bib"))
-  (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
+  ;; (setq calibredb-ref-default-bibliography (concat (file-name-as-directory calibredb-root-dir) "catalog.bib"))
+  ;; (add-to-list 'org-ref-default-bibliography calibredb-ref-default-bibliography)
   (setq org-ref-get-pdf-filename-function 'org-ref-get-mendeley-filename)
   ;; Metadata
   (setq calibredb-fetch-metadata-source-list '("Google" "Amazon.com" "Douban Books"))
@@ -4609,14 +4606,25 @@ In that case, insert the number."
   :defer 3
   :after company
   ;; :hook (python-mode . lsp) ;; Start LSP server in python-mode
+  :custom
+  (lsp-headerline-breadcrumb-enable nil)
+  (lsp-enable-indentation nil)
+  (lsp-enable-on-type-formatting nil)
+  (lsp-modeline-code-actions-enable nil)
+  (lsp-modeline-diagnostics-enable nil)
+  (lsp-clients-clangd-args '("--header-insertion=never"))
+  (lsp-ui-doc-enable nil)
   :config
   (setq lsp-enable-snippet t
         ;; Ignore duplicates when there is a same symbol with the same contents.
         lsp-ui-sideline-ignore-duplicate t
         ;; Enable peek
         lsp-ui-peek-enable t
-        lsp-ui-doc-enable t)
+        )
   )
+
+(use-package rmsbolt
+  :defer 10)
 
 (use-package eglot
   ;; More light-weight language server protocol
@@ -5074,6 +5082,11 @@ In that case, insert the number."
 ;; Quick access to commonly used files
 (global-set-key (kbd "s-SPC") (lambda () (interactive)
                                 (find-file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory))))
+
+(set-register ?i (cons 'file (expand-file-name ".emacs.default/init.el" my-emacs-conf-directory)))
+(set-register ?t (cons 'file org-my-todo-file))
+(set-register ?w (cons 'file org-my-work-file))
+(set-register ?c (cons 'file org-my-church-file))
 (global-set-key (kbd "s-1") '(lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-2") '(lambda () (interactive) (find-file org-my-work-file)))
 (global-set-key (kbd "s-3") '(lambda () (interactive) (find-file org-my-church-file)))
@@ -5091,6 +5104,7 @@ In that case, insert the number."
 (setq mode-line-compact 'long)
 
 (use-package simple-modeline
+  :after (eyebrowse)
   :demand t
   :config
   (defun simple-modeline-segment-minions ()
