@@ -2902,31 +2902,27 @@ This function tries to do what you mean:
            ("C-c J"     . org-journal-new-entry))
 
 (setq-default org-roam-capture-templates
-              '(
-                ("d" "default" plain "%?" :if-new
+              '(("d" "default" plain "%?" :if-new
                  (file+head "${slug}.org" "#+title: ${title}")
                  :unnarrowed t)
                 ("p" "Permanent notes" plain "%?" :if-new
                  (file "zettels/${slug}.org") ;; Where real permanent notes locate.
-                 :unnarrowed t)
-                )
-              org-roam-node-display-template
-              "${filetitle} > ${olp} > ${title:80} ${tags:*}")
+                 :unnarrowed t)))
 
 (cl-defmethod org-roam-node-filetitle ((node org-roam-node))
   "Return the file TITLE for the node."
   (org-roam-get-keyword "TITLE" (org-roam-node-file node)))
-(defun my/org-roam-node--format-entry (node width)
-  (let ((display (org-roam-node-title node))
+(cl-defmethod org-roam-node-hierarchy ((node org-roam-node))
+  "Return the hierarchy for the node."
+  (let ((title (org-roam-node-title node))
         (olp (org-roam-node-olp node))
         (level (org-roam-node-level node))
-        (tags (org-roam--tags-to-str (org-roam-node-tags node)))
         (filetitle (org-roam-node-filetitle node)))
-    (when (> level 1) (setq display (concat (string-join olp " > ") " > " display)))
-    (when (> level 0) (setq display (concat filetitle " > " display)))
-    (setq display (concat display "  " tags))
-    display))
-(advice-add 'org-roam-node--format-entry :override #'my/org-roam-node--format-entry)
+    (concat
+     (if (> level 0) (concat filetitle " > "))
+     (if (> level 1) (concat (string-join olp " > ") " > "))
+     title)))
+(setq org-roam-node-display-template "${hierarchy:*} ${tags:20}")
 
 (defun my/org-id-update-org-roam-files ()
   "Update Org-ID locations for all Org-roam files."
