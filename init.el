@@ -1704,7 +1704,7 @@ horizontal mode."
 (use-package ob-mermaid :straight (:fork (:host github :repo "yiufung/ob-mermaid")))
 (use-package ob-http)
 (use-package org-superstar)
-(use-package org-roam :straight (:host github :repo "org-roam/org-roam" :branch "v2"))
+(use-package org-roam)
 (use-package org-journal)
 (use-package ox-reveal)
 (use-package nroam :straight (:host github :branch "master" :repo "NicolasPetton/nroam"))
@@ -2906,7 +2906,7 @@ This function tries to do what you mean:
                  (file+head "${slug}.org" "#+title: ${title}")
                  :unnarrowed t)
                 ("p" "Permanent notes" plain "%?" :if-new
-                 (file "zettels/${slug}.org") ;; Where real permanent notes locate.
+                 (file+head "zettels/${slug}.org" "#+TITLE: ${title}\n#+FILETAGS: permanent\n") ;; Where real permanent notes locate.
                  :unnarrowed t)))
 
 (cl-defmethod org-roam-node-filetitle ((node org-roam-node))
@@ -2929,6 +2929,9 @@ This function tries to do what you mean:
   (interactive)
   (org-id-update-id-locations (org-roam--list-all-files)))
 (my/org-id-update-org-roam-files)
+
+;; Rebuild every 10 minutes when idle
+(run-with-idle-timer 600 t 'org-roam-db-sync)
 
 (setq org-roam-index-file (expand-file-name "roam/zettels/index.org" org-directory))
 (setq my-vocabulary-file (expand-file-name "roam/vocabulary.org" org-directory))
