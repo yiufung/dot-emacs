@@ -4784,6 +4784,12 @@ In that case, insert the number."
         (ess-eval-linewise (concat "styler::style_dir(\"" default-directory "\")"))))
   )
 
+;;;; Rust
+(use-package rust-mode
+  :bind (:map rust-mode-map ("C-c C-c" . rust-run)) ;; Compile and run
+  :config
+  (setq rust-format-on-save t)
+  )
 ;;;; Lisp
 
 (use-package elisp-mode
@@ -4888,7 +4894,9 @@ In that case, insert the number."
               (("M-<up>" . markdown-move-up)
                ("M-<down>" . markdown-move-down)
                ("M-<left>" . markdown-promote)
-               ("M-<right>" . markdown-demote)))
+               ("M-<right>" . markdown-demote)
+               ("M-p" . nil)
+               ("M-n" . nil)))
   :init (setq markdown-command "multimarkdown")
   :config
   (setq-default markdown-enable-math t
