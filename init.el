@@ -1785,7 +1785,7 @@ horizontal mode."
            ("S-s-<return>" . org-insert-verse-under-item)
            ("s-t" . (lambda () (interactive) (org-toggle-checkbox t)))
            ;; Easy zero-width spaces with Org
-           ("M-SPC M-SPC" . (lambda () (interactive) (insert "\u200b")))
+           ;; ("M-SPC M-SPC" . (lambda () (interactive) (insert "\u200b")))
            )
 (defun fix-keymaps ()
   "Fix annoying errors when Org suddenly reload keymaps out of nowhere."
@@ -2846,7 +2846,7 @@ This function tries to do what you mean:
               org-download-annotate-function (lambda (link) "") ;; Don't annotate
               )
 (add-hook 'dired-mode-hook 'org-download-enable)
-(global-set-key (kbd "<print>") 'org-download-clipboard) ;; crop in X11 first, and paste within here later
+(global-set-key (kbd "<print>") 'org-download-screenshot)
 ;; Use #+ATTR_ORG: :width 300px to customized image display width
 (setq org-image-actual-width nil)
 
@@ -2896,6 +2896,7 @@ This function tries to do what you mean:
            ("C-c g v"   . org-roam-node-visit)
            ("C-c g SPC" . org-roam-buffer-toggle)
            ("C-c g c"   . org-roam-capture)
+           ("C-c g a"   . org-roam-alias-add)
            ("C-c g i"   . org-roam-node-insert)
            ("C-c g p"   . (lambda () (interactive) (org-roam-node-find t "permanent")))
            ("C-c g \\"  . (lambda () (interactive) (find-file org-roam-index-file)))
@@ -3660,6 +3661,11 @@ Yiufung
   ;; Run make info to compile info documentation
   (setq Info-additional-directory-list `(,(expand-file-name "straight/repos/org/doc/" user-emacs-directory)))
   (add-hook 'Info-selection-hook 'info-colors-fontify-node)
+  )
+
+(use-package devdocs
+  :defer 3
+  :straight (:repo "astoff/devdocs.el" :host github)
   )
 
 (use-package browse-url
