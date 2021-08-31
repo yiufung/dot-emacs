@@ -2128,6 +2128,11 @@ horizontal mode."
          (file+headline org-my-anki-file "Dispatch")
          "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Cloze\n:ANKI_DECK: Mega\n:END:\n** Text\n%?\n** Extra\n")
 
+        ("b" "Bible"
+         entry
+         (file+headline org-my-anki-file "Dispatch")
+         "* %<%H:%M>\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic\n:ANKI_DECK: Bible\n:END:\n** Front\n%?\n** Back\n")
+
         ("c" "Add tasks" ;; Capture first, refile daily
          entry
          (file+headline org-my-todo-file "Inbox")
@@ -2872,7 +2877,7 @@ This function tries to do what you mean:
 
 ;; org-roam and org-journal setup
 (require 'org-roam)
-(require 'org-roam-protocol)
+;; (require 'org-roam-protocol)
 (require 'org-journal)
 (require 'nroam)
 ;; Archiving web contents within Org-roam.
@@ -2928,7 +2933,7 @@ This function tries to do what you mean:
 (defun my/org-id-update-org-roam-files ()
   "Update Org-ID locations for all Org-roam files."
   (interactive)
-  (org-id-update-id-locations (org-roam--list-all-files)))
+  (org-id-update-id-locations (org-roam-list-files)))
 (my/org-id-update-org-roam-files)
 
 ;; Rebuild every 10 minutes when idle
@@ -5100,6 +5105,7 @@ In that case, insert the number."
 (set-register ?t (cons 'file org-my-todo-file))
 (set-register ?w (cons 'file org-my-work-file))
 (set-register ?c (cons 'file org-my-church-file))
+(set-register ?r (cons 'file org-board-capture-file))
 (global-set-key (kbd "s-1") '(lambda () (interactive) (find-file org-my-todo-file)))
 (global-set-key (kbd "s-2") '(lambda () (interactive) (find-file org-my-work-file)))
 (global-set-key (kbd "s-3") '(lambda () (interactive) (find-file org-my-church-file)))
@@ -5519,7 +5525,7 @@ Change to light yellow for all frames."
   )
 
 (use-package anki-editor
-  :defer 10
+  :defer 5
   :bind (:map org-mode-map
               ("<f12>" . anki-editor-cloze-region-dont-incr)
               ("<f11>" . anki-editor-cloze-region-auto-incr)
@@ -5569,7 +5575,8 @@ Change to light yellow for all frames."
   :defer 3
   :init
   (straight-use-package '(sword-to-org :host github :repo "alphapapa/sword-to-org"))
-  :bind (("C-c B" . dtk-bible))
+  :bind (("C-c B" . dtk-bible)
+         ("C-c j" . dtk-bible))
   :custom
   (dtk-word-wrap t) ;; Per-verse output
   (dtk-module "ChiNCVt") ;; 新譯本繁體版
