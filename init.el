@@ -1161,7 +1161,7 @@ If first character is /, search camelCase."
   (prescient-persist-mode +1)
 
   ;; Put to last to enable
-  (selectrum-mode +1))
+  (vertico-mode +1))
 
 ;;; File Nav & Mgmt: Follow / Dired / Bookmark+
 
