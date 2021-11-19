@@ -1080,7 +1080,7 @@ If first character is /, search camelCase."
          ("C-s e" . consult-isearch)
          ("C-x j j" . consult-bookmark)
          ("M-s" . consult-line)
-         ("C-c i" . consult-project-imenu)
+         ("C-c i" . imenu)
          ("C-y" . yank)
          ("M-y" . consult-yank-pop)
          ("C-x M-:" . consult-complex-command)
@@ -1108,6 +1108,7 @@ If first character is /, search camelCase."
   (require 'selectrum)
   (require 'marginalia)
   (require 'consult)
+  (require 'vertico)
   ;; Hide the mode line of the Embark live/completions buffers
   (add-to-list 'display-buffer-alist
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
@@ -1815,6 +1816,8 @@ horizontal mode."
 ;; Using org-roam as PKM, and org-board to archive web contents under roam directory
 (setq-default org-roam-directory (expand-file-name "roam/" org-directory)
               org-board-capture-file (expand-file-name "reading_slip_box.org" org-roam-directory))
+;; Ignore v2 upgrade warning
+(setq org-roam-v2-ack t)
 
 ;; Default org-mode startup
 (setq org-startup-folded t
