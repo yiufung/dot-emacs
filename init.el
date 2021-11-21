@@ -2113,6 +2113,9 @@ horizontal mode."
    (htmlize-output-type 'inline-css)))
 ;; (run-with-idle-timer (* 3600 12) t 'org-store-agenda-views)
 
+;; Show home agenda when idle for 10 minutes.
+(run-with-idle-timer 600 t '(lambda () (org-agenda nil "h")))
+
 ;; Auto save org-files, so that we prevent the locking problem between computers
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
 ;; Suppress output "Saving all Org buffers... done"
