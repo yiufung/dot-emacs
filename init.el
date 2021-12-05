@@ -1088,7 +1088,7 @@ If first character is /, search camelCase."
          ("C-h l" . find-library)
          ;; selectrum
          ("C-c C-r" . selectrum-repeat)
-         ("C-M-," . embark-act)       ;; pick some comfortable binding
+         ("C-." . embark-act)       ;; pick some comfortable binding
          ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
          :map embark-symbol-map
          ("d" . my-sdcv-search-input)
@@ -2954,6 +2954,7 @@ This function tries to do what you mean:
                :empty-lines-before 1))
 
 (use-package org-roam-server
+  :disabled t
   :after org-roam
   :defer 15
   :straight (org-roam-server :host github :repo "org-roam/org-roam-server" :files ("*.el" "assets" "index.html"))
@@ -3881,7 +3882,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :bind (:map flyspell-mode-map
               ("C-;" . nil)                  ; unbind the key, reserved for iedit
               ("C-," . nil)                  ; unbind the key, reserved for avy-jump
-              ("C-." . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
+              ("C-M-," . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
               )
   :init
   (setq flyspell-correct-interface #'flyspell-correct-dummy) ;; use selectrum interfa
@@ -3914,7 +3915,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :load-path (lambda () (expand-file-name "elisp" my-emacs-conf-directory))
   :commands (sdcv-search-pointer sdcv-search-pointer+ sdcv-search-input sdcv-search-input+)
   :custom-face (sdcv-tooltip-face ((t (:foreground "black" :background "gainsboro"))))
-  :custom-face (internal-border ((t (:background "LightGrey"))))
+  ;; :custom-face (internal-border ((t (:background "LightGrey"))))
   :bind (("C-c d" . my-sdcv-search-input)
          ("s-d" . sdcv-search-input+))
   :bind (:map sdcv-mode-map
@@ -4850,8 +4851,7 @@ In that case, insert the number."
             ruby-mode
             markdown-mode
             groovy-mode
-            scala-mode
-            minibuffer-setup-hook)
+            scala-mode)
     (add-hook it 'turn-on-smartparens-strict-mode)))
 
 ;;;; HTML
@@ -5245,33 +5245,30 @@ Change to light yellow for all frames."
 (use-package one-themes)
 (use-package naysayer-theme)
 (use-package doom-themes)
-(use-package modus-operandi-theme
+(use-package modus-themes
   :init
   (setq
-   modus-operandi-theme-distinct-org-blocks t
-   modus-operandi-theme-slanted-constructs t
-   modus-operandi-theme-bold-constructs t
-   modus-operandi-theme-faint-syntax t
-   modus-operandi-theme-prompts 'subtle
-   modus-operandi-theme-fringes 'nil
-   ;; modus-operandi-theme-variable-pitch-headings nil
-   modus-operandi-theme-proportional-fonts t
-   modus-operandi-theme-scale-headings t
-   modus-operandi-theme-section-headings nil
-   modus-operandi-theme-rainbow-headings nil
-   modus-operandi-theme-3d-modeline nil
-   modus-operandi-theme-org-blocks t
-   modus-operandi-theme-rainbow-org-src-blocks t
-   modus-operandi-theme-completions 'opinionated))
-(use-package modus-vivendi-theme
-  :config
-  (setq modus-vivendi-theme-variable-pitch-headings nil
-        modus-vivendi-theme-section-headings t
-        modus-vivendi-theme-rainbow-headings t
-        modus-vivendi-theme-3d-modeline t
-        modus-vivendi-theme-org-blocks t
-        modus-vivendi-theme-rainbow-org-src-blocks t
-        ))
+   modus-themes-org-blocks t
+   modus-themes-headings '((1 . (background overline))
+                           (2 . (overline rainbow))
+                           (t . (monochrome)))
+   modus-themes-org-agenda '((header-block . (variable-pitch scale-title))
+                             (header-date . (grayscale workaholic bold-today))
+                             (event . (accented italic varied))
+                             (scheduled . uniform)
+                             (habit . traffic-light))
+   modus-themes-subtle-line-numbers t
+   modus-themes-slanted-constructs t
+   modus-themes-diffs 'desaturated
+   modus-themes-bold-constructs t
+   modus-themes-prompts 'subtle
+   modus-themes-variable-pitch-headings nil
+   modus-themes-variable-pitch-ui nil
+   modus-themes-scale-headings t
+   modus-themes-completions 'opinionated
+   modus-themes-tabs-accented t))
+
+
 
 (use-package solaire-mode
   ;; visually distinguish file-visiting windows from other types of windows (like popups or sidebars) by giving them a
@@ -5298,27 +5295,27 @@ Change to light yellow for all frames."
      :font (font-spec :name "Sarasa Fixed Slab HC"
                       :weight 'normal
                       :slant 'normal
-                      :size 15))
+                      :size 13))
     ;; Fixed-width for programming
     (set-face-attribute
      'fixed-pitch nil
      :font (font-spec :name "Sarasa Term Slab HC"
                       :weight 'normal
                       :slant 'normal
-                      :size 15))
+                      :size 13))
     (set-face-attribute
      'fixed-pitch-serif nil
      :font (font-spec :name "Sarasa Term Slab HC"
                       :weight 'normal
                       :slant 'normal
-                      :size 15))
+                      :size 13))
     ;; Variable-width for reading
     (set-face-attribute
      'variable-pitch nil
      :font (font-spec :name "Sarasa Term Slab HC" ;; Alegreya
                       :weight 'normal
                       :slant 'normal
-                      :size 15))
+                      :size 13))
     ;; For all CJK fonts
     (dolist (charset '(kana han symbol cjk-misc bopomofo))
       (set-fontset-font
@@ -5327,7 +5324,7 @@ Change to light yellow for all frames."
        (font-spec :name "Sarasa Fixed Slab HC"
                   :weight 'normal
                   :slant 'normal
-                  :size 15)))
+                  :size 13)))
     )
   )
 
