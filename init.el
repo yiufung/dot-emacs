@@ -1757,6 +1757,7 @@ horizontal mode."
            ("C-x n b" . nil)
            ("C-x n e" . nil)
            ("C-x n"   . nil)
+           ("C-c ."   . org-time-stamp-inactive)
            ("C-c C-j" . counsel-org-goto)
            ("s-P"     . anki-editor-push-notes)
            ("s-L"     . org-cliplink)
@@ -1900,7 +1901,7 @@ horizontal mode."
  ;; Simple target is used, so no need to cache
  org-refile-use-cache nil
  ;; Use current window
- org-agenda-window-setup 'reorganize-frame
+ org-agenda-window-setup 'only-window
  org-agenda-restore-windows-after-quit nil
  ;; It doesn't have to start on weekday
  org-agenda-start-on-weekday nil
@@ -1914,8 +1915,8 @@ horizontal mode."
  org-deadline-warning-days 14
  ;; Show state changes in org-agenda-view when log-mode is enabled. Press l.
  org-agenda-log-mode-items '(closed clock state)
- ;; Always rebuild agenda
- org-agenda-sticky nil
+ ;; Bury agenda buffer on q
+ org-agenda-sticky t
  ;; Show clock report at start
  org-agenda-start-with-clockreport-mode t
  ;; Don’t show scheduled/deadline/timestamp items in agenda when they are done
@@ -2114,7 +2115,9 @@ horizontal mode."
 ;; (run-with-idle-timer (* 3600 12) t 'org-store-agenda-views)
 
 ;; Show home agenda when idle for 10 minutes.
-(run-with-idle-timer 600 t '(lambda () (org-agenda nil "h")))
+(run-with-idle-timer 600 t #'(lambda ()
+                               (unless (equal (buffer-name) "*Org Agenda*")
+                                 (org-agenda nil "h"))))
 
 ;; Auto save org-files, so that we prevent the locking problem between computers
 (add-hook 'auto-save-hook 'org-save-all-org-buffers)
@@ -2303,6 +2306,8 @@ horizontal mode."
 (setq org-id-locations-file (expand-file-name ".org-id-locations" user-emacs-directory)
       org-id-link-to-org-use-id 'create-if-interactive
       org-id-track-globally t)
+;; Add id to all heading created by org-insert-*
+(add-hook 'org-insert-heading-hook 'org-id-get-create)
 ;; IMPORTANT: create ID for everything I capture: be it an entry or a file. As Roam is used as a reference system, it's
 ;; crucial to use id as link, instead of file name, which may change in the future.
 (add-hook 'org-capture-before-finalize-hook 'org-id-get-create)
@@ -2754,10 +2759,10 @@ This function tries to do what you mean:
 (add-to-list 'org-speed-commands (cons "j" (lambda ()
                                                   (avy-with avy-goto-line
                                                     (avy--generic-jump "^\\*+" nil)))))
-(global-set-key (kbd "M-j") '(lambda ()
-                               (interactive)
-                               (avy-with avy-goto-line
-                                 (avy--generic-jump "^\\*+" nil))))
+(global-set-key (kbd "M-j") #'(lambda ()
+                                (interactive)
+                                (avy-with avy-goto-line
+                                  (avy--generic-jump "^\\*+" nil))))
 
 
 ;; Capturing pages from web. Integrates org-protocol-capture-html,
@@ -3880,9 +3885,11 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   ;; any future corrections made with flyspell will be automatically corrected as I type.
   :hook (flyspell-mode . auto-correct-mode)
   :bind (:map flyspell-mode-map
+              ("C-." . nil)                  ; unbind the key, reserved for embark-act
               ("C-;" . nil)                  ; unbind the key, reserved for iedit
               ("C-," . nil)                  ; unbind the key, reserved for avy-jump
               ("C-M-," . flyspell-correct-wrapper) ; Call with C-u to enable rapid mode.
+              ("C-M-i" . flyspell-correct-wrapper)
               )
   :init
   (setq flyspell-correct-interface #'flyspell-correct-dummy) ;; use selectrum interfa
@@ -4716,7 +4723,7 @@ In that case, insert the number."
   (require 'ein-notebook)
   (setq-default ein:worksheet-enable-undo 't
                 ein:polymode 'nil)
-  (add-to-list 'ein:notebook-mode-hook '(lambda () (show-paren-mode -1)))
+  (add-to-list 'ein:notebook-mode-hook #'(lambda () (show-paren-mode -1)))
   )
 
 ;;;; Python
@@ -4872,9 +4879,9 @@ In that case, insert the number."
 (use-package haskell-mode
   ;; Haskell support
   :straight t
-  :straight intero
+  ;; :straight intero
   :config
-  (intero-global-mode 1)
+  ;; (intero-global-mode 1)
   )
 
 ;;;; Scala
@@ -5093,8 +5100,8 @@ In that case, insert the number."
 ;; <f1> for help-* commands
 (global-set-key (kbd "<f2>") 'counsel-find-file-extern)
 ;; <f3> <f4> for macro
-(global-set-key (kbd "<f5>") '(lambda () (interactive) (org-agenda nil "h")))
-(global-set-key (kbd "<f6>") '(lambda () (interactive) (org-agenda nil "oo")))
+(global-set-key (kbd "<f5>") #'(lambda () (interactive) (org-agenda nil "h")))
+(global-set-key (kbd "<f6>") #'(lambda () (interactive) (org-agenda nil "oo")))
 (global-set-key (kbd "<f8>") 'follow-mode)
 ;; <f9> - <f12> for eyebrowse workspace
 
@@ -5112,12 +5119,12 @@ In that case, insert the number."
 (set-register ?w (cons 'file org-my-work-file))
 (set-register ?c (cons 'file org-my-church-file))
 (set-register ?r (cons 'file org-board-capture-file))
-(global-set-key (kbd "s-1") '(lambda () (interactive) (find-file org-my-todo-file)))
-(global-set-key (kbd "s-2") '(lambda () (interactive) (find-file org-my-work-file)))
-(global-set-key (kbd "s-3") '(lambda () (interactive) (find-file org-my-church-file)))
-(global-set-key (kbd "s-4") '(lambda () (interactive) (find-file (expand-file-name "mobile-inbox.org" org-directory))))
-(global-set-key (kbd "s-5") '(lambda () (interactive) (find-file org-board-capture-file)))
-(global-set-key (kbd "s-\\") '(lambda () (interactive) (find-file org-roam-index-file)))
+(global-set-key (kbd "s-1") #'(lambda () (interactive) (find-file org-my-todo-file)))
+(global-set-key (kbd "s-2") #'(lambda () (interactive) (find-file org-my-work-file)))
+(global-set-key (kbd "s-3") #'(lambda () (interactive) (find-file org-my-church-file)))
+(global-set-key (kbd "s-4") #'(lambda () (interactive) (find-file (expand-file-name "mobile-inbox.org" org-directory))))
+(global-set-key (kbd "s-5") #'(lambda () (interactive) (find-file org-board-capture-file)))
+(global-set-key (kbd "s-\\") #'(lambda () (interactive) (find-file org-roam-index-file)))
 
 ;; Test ground
 (global-set-key (kbd "s-)") (lambda () (interactive) (find-file "~/.emacs.test-ground/init.el")))
@@ -5218,16 +5225,16 @@ If luminance is larger than 0.7, return 'light, else return
                  ("DONE" :foreground "#005f33" :weight bold :strike-through t)))
          (message "[cyf] Setting org-todo-keyword-faces to light theme.. DONE"))))
 
-(defun cyf/set-light-theme-background ()
-  "My eyes hurt with white background.
-Change to light yellow for all frames."
-  (interactive)
-  (when (equal (cyf/theme-type) 'light)
-    (message "[cyf] Light theme detected: Setting backgrounds to light yellow")
-    (dolist (frame (frame-list))
-      (select-frame frame)
-      ;; (set-background-color "LightGoldenrodYellow")
-      (set-background-color "LightYellow2"))))
+;; (defun cyf/set-light-theme-background ()
+;;   "My eyes hurt with white background.
+;; Change to light yellow for all frames."
+;;   (interactive)
+;;   (when (equal (cyf/theme-type) 'light)
+;;     (message "[cyf] Light theme detected: Setting backgrounds to light yellow")
+;;     (dolist (frame (frame-list))
+;;       (select-frame frame)
+;;       ;; (set-background-color "LightGoldenrodYellow")
+;;       (set-background-color "LightYellow2"))))
 
 (defun cyf/set-dark-theme-highlight-region ()
   "Highlight text in dark themes."
@@ -5337,7 +5344,6 @@ Change to light yellow for all frames."
   (defun cyf/customize-theme-in-current-frame ()
     "Apply all settings in one batch."
     (cyf/set-org-todo-keyword-faces)
-    (cyf/set-light-theme-background) ;; Some light themes have good default background
     (cyf/set-dark-theme-highlight-region)
     )
   (advice-add 'default-text-scale-increase :after 'cyf/customize-theme-in-current-frame)
@@ -5349,7 +5355,6 @@ Change to light yellow for all frames."
   "Apply all settings in one batch."
   (select-frame frame)
   (cyf/set-org-todo-keyword-faces)
-  (cyf/set-light-theme-background) ;; Some light themes have good default background
   (cyf/set-dark-theme-highlight-region)
   )
 
