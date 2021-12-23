@@ -1057,8 +1057,6 @@ If first character is /, search camelCase."
          ("<help> a" . consult-apropos)            ;; orig. apropos-command
          ;; M-g bindings (goto-map)
          ("M-g e" . consult-compile-error)
-         ("M-g g" . consult-goto-line)             ;; orig. goto-line
-         ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
          ("M-g o" . consult-outline)
          ("M-g m" . consult-mark)
          ("M-g k" . consult-global-mark)
@@ -1087,6 +1085,7 @@ If first character is /, search camelCase."
          ("C-h V" . set-variable)
          ("C-h l" . find-library)
          ;; selectrum
+         ("C-c i" . consult-imenu)
          ("C-c C-r" . selectrum-repeat)
          ("C-." . embark-act)       ;; pick some comfortable binding
          ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
@@ -1491,14 +1490,15 @@ horizontal mode."
 
 (use-package avy
   :bind  (("C-,"   . avy-goto-word-1)
+          ("M-g g" . avy-goto-line)             ;; orig. goto-line
+          ("M-g M-g" . avy-goto-line)           ;; orig. goto-line
           ;; ("C-M-," . avy-goto-line)
           )
   :commands (avy-with)
   :config
   (setq avy-timeout-seconds 0.3
         avy-all-windows 'all-frames
-        avy-style 'at-full)
-  )
+        avy-style 'at-full))
 
 (use-package link-hint
   :defer 10
@@ -1779,8 +1779,9 @@ horizontal mode."
            ;; Unbinding org-force-cycle-archived
            ("<C-tab>"      . nil)
            ;; default option respects content, I don't use it
-           ;; ("C-<return>"   . nil) ;; Reserved for ace-window
+           ("C-<return>"   . nil) ;; Reserved for ace-window
            ("C-S-<return>" . org-insert-heading-respect-content)
+           ("C-M-<return>" . org-insert-heading-respect-content)
            ("s-n"          . org-next-block)
            ("s-p"          . org-previous-block)
            ("s-<return>"   . org-insert-quote-under-item)
@@ -1867,6 +1868,7 @@ horizontal mode."
            ("S" . org-agenda-schedule)
            ("J" . org-agenda-goto-date)
            ("j" . avy-goto-word-1)
+           ("T" . org-agenda-todo-yesterday)
            ("o" . org-agenda-open-link)
            ("w" . org-agenda-refile)
            ("W" . org-agenda-week-view))
@@ -2594,6 +2596,7 @@ horizontal mode."
       org-src-window-setup 'current-window ;; Edit source block location
       org-edit-src-content-indentation 0
       org-fontify-quote-and-verse-blocks t ;; fontify text within verse/quote
+      org-fontify-whole-block-delimiter-line t ;; fontify delimeter line
       org-adapt-indentation nil)
 
 ;; Don't prompt before running code in org
@@ -2947,6 +2950,8 @@ This function tries to do what you mean:
   (org-id-update-id-locations (org-roam-list-files)))
 (my/org-id-update-org-roam-files)
 
+;; Delay scan of Org ID location upon startup.
+(run-with-idle-timer 600 nil 'org-roam-update-org-id-locations)
 ;; Rebuild every 10 minutes when idle
 (run-with-idle-timer 600 t 'org-roam-db-sync)
 
@@ -4322,7 +4327,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
   :bind (
          ("H-c" . company-mode)
          :map company-active-map
-         ("C-c ?" . company-quickhelp-manual-begin)
+         ("h"   . company-quickhelp-manual-begin) ;; C-g then h when h is really needed.
          ("C-n" . company-select-next)
          ("C-p" . company-select-previous)
          )
@@ -4334,8 +4339,11 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
         company-tooltip-flip-when-above t
         company-minimum-prefix-length 1
         company-idle-delay 0.5
-        company-tooltip-idle-delay 0
-        company-format-margin-function #'company-vscode-light-icons-margin)
+        company-tooltip-idle-delay 0.5
+        company-format-margin-function #'company-vscode-light-icons-margin
+        ;; Quickhelp will not be automatically triggered. Do it manually.
+        company-quickhelp-delay nil
+        company-quickhelp-use-propertized-text t)
 
   ;; Directly press [1..9] to insert candidates
   ;; See http://oremacs.com/2017/12/27/company-numbers/
@@ -4364,9 +4372,6 @@ In that case, insert the number."
                           (company-abort)
                           (self-insert-command 1)))
     (define-key map (kbd "<return>") nil))
-
-  ;; (global-company-mode t)
-  (company-quickhelp-mode +1)
   )
 
 ;;;; Heuristic text completion: hippie expand + dabbrev
@@ -5255,12 +5260,14 @@ If luminance is larger than 0.7, return 'light, else return
 (use-package modus-themes
   :init
   (setq
-   modus-themes-org-blocks t
+   modus-themes-org-blocks 'gray-background
+   modus-themes-region '(bg-only no-extend)
+   modus-themes-fringes 'subtle
    modus-themes-headings '((1 . (background overline))
                            (2 . (overline rainbow))
                            (t . (monochrome)))
-   modus-themes-org-agenda '((header-block . (variable-pitch scale-title))
-                             (header-date . (grayscale workaholic bold-today))
+   modus-themes-org-agenda '((header-block . (variable-pitch 1.5 scale-title))
+                             (header-date . (grayscale workaholic bold-today 1.2))
                              (event . (accented italic varied))
                              (scheduled . uniform)
                              (habit . traffic-light))
@@ -5268,12 +5275,19 @@ If luminance is larger than 0.7, return 'light, else return
    modus-themes-slanted-constructs t
    modus-themes-diffs 'desaturated
    modus-themes-bold-constructs t
+   modus-themes-italic-constructs t
    modus-themes-prompts 'subtle
    modus-themes-variable-pitch-headings nil
    modus-themes-variable-pitch-ui nil
    modus-themes-scale-headings t
    modus-themes-completions 'opinionated
-   modus-themes-tabs-accented t))
+   modus-themes-tabs-accented t)
+  ;; Load the theme files before enabling a theme
+  (modus-themes-load-themes)
+  :config
+  ;; Load the theme of your choice:
+  (modus-themes-load-operandi) ;; OR (modus-themes-load-vivendi)
+  )
 
 
 
