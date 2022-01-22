@@ -877,11 +877,9 @@ Useful when hard line wraps are unwanted (email/sharing article)."
   )
 
 ;;; Completion Framework: Ivy / Swiper / Counsel
-(use-package orderless
-  :ensure t
-  :custom (completion-styles '(orderless)))
 
 (use-package counsel
+  ;; No longer used, moved to vertico
   :disabled t
   :straight t
   :straight ivy-hydra
@@ -1023,21 +1021,21 @@ If first character is /, search camelCase."
   )
 
 
-;;; Embark / Consult / Selectrum
+;;; Vertico / Embark / Consult
 
-(use-package selectrum
-  ;; selection framework
+(use-package vertico
   :demand t
   :straight t
-  :straight consult ;; counsel equivalent for plectrum
-  :straight consult-flycheck
-  :straight consult-notmuch
   :straight embark ;; minibuffer actions + occur/export
+  :straight consult ;; counsel equivalent for vertico
   :straight embark-consult
+  :straight consult-flycheck
+  :straight consult-dir
+  :straight consult-notmuch
   :straight marginalia ;; ivy-rich-like annotations for candidates
   :straight prescient ;; filtering and frecency-based sorting
-  :straight selectrum-prescient
-  :straight vertico ;; needed by some nevertheless
+  :straight orderless ;; Match text with completion
+  :custom (completion-styles '(orderless))
   :hook (embark-collect-mode . embark-consult-preview-minor-mode)
   :bind (
          ;; consult bindings
@@ -1084,9 +1082,8 @@ If first character is /, search camelCase."
          ("C-x M-:" . consult-complex-command)
          ("C-h V" . set-variable)
          ("C-h l" . find-library)
-         ;; selectrum
+         ;; consult related
          ("C-c i" . consult-imenu)
-         ("C-c C-r" . selectrum-repeat)
          ("C-." . embark-act)       ;; pick some comfortable binding
          ("C-h B" . embark-bindings) ;; alternative for `describe-bindings'
          :map embark-symbol-map
@@ -1104,7 +1101,6 @@ If first character is /, search camelCase."
   :config
   (require 'embark)
   (require 'embark-consult)
-  (require 'selectrum)
   (require 'marginalia)
   (require 'consult)
   (require 'vertico)
@@ -1113,6 +1109,12 @@ If first character is /, search camelCase."
                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
                  nil
                  (window-parameters (mode-line-format . none))))
+
+  ;; Add Sudo edit
+  (define-key embark-file-map (kbd "S") 'crux-sudo-edit)
+  ;; Share code
+  (define-key embark-region-map (kbd "U") 'ixio-paste)
+  (define-key embark-region-map (kbd "g") 'google-this-noconfirm)
 
   (setq embark-collect-initial-view-alist
         '((file . list)
@@ -1138,6 +1140,24 @@ If first character is /, search camelCase."
           #'which-key--hide-popup-ignore-command)
         embark-become-indicator embark-action-indicator)
 
+  ;; Add custom actions for embark types.
+  ;; To make it mode-specific, assign a key binding to the corresponding keymap in the desired mode.
+  ;; For Org-mode
+  (embark-define-keymap embark-org-region-map
+    "Keymap for Embark actions on the active region in Org mode."
+    ("b" #'(lambda () (interactive) (org-emphasize ?*))) ;; bold
+    ("/" #'(lambda () (interactive) (org-emphasize ?/))) ;; italic
+    ("u" #'(lambda () (interactive) (org-emphasize ?_))) ;; underscore
+    ("v" #'(lambda () (interactive) (org-emphasize ?=))) ;; verbatim
+    ("x" #'(lambda () (interactive) (org-emphasize ?+))) ;; cross
+    ("c" #'(lambda () (interactive) (org-emphasize ?~))) ;; code
+    ("|" org-table-create-or-convert-from-region) ;; table
+    ("_" org-subscript-region-or-point) ;; subscript
+    ("^" org-superscript-region-or-point) ;; superscript
+    )
+  (add-to-list 'embark-keymap-alist '(org-region . embark-org-region-map))
+  (define-key embark-region-map "o" embark-org-region-map)
+
   ;; Marginalia: provides annotations to completion candidates.
   (setq marginalia-annotators
         '(marginalia-annotators-heavy
@@ -1152,13 +1172,18 @@ If first character is /, search camelCase."
 
   (savehist-mode +1)
   ;; Use orderless style
-  (setq orderless-skip-highlighting (lambda () selectrum-is-active))
-  (setq selectrum-highlight-candidates-function #'orderless-highlight-matches)
-  (setq selectrum-prescient-enable-filtering nil)
+  ;; TODO find it for vertico?
+
   ;; Use prescient on top of orderless
-  (selectrum-prescient-mode +1)
   (setq prescient-save-file (expand-file-name "prescient-save.el" my-private-conf-directory))
-  (prescient-persist-mode +1)
+  ;; (prescient-persist-mode +1)
+
+  ;; Vertico customizations
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
   ;; Put to last to enable
   (vertico-mode +1))
@@ -1439,10 +1464,10 @@ horizontal mode."
     (window-height . 10)
     (reusable-frames . visible))
    ("^\\vterm"
-    (display-buffer-reuse-window display-buffer-in-side-window)
+    (display-buffer-reuse-window) ;; display-buffer-in-side-window
     (side . right)
     (slot . 2)
-    (window-width . 80)
+    (window-width . 90)
     (reusable-frames . visible))
    ;; Always show notmuch in new frame
    ("^\\*info"
@@ -1867,7 +1892,7 @@ horizontal mode."
 (bind-keys :map org-agenda-mode-map
            ("S" . org-agenda-schedule)
            ("J" . org-agenda-goto-date)
-           ("j" . avy-goto-word-1)
+           ("j" . avy-goto-line)
            ("T" . org-agenda-todo-yesterday)
            ("o" . org-agenda-open-link)
            ("w" . org-agenda-refile)
@@ -2227,9 +2252,17 @@ horizontal mode."
 (defun make-orgcapture-frame ()
   "Create a new frame and run org-capture."
   (interactive)
-  (make-frame '((name . "org-capture") (window-system . x) (width . 80) (height . 24)))
+  (make-frame '((name . "org-capture") (window-system . x) (width . 100) (height . 24)))
   (select-frame-by-name "org-capture")
   (org-capture)
+  )
+
+(defun make-eww-frame ()
+  "Create a new frame and run eww on current url (the first item in clipboard)."
+  (interactive)
+  (make-frame '((name . "eww") (window-system . x) (width . 80) (height . 24)))
+  (select-frame-by-name "eww")
+  (eww (with-temp-buffer (clipboard-yank) (buffer-string)))
   )
 
 ;; Automatically add CREATED property on creation of heading
@@ -2237,6 +2270,11 @@ horizontal mode."
 (setq org-expiry-inactive-timestamps t)
 (org-expiry-insinuate) ;; Activate org-expiry mechanism on new heading creation using M-RET etc
 (add-hook 'org-capture-before-finalize-hook 'org-expiry-insert-created) ;; Add to capture too
+
+(defun org-expiry-get-created (point)
+  (org-entry-get point org-expiry-created-property-name)
+  )
+
 
 ;; General org settings
 (setq-default
@@ -3897,7 +3935,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
               ("C-M-i" . flyspell-correct-wrapper)
               )
   :init
-  (setq flyspell-correct-interface #'flyspell-correct-dummy) ;; use selectrum interfa
+  (setq flyspell-correct-interface #'flyspell-correct-dummy) ;; Use native
   :config
   ;; Requires aspell support.
   ;; Dictionaries to be downloaded via OS package manager
@@ -4286,7 +4324,7 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
     (if (not (equal major-mode 'vterm-mode))
         (vterm-mode)))
   :hook (vterm-mode . (lambda () (whole-line-or-region-local-mode -1)))
-  :bind (("C-z C-z" . create-or-switch-to-vterm)
+  :bind (("C-z C-t" . create-or-switch-to-vterm)
          :map vterm-mode-map
          ("C-y"  . vterm-yank)
          ("<f5>" . nil)
@@ -4296,7 +4334,8 @@ Useful for utilizing some plugins in Firefox (e.g: to make Anki cards)"
          ("<f9>" . nil)
          ("<f10>" . nil)
          ("<f11>" . nil)
-         ("<f12>" . nil)))
+         ("<f12>" . nil)
+         ("C-z" . nil)))
 
 (use-package shell
   :straight nil
@@ -4562,7 +4601,7 @@ In that case, insert the number."
 
 (use-package flycheck
   :defer 5
-  :after selectrum
+  :after vertico
   :straight hydra
   :straight posframe
   :straight flycheck-posframe
@@ -5420,6 +5459,9 @@ If luminance is larger than 0.7, return 'light, else return
   (fset 'org-insert-quote-under-item
         (kmacro-lambda-form [M-return backspace backspace ?  ?  ?< ?q tab tab] 0 "%d"))
   )
+
+(use-package google-this
+  :defer 15)
 
 (defalias 'rot13-mode 'toggle-rot13-mode)
 
