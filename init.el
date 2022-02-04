@@ -134,7 +134,7 @@ CURRENT-NAME, if it does not already have them:
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
 ;; Avoid checking for modifications on startup
-(setq straight-check-for-modifications '(check-on-save find-when-checking))
+(setq straight-check-for-modifications '(find-at-startup check-on-save find-when-checking))
 
 ;; Bootstrap `use-package'
 (setq-default
@@ -1535,6 +1535,8 @@ horizontal mode."
             #'(lambda () (bind-key "f" #'link-hint-open-link w3m-mode-map)))
   (add-hook 'help-mode-hook
             #'(lambda () (bind-key "f" #'link-hint-open-link help-mode-map))))
+
+(use-package helpful)
 
 (use-package avy-zap
   :bind (("M-z" . avy-zap-to-char-dwim)
@@ -2947,8 +2949,8 @@ This function tries to do what you mean:
               org-journal-enable-encryption nil
               org-journal-file-header "#+title: %Y-%m-%d-%a\n#+roam_tags: diary\n\n")
 (add-hook 'org-journal-mode-hook #'(lambda() (company-mode -1)))
-;; v2 Setup
-(org-roam-setup)
+
+;; bindings of org-roam
 (bind-keys ("C-c g g"   . org-roam-node-find)
            ("C-c g v"   . org-roam-node-visit)
            ("C-c g SPC" . org-roam-buffer-toggle)
