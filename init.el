@@ -1025,7 +1025,7 @@ If first character is /, search camelCase."
 
 (use-package vertico
   :demand t
-  :straight t
+  :straight (:files (:defaults "extensions/*"))
   :straight embark ;; minibuffer actions + occur/export
   :straight consult ;; counsel equivalent for vertico
   :straight embark-consult
@@ -1184,6 +1184,10 @@ If first character is /, search camelCase."
   (defun crm-indicator (args)
     (cons (concat "[CRM] " (car args)) (cdr args)))
   (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  (require 'vertico-quick)
+  (define-key vertico-map "\M-q" #'vertico-quick-insert)
+  (define-key vertico-map "\C-q" #'vertico-quick-exit)
 
   ;; Put to last to enable
   (vertico-mode +1))
