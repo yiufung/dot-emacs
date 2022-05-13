@@ -739,17 +739,26 @@ is already narrowed."
 (use-package selected
   ;; Run commands on selected region. Very smooth!
   :defer 5
+  :hook (org-mode . selected-minor-mode)
   :bind (:map selected-keymap
               ("q" . selected-off)
-              ("u" . upcase-region)
+              ;; ("u" . upcase-region)
               ("d" . downcase-region)
               ("w" . count-words-region)
               ;; ("m" . apply-macro-to-region-lines)
               ("t" . org-table-convert-region)
               ("o" . open-text-in-firefox)
+              ("i" . org-roam-node-insert)
+              ("b" . (lambda () (interactive) (org-emphasize ?*))) ;; bold
+              ("/" . (lambda () (interactive) (org-emphasize ?/))) ;; italic
+              ("u" . (lambda () (interactive) (org-emphasize ?_))) ;; underscore
+              ("v" . (lambda () (interactive) (org-emphasize ?=))) ;; verbatim
+              ("x" . (lambda () (interactive) (org-emphasize ?+))) ;; cross
+              ("c" . (lambda () (interactive) (org-emphasize ?~))) ;; code
+              ("|" . org-table-create-or-convert-from-region) ;; table
+              ("_" . org-subscript-region-or-point) ;; subscript
+              ("^" . org-superscript-region-or-point) ;; superscript
               )
-  :config
-  (selected-global-mode +1)
   )
 
 ;;; Text Editing / Substitution / Copy-Pasting
