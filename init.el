@@ -1343,8 +1343,10 @@ output file. %i path(s) are relative, while %o is absolute.")
          ("M-o" . nil))
   :init
   (require 'bookmark+)
-  ;; Save bookmarks on every change
-  (setq bookmark-save-flag 1)
+  ;; Save bookmarks while idle on 5 minutes
+  (setq bookmark-save-flag nil)
+  (run-with-idle-timer 300 t 'bookmark-save)
+
   (setq-default bookmark-default-file (expand-file-name "bookmarks" my-private-conf-directory)
                 bmkp-last-as-first-bookmark-file (expand-file-name "bookmarks" my-private-conf-directory))
   )
